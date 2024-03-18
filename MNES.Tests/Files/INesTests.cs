@@ -14,10 +14,10 @@ namespace MNES.Tests.Files
         [TestMethod]
         public void TestHeader()
         {
-            var rom_file = "Resources/Test Roms/instr_test-v3/official_only.nes";
+            var rom_file = "Resources/Test Roms/other/nestest.nes";
 
             var nes_bytes = File.ReadAllBytes(rom_file);
-            INesHeader header = new INesHeader(nes_bytes);
+            INesHeader header = new(nes_bytes);
         }
     }
 }

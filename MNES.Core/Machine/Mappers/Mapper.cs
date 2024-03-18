@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MNES.Core.Machine.Mappers.Implementation;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -20,6 +21,10 @@ namespace MNES.Core.Machine.Mappers
             Machine = machine;
         }
 
-        public abstract ushort this[ushort index] { get; set; }
+        public abstract byte this[ushort index] { get; set; }
+
+        public static Mapper GetMapper(INesHeader header, MachineState machine) =>
+            header.MapperNumber == 0 ? new M000(machine) :
+            null;
     }
 }
