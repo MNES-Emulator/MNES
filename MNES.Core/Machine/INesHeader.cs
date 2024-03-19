@@ -41,7 +41,7 @@ namespace MNES.Core.Machine
         public INesHeader(byte[] nes_file)
         {
             // 0-3	Constant $4E $45 $53 $1A (ASCII "NES" followed by MS-DOS end-of-file)
-            if (!nes_file[..4].SequenceEqual(ines_text)) throw new Exception("INES header not found.");
+            if (!nes_file[..4].SequenceEqual(ines_text)) throw new Exception("ROM invalid, INES header not found.");
             // 4	Size of PRG ROM in 16 KB units
             PrgRomSize = nes_file[4] * 16000;
             // 5	Size of CHR ROM in 8 KB units (value 0 means the board uses CHR RAM)

@@ -17,7 +17,7 @@ namespace MNES.Core.Machine
             DUAL_COMPATIBLE,
         }
 
-        Task running_thread;
+        public Task RunningThread { get; private set; }
         Action tick_callback;
         int _hertz;
         RegionType _region_backing = RegionType.NTSC;
@@ -47,7 +47,7 @@ namespace MNES.Core.Machine
                 return;
             }
             if (_is_running) throw new Exception($"{nameof(NesTimer)} is already running.");
-            running_thread = Task.Run(Run);
+            RunningThread = Task.Run(Run);
         }
 
         void Run()
@@ -101,14 +101,14 @@ namespace MNES.Core.Machine
         public void Reset() {
             if (!_is_running) throw new Exception($"Cannot reset {nameof(NesTimer)} when it's not running.");
             _is_stopping = true;
-            running_thread.Wait();
+            RunningThread.Wait();
             Start();
         }
 
         public void Stop() {
             if (!_is_running) throw new Exception($"Cannot stop {nameof(NesTimer)} when it's not running.");
             _is_stopping = true;
-            running_thread.Wait();
+            RunningThread.Wait();
         }
     }
 }

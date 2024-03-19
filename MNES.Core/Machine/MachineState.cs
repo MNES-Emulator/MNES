@@ -1,45 +1,76 @@
-﻿using MNES.Core.Machine.Mappers;
+﻿using MNES.Core.Machine.CPU;
+using MNES.Core.Machine.Input;
+using MNES.Core.Machine.Mappers;
+using MNES.Core.Saves.Configuration;
 
 namespace MNES.Core.Machine
 {
     public class MachineState
     {
-        INesHeader header;
-        Mapper mapper;
+        readonly INesHeader header;
+        readonly Mapper mapper;
+        readonly NesTimer timer;
+        readonly ConfigSettings settings;
+        readonly InputState input;
+        byte last_read_value = 0; // returns in case of open bus reads
 
-        // 2KB onboard RAM
-        public byte[] Ram = new byte[2000];
+        readonly byte[] ram = new byte[2000];
+        public readonly byte[] Rom;
+        readonly Ppu ppu = new();
+        readonly Apu apu = new();
+        readonly Cpu cpu;
 
-        public byte[] Rom;
-
-        // CPU register values
-        public CpuRegisters CpuRegisters = new();
-
-        public PPU Ppu = new();
-
-        Apu Apu = new();
-
-        public MachineState(string rom_path)
+        public MachineState(string rom_path, ConfigSettings settings, InputState input)
         {
+            this.settings = settings;
+            this.input = input;
             var nes_bytes = File.ReadAllBytes(rom_path);
             header = new INesHeader(nes_bytes);
             Rom = new byte[nes_bytes.Length - 16];
             nes_bytes[16..].CopyTo(Rom, 0);
             mapper = Mapper.GetMapper(header, this);
             if (mapper == null) throw new NotImplementedException($"Mapper {header.MapperNumber} is not implemented.");
+            cpu = new(this);
+            timer = new(settings.System.Region, settings.System.DebugMode ? DebugTick : cpu.Tick);
         }
 
-        // obviously very slow but whatever
-        public byte this[ushort index] { 
-            get =>
-                index < 0x2000 ? Ram[index % 0x2000] :
-                index < 0x4000 ? Ppu.Registers[index % 8] :
-                index < 0x4020 ? Apu.Registers[index - 0x4000] :
-                mapper[index];
-            set {
-                if (index < 0x2000) Ram[index % 0x2000] = value;
-                else if (index < 0x4000) Ppu.Registers[index % 8] = value;
-                else if (index < 0x4020) Apu.Registers[index - 0x4000] = value;
+        public async Task Run()
+        {
+            SetPowerUpState();
+            //cpu.Registers.PC = (ushort)(this[0xFFFC] + (this[0xFFFD] << 8));
+            cpu.Registers.PC = 0xC000;
+            timer.Start();
+            await timer.RunningThread;
+        }
+
+        void DebugTick()
+        {
+            cpu.Tick();
+        }
+
+        void SetPowerUpState()
+        {
+            cpu.SetPowerUpState();
+            ppu.SetPowerUpState();
+            apu.SetPowerUpState();
+            for (int i = 0; i < ram.Length; i++) ram[i] = 0xFF;
+        }
+
+        /// <summary> If reads null, then open bus read. Don't write null. </summary>
+        public byte this[ushort index] {
+            get {
+                last_read_value =
+                    index < 0x2000 ? ram[index % 0x2000] :
+                    index < 0x4000 ? ppu.Registers[index % 8] :
+                    index < 0x4020 ? apu.Registers[index - 0x4000] :
+                    mapper[index] ?? last_read_value;
+                return last_read_value;
+            }
+            set
+            {
+                if (index < 0x2000) ram[index % 0x2000] = value;
+                else if (index < 0x4000) ppu.Registers[index % 8] = value;
+                else if (index < 0x4020) apu.Registers[index - 0x4000] = value;
                 else mapper[index] = value;
             }
         }

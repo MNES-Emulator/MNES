@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace MNES.Core.Machine
 {
     // https://www.nesdev.org/wiki/PPU_registers
-    public class PPU
+    public class Ppu
     {
         public byte[] Registers = new byte[8];
         public byte OAMDMA;
@@ -36,5 +36,11 @@ namespace MNES.Core.Machine
         // dddd dddd
         // PPU data read/write
         byte PpuData => Registers[7];
+
+        public void SetPowerUpState()
+        {
+            Array.Clear(Registers);
+            OAMDMA = 0;
+        }
     }
 }

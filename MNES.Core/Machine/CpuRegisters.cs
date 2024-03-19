@@ -10,6 +10,18 @@ namespace MNES.Core.Machine
     /// <summary> Represents all the registers of the CPU. </summary>
     public class CpuRegisters
     {
+        public enum StatusFlagType : byte
+        {
+            Carry = 1,
+            Zero = 2,
+            InerruptDisable = 4,
+            Decimal = 8,
+            BFlag = 16,
+            _1 = 32,
+            Overflow = 64,
+            Negative = 128,
+        }
+
         /// <summary> The accumulator. </summary>
         public byte A;
 
