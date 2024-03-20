@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using static MNES.Core.Machine.CPU.CpuInstruction;
+using static MNES.Core.Machine.CpuRegisters;
 
 namespace MNES.Core.Machine.CPU
 {
@@ -45,10 +46,46 @@ namespace MNES.Core.Machine.CPU
         {
             m[m.Cpu.Registers.S++] = value;
         }
-
         #endregion
 
-        static readonly CpuInstruction[] GetInstructionsUnordered = new CpuInstruction[] {
+        // Some opcodes do similar things
+        #region Generic Opcode Methods
+        static void OpSetFlag(MachineState m, StatusFlagType flag)
+        {
+            m.Cpu.Registers.P |= (byte)flag;
+            m.Cpu.Registers.PC++;
+        }
+
+        static void OpClearFlag(MachineState m, StatusFlagClearType flag)
+        {
+            m.Cpu.Registers.ClearFlag(flag);
+            m.Cpu.Registers.PC++;
+        }
+
+        static void OpBranchOnFlag(MachineState m, StatusFlagType flag)
+        {
+            if (m.Cpu.Registers.HasFlag(flag))
+            {
+                m.Cpu.Registers.PC += m[(ushort)(m.Cpu.Registers.PC + 1)];
+                if (m.Settings.System.DebugMode) m.Cpu.log_message = $"${m.Cpu.Registers.PC:X4} (?)"; // If flag is false the message is probably different
+            }
+
+            m.Cpu.Registers.PC += 2;
+        }
+
+        static void OpBranchOnClearFlag(MachineState m, StatusFlagType flag)
+        {
+            if (!m.Cpu.Registers.HasFlag(flag))
+            {
+                m.Cpu.Registers.PC += m[(ushort)(m.Cpu.Registers.PC + 1)];
+                if (m.Settings.System.DebugMode) m.Cpu.log_message = $"${m.Cpu.Registers.PC:X4} (?)"; // If flag is false the message is probably different
+            }
+
+            m.Cpu.Registers.PC += 2;
+        }
+        #endregion
+
+        static readonly CpuInstruction[] instructions_unordered = new CpuInstruction[] {
             
             new() { Name = "JMP", OpCode = 0x4C, Bytes = 3, Process = new ProcessDelegate[] { 
                 m => { 
@@ -100,10 +137,35 @@ namespace MNES.Core.Machine.CPU
             } },
 
             new() { Name = "SEC", OpCode = 0x38, Bytes = 1, Process = new ProcessDelegate[] {
-                m => { 
-                    m.Cpu.Registers.P |= (byte)CpuRegisters.StatusFlagType.Carry;
-                    m.Cpu.Registers.PC++;
+                m => OpSetFlag(m, StatusFlagType.Carry),
+            } },
+
+            new() { Name = "BCS", OpCode = 0xB0, Bytes = 2, Process = new ProcessDelegate[] {
+                m => OpBranchOnFlag(m, StatusFlagType.Carry),
+            } },
+
+            new() { Name = "CLC", OpCode = 0x18, Bytes = 1, Process = new ProcessDelegate[] {
+                m => OpClearFlag(m, StatusFlagClearType.Carry),
+            } },
+
+            new() { Name = "BCC", OpCode = 0x90, Bytes = 2, Process = new ProcessDelegate[] {
+                m => OpBranchOnClearFlag(m, StatusFlagType.Carry),
+            } },
+
+            new() { Name = "LDA", OpCode = 0xA9, Bytes = 2, Process = new ProcessDelegate[] {
+                m => {
+                    m.Cpu.Registers.A = m[(ushort)(m.Cpu.Registers.PC + 1)];
+                    m.Cpu.Registers.PC += 2;
+                    if (m.Settings.System.DebugMode) m.Cpu.log_message = $"#${m.Cpu.Registers.A:X2}";
                 },
+            } },
+
+            new() { Name = "BEQ", OpCode = 0xF0, Bytes = 2, Process = new ProcessDelegate[] {
+                m => OpBranchOnFlag(m, StatusFlagType.Zero),
+            } },
+
+            new() { Name = "BNE", OpCode = 0xD0, Bytes = 2, Process = new ProcessDelegate[] {
+                m => OpBranchOnClearFlag(m, StatusFlagType.Zero),
             } },
 
             //new() { Name = "", OpCode = 0x00, Bytes = 0, Process = new ProcessDelegate[] {
@@ -114,7 +176,7 @@ namespace MNES.Core.Machine.CPU
         public Cpu(MachineState machine)
         {
             this.machine = machine;
-            foreach (var i in GetInstructionsUnordered) {
+            foreach (var i in instructions_unordered) {
                 if (instructions[i.OpCode] != null) throw new Exception($"Duplicate OpCodes: {instructions[i.OpCode].Name} and {i.Name}");
                 instructions[i.OpCode] = i;
             }
@@ -141,7 +203,7 @@ namespace MNES.Core.Machine.CPU
                 CurrentInstruction = instructions[opcode];
                 if (CurrentInstruction == null) {
                     var op_x = opcode.ToString("X2");
-                    throw new NotImplementedException($"Opcode {opcode:X2} not implemented.");
+                    throw new NotImplementedException($"Opcode {opcode:X2} not implemented. {instructions_unordered.Length}/151 opcodes are implemented!");
                 }
                 if (machine.Settings.System.DebugMode)
                 {
