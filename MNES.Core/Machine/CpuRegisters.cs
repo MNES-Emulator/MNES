@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MNES.Core.Machine.Log;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -41,5 +42,7 @@ namespace MNES.Core.Machine
         public byte P;
 
         public bool GetFlag(byte flag) => (P & flag) > 0;
+
+        public CpuRegisterLog GetLog() => new(this);
     }
 }

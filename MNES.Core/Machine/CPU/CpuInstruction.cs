@@ -18,6 +18,6 @@ namespace MNES.Core.Machine.CPU
         public bool Illegal { get; init; }
         public ProcessDelegate[] Process { get; init; }
         /// <summary> True if fully implemented. </summary>
-        public bool Implemented { get; init; }
+        public bool Unfinished { get; init; } = false;
     }
 }
