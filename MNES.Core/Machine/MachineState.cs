@@ -59,6 +59,16 @@ namespace MNES.Core.Machine
             for (int i = 0; i < Ram.Length; i++) Ram[i] = 0xFF;
         }
 
+        public ushort ReadUShort(int index) => ReadUShort((ushort)index);
+        public ushort ReadUShort(ushort index)
+        {
+            var b_l = this[index];
+            ushort b_h = this[(ushort)(index + 1)];
+            b_h <<= 8;
+            b_h |= b_l;
+            return b_h;
+        }
+
         /// <summary> If reads null, then open bus read. Don't write null. </summary>
         public byte this[ushort index] {
             get {

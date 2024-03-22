@@ -78,7 +78,7 @@ namespace MNES.Core.Machine
         public byte S { get => registers[3]; set => registers[3] = value; }
 
         /// <summary> The status register. </summary>
-        public byte P { get => registers[4]; set => registers[4] = value; }
+        public byte P { get => registers[4]; set => registers[4] = (byte)(value | (byte)StatusFlagType._1); }
 
         public byte GetRegister(RegisterType r) => registers[(int)r];
 

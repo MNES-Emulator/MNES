@@ -326,9 +326,45 @@ namespace MNES.Core.Machine.CPU
                 },
             } },
 
-            //new() { Name = "", OpCode = 0x00, Bytes = 0, Process = new ProcessDelegate[] {
+            //new() { Name = "STA", OpCode = 0x8D, Bytes = 3, Process = new ProcessDelegate[] {
             //    m => { },
+            //    m => { },
+            //    m => { },
+            //    m => {
+            //        var target = m.ReadUShort(m.Cpu.Registers.PC + 1);
+            //        m[target] = m.Cpu.Registers.A;
+            //        m.Cpu.Registers.PC += 3;
+            //        if (m.Settings.System.DebugMode) m.Cpu.log_message = $"${target:X2} = {m.Cpu.Registers.A:X2}";
+            //    },
             //} },
+
+            new() { Name = "CLV", OpCode = 0xB8, Bytes = 1, Process = new ProcessDelegate[] {
+                m => OpClearFlag(m, StatusFlagClearType.Overflow),
+            } },
+
+            new() { Name = "EOR", OpCode = 0x49, Bytes = 2, Process = new ProcessDelegate[] {
+                m => {
+                    var target = m[(ushort)(m.Cpu.Registers.PC + 1)];
+                    m.Cpu.Registers.A ^= target;
+                    m.Cpu.Registers.PC += 2;
+                },
+            } },
+
+            new() { Name = "ADC", OpCode = 0x69, Bytes = 2, Process = new ProcessDelegate[] {
+                m => {
+                    var target = m[(ushort)(m.Cpu.Registers.PC + 1)];
+                    m.Cpu.Registers.A += target;
+                    m.Cpu.Registers.PC += 2;
+                },
+            } },
+
+            new() { Name = "LDY", OpCode = 0xA0, Bytes = 2, Process = new ProcessDelegate[] {
+                m => {
+                    m.Cpu.Registers.Y = m[(ushort)(m.Cpu.Registers.PC + 1)];
+                    m.Cpu.Registers.PC += 2;
+                    if (m.Settings.System.DebugMode) m.Cpu.log_message = $"#${m.Cpu.Registers.Y:X2}";
+                },
+            } },
         };
 
         public Cpu(MachineState machine)
@@ -386,10 +422,6 @@ namespace MNES.Core.Machine.CPU
                     if (machine.Settings.System.DebugMode) {
                         machine.Logger.Log(new(CurrentInstruction, log_pc, log_d1, log_d2, log_cpu, log_cyc, log_message));
                         log_message = null;
-                    }
-                    if (CurrentInstruction.Unfinished)
-                    {
-                        throw new NotImplementedException($"Opcode {CurrentInstruction.OpCode:X2} marked as not fully implemented.");
                     }
                     CurrentInstruction = null;
                     CurrentInstructionCycle = 0;
