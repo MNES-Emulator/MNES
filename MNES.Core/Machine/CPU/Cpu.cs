@@ -99,28 +99,9 @@ namespace MNES.Core.Machine.CPU
 
         static void OpCompare(MachineState m, byte r, byte mem, ushort pc_add)
         {
-            bool n_flag = (mem & 0b_1000_0000) == 0;
-            bool z_flag;
-            bool c_flag;
-            if (r < mem)
-            {
-                z_flag = false;
-                c_flag = false;
-            }
-            else if (r == mem)
-            {
-                n_flag = false;
-                z_flag = true;
-                c_flag = true;
-            }
-            else
-            {
-                z_flag = false;
-                c_flag = true;
-            }
-            m.Cpu.Registers.SetFlag(StatusFlagType.Negative, n_flag);
-            m.Cpu.Registers.SetFlag(StatusFlagType.Zero, z_flag);
-            m.Cpu.Registers.SetFlag(StatusFlagType.Carry, c_flag);
+            m.Cpu.Registers.SetFlag(StatusFlagType.Negative, ((r - mem) & 0b_1000_0000) > 0);
+            m.Cpu.Registers.SetFlag(StatusFlagType.Zero, r == mem);
+            m.Cpu.Registers.SetFlag(StatusFlagType.Carry, mem <= r);
             m.Cpu.Registers.PC += pc_add;
         }
 
@@ -309,20 +290,6 @@ namespace MNES.Core.Machine.CPU
 
             new() { Name = "CMP", OpCode = 0xC9, Bytes = 2, Process = new ProcessDelegate[] {
                 m => {
-                    // desync 299
-                    // Expected;
-                    // 299 C9D2  C9 3F     CMP #$3F            A:40 X:00 Y:00 P:27 S:FB 
-                    // 300 C9D4  F0 09     BEQ $C9DF           A:40 X:00 Y:00 P:25 S:FB // 00100101
-
-                    // Results;
-                    // 299 C9D2  C9 3F     CMP #$3F            A:40 X:00 Y:00 P:27 S:FB
-                    // 300 C9D4  F0 09     BEQ $C9DF           A:40 X:00 Y:00 P:A5 S:FB // 10100101
-
-                    if (m.Cpu.log_inst_count == 299)
-                    {
-
-                    }
-
                     if (m.Settings.System.DebugMode) m.Cpu.log_message = $"#${m[(ushort)(m.Cpu.Registers.PC + 1)]:X2}";
                     OpCompare(m, m.Cpu.Registers.A, m[(ushort)(m.Cpu.Registers.PC + 1)], 2); 
                 },
