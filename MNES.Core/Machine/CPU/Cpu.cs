@@ -53,9 +53,9 @@ namespace MNES.Core.Machine.CPU
             m[m.Cpu.Registers.S--] = value;
         }
 
-        static byte PULL(MachineState m) => 
+        static byte PULL(MachineState m) =>
             m[++m.Cpu.Registers.S];
-        
+
         #endregion
 
         // Some opcodes do similar things
@@ -66,51 +66,91 @@ namespace MNES.Core.Machine.CPU
             m.Cpu.Registers.PC++;
         }
 
-        static void OpClearFlag(MachineState m, StatusFlagClearType flag)
+        static void OpClearFlag(MachineState m, StatusFlagType flag)
         {
             m.Cpu.Registers.ClearFlag(flag);
             m.Cpu.Registers.PC++;
         }
 
-        static void OpBranchOnFlag(MachineState m, StatusFlagType flag)
+        static void OpBranchOnFlagRelative(MachineState m, StatusFlagType flag)
         {
+            if (m.Settings.System.DebugMode) m.Cpu.log_message = $"${m.Cpu.Registers.PC + m[(ushort)(m.Cpu.Registers.PC + 1)] + 2:X4}";
+            
             if (m.Cpu.Registers.HasFlag(flag))
             {
                 m.Cpu.Registers.PC += m[(ushort)(m.Cpu.Registers.PC + 1)];
-                if (m.Settings.System.DebugMode) m.Cpu.log_message = $"${m.Cpu.Registers.PC:X4} (?)"; // If flag is false the message is probably different
             }
 
             m.Cpu.add_cycles = 1; // Todo: Add another if branch is on another page
             m.Cpu.Registers.PC += 2;
         }
 
-        static void OpBranchOnClearFlag(MachineState m, StatusFlagType flag)
+        static void OpBranchOnClearFlagRelative(MachineState m, StatusFlagType flag)
         {
+            if (m.Settings.System.DebugMode) m.Cpu.log_message = $"${m.Cpu.Registers.PC + m[(ushort)(m.Cpu.Registers.PC + 1)] + 2:X4}";
+
             if (!m.Cpu.Registers.HasFlag(flag))
             {
                 m.Cpu.Registers.PC += m[(ushort)(m.Cpu.Registers.PC + 1)];
-                if (m.Settings.System.DebugMode) m.Cpu.log_message = $"${m.Cpu.Registers.PC:X4} (?)"; // If flag is false the message is probably different
             }
             m.Cpu.add_cycles = 1; // Todo: Add another if branch is on another page
             m.Cpu.Registers.PC += 2;
+        }
+
+        static void OpCompare(MachineState m, byte r, byte mem, ushort pc_add)
+        {
+            bool n_flag = (mem & 0b_1000_0000) == 0;
+            bool z_flag;
+            bool c_flag;
+            if (r < mem)
+            {
+                z_flag = false;
+                c_flag = false;
+            }
+            else if (r == mem)
+            {
+                n_flag = false;
+                z_flag = true;
+                c_flag = true;
+            }
+            else
+            {
+                z_flag = false;
+                c_flag = true;
+            }
+            m.Cpu.Registers.SetFlag(StatusFlagType.Negative, n_flag);
+            m.Cpu.Registers.SetFlag(StatusFlagType.Zero, z_flag);
+            m.Cpu.Registers.SetFlag(StatusFlagType.Carry, c_flag);
+            m.Cpu.Registers.PC += pc_add;
+        }
+
+        static void OpAddCarry(MachineState m, byte value)
+        {
+            var a = m.Cpu.Registers.A;
+            var sum = a + value + (m.Cpu.Registers.HasFlag(StatusFlagType.Carry)? 1 : 0);
+            var carry = sum > 0xFF;
+            var overflow = (~(a ^ value) & (a ^ sum) & 0x80) > 0;
+            m.Cpu.Registers.A = (byte)sum;
+            m.Cpu.Registers.SetFlag(StatusFlagType.Carry, carry);
+            m.Cpu.Registers.SetFlag(StatusFlagType.Overflow, overflow);
         }
         #endregion
 
         static readonly CpuInstruction[] instructions_unordered = new CpuInstruction[] {
-            
-            new() { Name = "JMP", OpCode = 0x4C, Bytes = 3, Process = new ProcessDelegate[] { 
-                m => { 
-                    m.Cpu.tmp_u = m.Cpu.Registers.PC; 
-                    PCL(m, m[(ushort)(m.Cpu.tmp_u + 1)]); 
+
+            new() { Name = "JMP", OpCode = 0x4C, Bytes = 3, Process = new ProcessDelegate[] {
+                m => {
+                    m.Cpu.tmp_u = m.Cpu.Registers.PC;
+                    PCL(m, m[(ushort)(m.Cpu.tmp_u + 1)]);
                 },
-                m => { 
+                m => {
                     PCH(m, m[(ushort)(m.Cpu.tmp_u + 2)]);
                     if (m.Settings.System.DebugMode) m.Cpu.log_message = $"${m.Cpu.Registers.PC:X4}";
                 },
             } },
 
-            new() { Name = "LDX", OpCode = 0xA2, Bytes = 2, Process = new ProcessDelegate[] { 
-                m => { 
+            new() { Name = "LDX", OpCode = 0xA2, Bytes = 2, Process = new ProcessDelegate[] {
+                m => {
                     m.Cpu.Registers.X = m[(ushort)(m.Cpu.Registers.PC + 1)];
                     m.Cpu.Registers.PC += 2;
                     if (m.Settings.System.DebugMode) m.Cpu.log_message = $"#${m.Cpu.Registers.X:X2}";
@@ -152,15 +192,15 @@ namespace MNES.Core.Machine.CPU
             } },
 
             new() { Name = "BCS", OpCode = 0xB0, Bytes = 2, Process = new ProcessDelegate[] {
-                m => OpBranchOnFlag(m, StatusFlagType.Carry),
+                m => OpBranchOnFlagRelative(m, StatusFlagType.Carry),
             } },
 
             new() { Name = "CLC", OpCode = 0x18, Bytes = 1, Process = new ProcessDelegate[] {
-                m => OpClearFlag(m, StatusFlagClearType.Carry),
+                m => OpClearFlag(m, StatusFlagType.Carry),
             } },
 
             new() { Name = "BCC", OpCode = 0x90, Bytes = 2, Process = new ProcessDelegate[] {
-                m => OpBranchOnClearFlag(m, StatusFlagType.Carry),
+                m => OpBranchOnClearFlagRelative(m, StatusFlagType.Carry),
             } },
 
             new() { Name = "LDA", OpCode = 0xA9, Bytes = 2, Process = new ProcessDelegate[] {
@@ -172,11 +212,11 @@ namespace MNES.Core.Machine.CPU
             } },
 
             new() { Name = "BEQ", OpCode = 0xF0, Bytes = 2, Process = new ProcessDelegate[] {
-                m => OpBranchOnFlag(m, StatusFlagType.Zero),
+                m => OpBranchOnFlagRelative(m, StatusFlagType.Zero),
             } },
 
             new() { Name = "BNE", OpCode = 0xD0, Bytes = 2, Process = new ProcessDelegate[] {
-                m => OpBranchOnClearFlag(m, StatusFlagType.Zero),
+                m => OpBranchOnClearFlagRelative(m, StatusFlagType.Zero),
             } },
 
             new() { Name = "STA", OpCode = 0x85, Bytes = 2, Process = new ProcessDelegate[] {
@@ -192,10 +232,12 @@ namespace MNES.Core.Machine.CPU
             new() { Name = "BIT", OpCode = 0x24, Bytes = 2, Process = new ProcessDelegate[] {
                 m => { },
                 m => {
-                    var target = m[(ushort)(m.Cpu.Registers.PC + 1)];
-                    bool z_flag = (m.Cpu.Registers.A & target) == 0;
-                    bool n_flag = (m.Cpu.Registers.A & 0b_1000_0000) > 0;
-                    bool v_flag = (m.Cpu.Registers.A & 0b_0100_0000) > 0;
+                    var z_p_address = m[(ushort)(m.Cpu.Registers.PC + 1)];
+                    var value = m[z_p_address];
+                    if (m.Settings.System.DebugMode) m.Cpu.log_message = $"${z_p_address:X2} = {value:X2}";
+                    bool z_flag = (m.Cpu.Registers.A & value) == 0;
+                    bool n_flag = (value & 0b_1000_0000) > 0;
+                    bool v_flag = (value & 0b_0100_0000) > 0;
                     m.Cpu.Registers.SetFlag(StatusFlagType.Zero, z_flag);
                     m.Cpu.Registers.SetFlag(StatusFlagType.Negative, n_flag);
                     m.Cpu.Registers.SetFlag(StatusFlagType.Overflow, v_flag);
@@ -204,15 +246,15 @@ namespace MNES.Core.Machine.CPU
             } },
 
             new() { Name = "BVS", OpCode = 0x70, Bytes = 2, Process = new ProcessDelegate[] {
-                m => OpBranchOnFlag(m, StatusFlagType.Overflow),
+                m => OpBranchOnFlagRelative(m, StatusFlagType.Overflow),
             } },
 
             new() { Name = "BVC", OpCode = 0x50, Bytes = 2, Process = new ProcessDelegate[] {
-                m => OpBranchOnClearFlag(m, StatusFlagType.Overflow),
+                m => OpBranchOnClearFlagRelative(m, StatusFlagType.Overflow),
             } },
 
             new() { Name = "BPL", OpCode = 0x10, Bytes = 2, Process = new ProcessDelegate[] {
-                m => OpBranchOnClearFlag(m, StatusFlagType.Negative),
+                m => OpBranchOnClearFlagRelative(m, StatusFlagType.Negative),
             } },
 
             new() { Name = "RTS", OpCode = 0x60, Bytes = 1, Process = new ProcessDelegate[] {
@@ -251,7 +293,7 @@ namespace MNES.Core.Machine.CPU
             new() { Name = "PLA", OpCode = 0x68, Bytes = 1, Process = new ProcessDelegate[] {
                 m => { },
                 m => { },
-                m => { 
+                m => {
                     m.Cpu.Registers.A = PULL(m);
                     m.Cpu.Registers.PC++;
                 },
@@ -267,32 +309,27 @@ namespace MNES.Core.Machine.CPU
 
             new() { Name = "CMP", OpCode = 0xC9, Bytes = 2, Process = new ProcessDelegate[] {
                 m => {
-                    var target = m[(ushort)(m.Cpu.Registers.PC + 1)];
-                    bool n_flag = (target & 0b_1000_0000) == 0;
-                    bool z_flag;
-                    bool c_flag;
-                    if (m.Cpu.Registers.A < target) {
-                        z_flag = false;
-                        c_flag = false;
+                    // desync 299
+                    // Expected;
+                    // 299 C9D2  C9 3F     CMP #$3F            A:40 X:00 Y:00 P:27 S:FB 
+                    // 300 C9D4  F0 09     BEQ $C9DF           A:40 X:00 Y:00 P:25 S:FB // 00100101
+
+                    // Results;
+                    // 299 C9D2  C9 3F     CMP #$3F            A:40 X:00 Y:00 P:27 S:FB
+                    // 300 C9D4  F0 09     BEQ $C9DF           A:40 X:00 Y:00 P:A5 S:FB // 10100101
+
+                    if (m.Cpu.log_inst_count == 299)
+                    {
+
                     }
-                    else if (m.Cpu.Registers.A == target) {
-                        n_flag = false;
-                        z_flag = true;
-                        c_flag = true;
-                    }
-                    else {
-                        z_flag = false;
-                        c_flag = true;
-                    }
-                    m.Cpu.Registers.SetFlag(StatusFlagType.Negative, n_flag);
-                    m.Cpu.Registers.SetFlag(StatusFlagType.Zero, z_flag);
-                    m.Cpu.Registers.SetFlag(StatusFlagType.Carry, c_flag);
-                    m.Cpu.Registers.PC += 2;
+
+                    if (m.Settings.System.DebugMode) m.Cpu.log_message = $"#${m[(ushort)(m.Cpu.Registers.PC + 1)]:X2}";
+                    OpCompare(m, m.Cpu.Registers.A, m[(ushort)(m.Cpu.Registers.PC + 1)], 2); 
                 },
             } },
 
             new() { Name = "CLD", OpCode = 0xD8, Bytes = 1, Process = new ProcessDelegate[] {
-                m => OpClearFlag(m, StatusFlagClearType.Decimal),
+                m => OpClearFlag(m, StatusFlagType.Decimal),
             } },
 
             new() { Name = "PHA", OpCode = 0x48, Bytes = 1, Process = new ProcessDelegate[] {
@@ -315,7 +352,7 @@ namespace MNES.Core.Machine.CPU
             } },
 
             new() { Name = "BMI", OpCode = 0x30, Bytes = 2, Process = new ProcessDelegate[] {
-                m => OpBranchOnFlag(m, StatusFlagType.Negative),
+                m => OpBranchOnFlagRelative(m, StatusFlagType.Negative),
             } },
 
             new() { Name = "ORA", OpCode = 0x09, Bytes = 2, Process = new ProcessDelegate[] {
@@ -339,7 +376,7 @@ namespace MNES.Core.Machine.CPU
             //} },
 
             new() { Name = "CLV", OpCode = 0xB8, Bytes = 1, Process = new ProcessDelegate[] {
-                m => OpClearFlag(m, StatusFlagClearType.Overflow),
+                m => OpClearFlag(m, StatusFlagType.Overflow),
             } },
 
             new() { Name = "EOR", OpCode = 0x49, Bytes = 2, Process = new ProcessDelegate[] {
@@ -353,7 +390,8 @@ namespace MNES.Core.Machine.CPU
             new() { Name = "ADC", OpCode = 0x69, Bytes = 2, Process = new ProcessDelegate[] {
                 m => {
                     var target = m[(ushort)(m.Cpu.Registers.PC + 1)];
-                    m.Cpu.Registers.A += target;
+                    if (m.Settings.System.DebugMode) m.Cpu.log_message = $"#${target:X2}";
+                    OpAddCarry(m, target);
                     m.Cpu.Registers.PC += 2;
                 },
             } },
@@ -363,6 +401,20 @@ namespace MNES.Core.Machine.CPU
                     m.Cpu.Registers.Y = m[(ushort)(m.Cpu.Registers.PC + 1)];
                     m.Cpu.Registers.PC += 2;
                     if (m.Settings.System.DebugMode) m.Cpu.log_message = $"#${m.Cpu.Registers.Y:X2}";
+                },
+            } },
+
+            new() { Name = "CPY", OpCode = 0xC0, Bytes = 2, Process = new ProcessDelegate[] {
+                m => {
+                    if (m.Settings.System.DebugMode) m.Cpu.log_message = $"#${m[(ushort)(m.Cpu.Registers.PC + 1)]:X2}";
+                    OpCompare(m, m.Cpu.Registers.Y, m[(ushort)(m.Cpu.Registers.PC + 1)], 2);
+                },
+            } },
+
+            new() { Name = "CPX", OpCode = 0xE0, Bytes = 2, Process = new ProcessDelegate[] {
+                m => {
+                    if (m.Settings.System.DebugMode) m.Cpu.log_message = $"#${m[(ushort)(m.Cpu.Registers.PC + 1)]:X2}";
+                    OpCompare(m, m.Cpu.Registers.X, m[(ushort)(m.Cpu.Registers.PC + 1)], 2);
                 },
             } },
         };

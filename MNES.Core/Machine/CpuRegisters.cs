@@ -11,7 +11,7 @@ namespace MNES.Core.Machine
     /// <summary> Represents all the registers of the CPU. </summary>
     public class CpuRegisters
     {
-        public enum StatusFlagType : byte
+        public enum StatusFlagType
         {
             /// <summary> The C flag. </summary>
             Carry =             0b_0000_0001,
@@ -29,26 +29,6 @@ namespace MNES.Core.Machine
             Overflow =          0b_0100_0000,
             /// <summary> The N flag. </summary>
             Negative =          0b_1000_0000,
-        }
-
-        public enum StatusFlagClearType : byte
-        {
-            /// <summary> The C flag. </summary>
-            Carry =             0b_1111_1110,
-            /// <summary> The Z flag. </summary>
-            Zero =              0b_1111_1101,
-            /// <summary> The I flag. </summary>
-            InerruptDisable =   0b_1111_1011,
-            /// <summary> The D flag. </summary>
-            Decimal =           0b_1111_0111,
-            /// <summary> The B flag. </summary>
-            BFlag =             0b_1110_1111,
-            /// <summary> The 1 flag. </summary>
-            _1 =                0b_1101_1111,
-            /// <summary> The V flag. </summary>
-            Overflow =          0b_1011_1111,
-            /// <summary> The N flag. </summary>
-            Negative =          0b_0111_1111,
         }
 
         public enum RegisterType
@@ -92,12 +72,8 @@ namespace MNES.Core.Machine
         void SetRegisterAndFlags(RegisterType r, byte value)
         {
             registers[(int)r] = value;
-
-            if ((value & 0b_1000_0000) > 0) P |= (byte)StatusFlagType.Negative;
-            else P &= (byte)StatusFlagClearType.Negative;
-
-            if (value == 0) P |= (byte)StatusFlagType.Zero;
-            else P &= (byte)StatusFlagClearType.Zero;
+            SetFlag(StatusFlagType.Negative, (value & 0b_1000_0000) > 0);
+            SetFlag(StatusFlagType.Zero, value == 0);
         }
 
         public bool HasFlag(StatusFlagType flag) => (P & (byte)flag) > 0;
@@ -107,7 +83,7 @@ namespace MNES.Core.Machine
             if (value) P |= (byte)flag;
             else P &= (byte)~(byte)flag;
         }
-        public void ClearFlag(StatusFlagClearType flag) => P &= (byte)flag;
+        public void ClearFlag(StatusFlagType flag) => P &= (byte)~flag;
 
         public CpuRegisterLog GetLog() => new(this);
     }
