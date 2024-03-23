@@ -384,6 +384,78 @@ namespace MNES.Core.Machine.CPU
                     OpCompare(m, m.Cpu.Registers.X, m[(ushort)(m.Cpu.Registers.PC + 1)], 2);
                 },
             } },
+
+            new() { Name = "SBC", OpCode = 0xE9, Bytes = 2, Process = new ProcessDelegate[] {
+                m => {
+                    var target = m[(ushort)(m.Cpu.Registers.PC + 1)];
+                    if (m.Settings.System.DebugMode) m.Cpu.log_message = $"#${target:X2}";
+                    OpAddCarry(m, (byte)~target);
+                    m.Cpu.Registers.PC += 2;
+                },
+            } },
+
+            new() { Name = "INY", OpCode = 0xC8, Bytes = 1, Process = new ProcessDelegate[] {
+                m => {
+                    m.Cpu.Registers.Y++;
+                    m.Cpu.Registers.PC += 1;
+                },
+            } },
+
+            new() { Name = "INX", OpCode = 0xE8, Bytes = 1, Process = new ProcessDelegate[] {
+                m => {
+                    m.Cpu.Registers.X++;
+                    m.Cpu.Registers.PC += 1;
+                },
+            } },
+
+            new() { Name = "DEY", OpCode = 0x88, Bytes = 1, Process = new ProcessDelegate[] {
+                m => {
+                    m.Cpu.Registers.Y--;
+                    m.Cpu.Registers.PC += 1;
+                },
+            } },
+
+            new() { Name = "DEX", OpCode = 0xCA, Bytes = 1, Process = new ProcessDelegate[] {
+                m => {
+                    m.Cpu.Registers.X--;
+                    m.Cpu.Registers.PC += 1;
+                },
+            } },
+
+            new() { Name = "TAY", OpCode = 0xA8, Bytes = 1, Process = new ProcessDelegate[] {
+                m => {
+                    m.Cpu.Registers.Y = m.Cpu.Registers.A;
+                    m.Cpu.Registers.PC += 1;
+                },
+            } },
+
+            new() { Name = "TAX", OpCode = 0xAA, Bytes = 1, Process = new ProcessDelegate[] {
+                m => {
+                    m.Cpu.Registers.X = m.Cpu.Registers.A;
+                    m.Cpu.Registers.PC += 1;
+                },
+            } },
+
+            new() { Name = "TYA", OpCode = 0x98, Bytes = 1, Process = new ProcessDelegate[] {
+                m => {
+                    m.Cpu.Registers.A = m.Cpu.Registers.Y;
+                    m.Cpu.Registers.PC += 1;
+                },
+            } },
+
+            new() { Name = "TXA", OpCode = 0x8A, Bytes = 1, Process = new ProcessDelegate[] {
+                m => {
+                    m.Cpu.Registers.A = m.Cpu.Registers.X;
+                    m.Cpu.Registers.PC += 1;
+                },
+            } },
+
+            new() { Name = "TSX", OpCode = 0xBA, Bytes = 1, Process = new ProcessDelegate[] {
+                m => {
+                    m.Cpu.Registers.X = m.Cpu.Registers.S;
+                    m.Cpu.Registers.PC += 1;
+                },
+            } },
         };
 
         public Cpu(MachineState machine)
