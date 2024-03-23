@@ -2,6 +2,7 @@
 using MNES.Core.Machine.Input;
 using MNES.Core.Machine.Log;
 using MNES.Core.Machine.Mappers;
+using MNES.Core.Machine.Mappers.Implementation;
 using MNES.Core.Saves.Configuration;
 
 namespace MNES.Core.Machine
@@ -14,7 +15,7 @@ namespace MNES.Core.Machine
         readonly InputState input;
         byte last_read_value = 0; // returns in case of open bus reads
 
-        public readonly byte[] Ram = new byte[2000];
+        public readonly byte[] Ram = new byte[0x0800];
         public readonly byte[] Rom;
         public readonly Ppu Ppu = new();
         public readonly Apu Apu = new();
@@ -73,7 +74,7 @@ namespace MNES.Core.Machine
         public byte this[ushort index] {
             get {
                 last_read_value =
-                    index < 0x2000 ? Ram[index % 0x2000] :
+                    index < 0x2000 ? Ram[index % 0x0800] :
                     index < 0x4000 ? Ppu.Registers[index % 8] :
                     index < 0x4020 ? Apu.Registers[index - 0x4000] :
                     mapper[index] ?? last_read_value;
@@ -81,7 +82,7 @@ namespace MNES.Core.Machine
             }
             set
             {
-                if (index < 0x2000) Ram[index % 0x2000] = value;
+                if (index < 0x2000) Ram[index % 0x0800] = value;
                 else if (index < 0x4000) Ppu.Registers[index % 8] = value;
                 else if (index < 0x4020) Apu.Registers[index - 0x4000] = value;
                 else mapper[index] = value;

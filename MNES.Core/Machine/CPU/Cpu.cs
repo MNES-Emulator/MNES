@@ -216,12 +216,9 @@ namespace MNES.Core.Machine.CPU
                     var z_p_address = m[(ushort)(m.Cpu.Registers.PC + 1)];
                     var value = m[z_p_address];
                     if (m.Settings.System.DebugMode) m.Cpu.log_message = $"${z_p_address:X2} = {value:X2}";
-                    bool z_flag = (m.Cpu.Registers.A & value) == 0;
-                    bool n_flag = (value & 0b_1000_0000) > 0;
-                    bool v_flag = (value & 0b_0100_0000) > 0;
-                    m.Cpu.Registers.SetFlag(StatusFlagType.Zero, z_flag);
-                    m.Cpu.Registers.SetFlag(StatusFlagType.Negative, n_flag);
-                    m.Cpu.Registers.SetFlag(StatusFlagType.Overflow, v_flag);
+                    m.Cpu.Registers.SetFlag(StatusFlagType.Zero, (m.Cpu.Registers.A & value) == 0);
+                    m.Cpu.Registers.SetFlag(StatusFlagType.Negative, (value & 0b_1000_0000) > 0);
+                    m.Cpu.Registers.SetFlag(StatusFlagType.Overflow, (value & 0b_0100_0000) > 0);
                     m.Cpu.Registers.PC += 2;
                 },
             } },
@@ -454,6 +451,36 @@ namespace MNES.Core.Machine.CPU
                 m => {
                     m.Cpu.Registers.X = m.Cpu.Registers.S;
                     m.Cpu.Registers.PC += 1;
+                },
+            } },
+
+
+            new() { Name = "STX", OpCode = 0x8E, Bytes = 3, Process = new ProcessDelegate[] {
+                m => { },
+                m => { },
+                m => {
+                    var target = m.ReadUShort(m.Cpu.Registers.PC + 1);
+                    m[target] = m.Cpu.Registers.X;
+                    m.Cpu.Registers.PC += 3;
+                    if (m.Settings.System.DebugMode) m.Cpu.log_message = $"${target:X2} = {m.Cpu.Registers.X:X2}";
+                },
+            } },
+
+            new() { Name = "TXS", OpCode = 0x9A, Bytes = 1, Process = new ProcessDelegate[] {
+                m => {
+                    m.Cpu.Registers.S = m.Cpu.Registers.X;
+                    m.Cpu.Registers.PC += 1;
+                },
+            } },
+
+            new() { Name = "LDX", OpCode = 0xAE, Bytes = 3, Process = new ProcessDelegate[] {
+                m => { },
+                m => { },
+                m => {
+                    var target = m.ReadUShort(m.Cpu.Registers.PC + 1);
+                    m.Cpu.Registers.X = m[target];
+                    m.Cpu.Registers.PC += 3;
+                    if (m.Settings.System.DebugMode) m.Cpu.log_message = $"${target:X2} = {m.Cpu.Registers.X:X2}";
                 },
             } },
         };
