@@ -146,6 +146,63 @@ namespace Mnes.Core.Machine.CPU
             m.Cpu.Registers.SetFlag(StatusFlagType.Carry, carry);
             m.Cpu.Registers.SetFlag(StatusFlagType.Overflow, overflow);
         }
+
+        static void OpRollingLeftShiftMem(MachineState m, ushort target)
+        {
+            var prev_carry = m.Cpu.Registers.HasFlag(StatusFlagType.Carry);
+            var c_flag = (m[target] & 0b_1000_0000) > 0;
+            m[target] <<= 1;
+            if (prev_carry) m[target] |= 0b_0000_0001;
+            m.Cpu.Registers.UpdateFlags(m[target]);
+            m.Cpu.Registers.SetFlag(StatusFlagType.Carry, c_flag);
+        }
+
+        static void OpRollingRightShiftMem(MachineState m, ushort target)
+        {
+            var prev_carry = m.Cpu.Registers.HasFlag(StatusFlagType.Carry);
+            var c_flag = (m[target] & 0b_0000_0001) > 0;
+            m[target] >>= 1;
+            if (prev_carry) m[target] |= 0b_1000_0000;
+            m.Cpu.Registers.UpdateFlags(m[target]);
+            m.Cpu.Registers.SetFlag(StatusFlagType.Carry, c_flag);
+        }
+
+        //new()
+        //{
+        //    Name = "ROR",
+        //    OpCode = 0x6A,
+        //    Bytes = 1,
+        //    Process = new ProcessDelegate[] {
+        //    m => {
+        //        var prev_carry = m.Cpu.Registers.HasFlag(StatusFlagType.Carry);
+        //        var c_flag = (m.Cpu.Registers.A & 0b_0000_0001) > 0;
+        //        m.Cpu.Registers.A >>= 1;
+        //        if (prev_carry) m.Cpu.Registers.A |= 0b_1000_0000;
+        //        m.Cpu.Registers.SetFlag(StatusFlagType.Carry, c_flag);
+        //        m.Cpu.Registers.PC += 1;
+        //        if (m.Settings.System.DebugMode) m.Cpu.log_message = $"A";
+        //    },
+        //}
+        //},
+
+        //new()
+        //{
+        //    Name = "ROL",
+        //    OpCode = 0x2A,
+        //    Bytes = 1,
+        //    Process = new ProcessDelegate[] {
+        //    m => {
+        //        var prev_carry = m.Cpu.Registers.HasFlag(StatusFlagType.Carry);
+        //        var c_flag = (m.Cpu.Registers.A & 0b_1000_0000) > 0;
+        //        m.Cpu.Registers.A <<= 1;
+        //        if (prev_carry) m.Cpu.Registers.A |= 0b_0000_0001;
+        //        m.Cpu.Registers.SetFlag(StatusFlagType.Carry, c_flag);
+        //        m.Cpu.Registers.PC += 1;
+        //        if (m.Settings.System.DebugMode) m.Cpu.log_message = $"A";
+        //    },
+        //}
+        //},
+
         #endregion
 
         static readonly CpuInstruction[] instructions_unordered = new CpuInstruction[] {
@@ -831,7 +888,7 @@ namespace Mnes.Core.Machine.CPU
                 },
             } },
 
-            new() { Name = "ASL", OpCode = 0x06, Bytes = 1, Process = new ProcessDelegate[] {
+            new() { Name = "ASL", OpCode = 0x06, Bytes = 2, Process = new ProcessDelegate[] {
                 m => { },
                 m => {
                     var arg = m[(ushort)(m.Cpu.Registers.PC + 1)];
@@ -840,6 +897,36 @@ namespace Mnes.Core.Machine.CPU
                     var c_flag = (m[arg] & 0b_1000_0000) > 0;
                     m[arg] <<= 1;
                     m.Cpu.Registers.SetFlag(StatusFlagType.Carry, c_flag);
+
+                    m.Cpu.Registers.PC += 2;
+                },
+            } },
+
+            new() { Name = "ROR", OpCode = 0x66, Bytes = 2, Process = new ProcessDelegate[] {
+                m => { },
+                m => { },
+                m => { },
+                m => { },
+                m => {
+                    var arg = m[(ushort)(m.Cpu.Registers.PC + 1)];
+                    if (m.Settings.System.DebugMode) m.Cpu.log_message = $"${arg:X2} = {m[arg]:X2}";
+
+                    OpRollingRightShiftMem(m, arg);
+
+                    m.Cpu.Registers.PC += 2;
+                },
+            } },
+
+            new() { Name = "ROL", OpCode = 0x26, Bytes = 2, Process = new ProcessDelegate[] {
+                m => { },
+                m => { },
+                m => { },
+                m => { },
+                m => {
+                    var arg = m[(ushort)(m.Cpu.Registers.PC + 1)];
+                    if (m.Settings.System.DebugMode) m.Cpu.log_message = $"${arg:X2} = {m[arg]:X2}";
+
+                    OpRollingLeftShiftMem(m, arg);
 
                     m.Cpu.Registers.PC += 2;
                 },

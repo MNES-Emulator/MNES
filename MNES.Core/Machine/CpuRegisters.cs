@@ -78,6 +78,14 @@ namespace Mnes.Core.Machine
             SetFlag(StatusFlagType.Zero, value == 0);
         }
 
+        /// <summary> Set relevant flags from value in memory. </summary>
+        /// <param name="value"></param>
+        public void UpdateFlags(byte value)
+        {
+            SetFlag(StatusFlagType.Negative, (value & 0b_1000_0000) > 0);
+            SetFlag(StatusFlagType.Zero, value == 0);
+        }
+
         public bool HasFlag(StatusFlagType flag) => (P & (byte)flag) > 0;
         public void SetFlag(StatusFlagType flag) => P |= (byte)flag;
         public void SetFlag(StatusFlagType flag, bool value)
