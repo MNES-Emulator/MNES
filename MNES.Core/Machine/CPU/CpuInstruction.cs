@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MNES.Core.Machine.CPU
+namespace Mnes.Core.Machine.CPU
 {
     public class CpuInstruction
     {

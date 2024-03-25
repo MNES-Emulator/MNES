@@ -2,7 +2,7 @@
 using IniParser.Model;
 using Newtonsoft.Json;
 
-namespace MNES.Core.Saves.Configuration
+namespace Mnes.Core.Saves.Configuration
 {
     public static class Config
     {

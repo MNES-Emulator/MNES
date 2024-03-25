@@ -1,11 +1,11 @@
-﻿using MNES.Core.Machine.Log;
+﻿using Mnes.Core.Machine.Log;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MNES.Core.Machine
+namespace Mnes.Core.Machine
 {
     // https://www.nesdev.org/wiki/CPU_registers
     /// <summary> Represents all the registers of the CPU. </summary>

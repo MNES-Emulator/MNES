@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MNES.Core.Machine
+namespace Mnes.Core.Machine
 {
     public class Apu
     {

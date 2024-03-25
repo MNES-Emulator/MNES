@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MNES.Core.Machine.Mappers
+namespace Mnes.Core.Machine.Mappers
 {
     public class MapperBank
     {

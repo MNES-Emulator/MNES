@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MNES.Core.Machine
+namespace Mnes.Core.Machine
 {
     // https://www.nesdev.org/wiki/INES
     public class INesHeader

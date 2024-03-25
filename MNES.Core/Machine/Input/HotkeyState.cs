@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MNES.Core.Machine.Input
+namespace Mnes.Core.Machine.Input
 {
     public class HotkeyState
     {

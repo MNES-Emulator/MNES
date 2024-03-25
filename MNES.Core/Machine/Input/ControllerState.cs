@@ -1,4 +1,4 @@
-﻿namespace MNES.Core.Machine.Input
+﻿namespace Mnes.Core.Machine.Input
 {
     public class ControllerState
     {

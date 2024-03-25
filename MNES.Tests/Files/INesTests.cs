@@ -1,12 +1,12 @@
-﻿using MNES.Core;
-using MNES.Core.Machine;
+﻿using Mnes.Core;
+using Mnes.Core.Machine;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MNES.Tests.Files
+namespace Mnes.Tests.Files
 {
     [TestClass]
     public class INesTests

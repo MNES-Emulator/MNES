@@ -1,4 +1,4 @@
-﻿using MNES.Core.Machine;
+﻿using Mnes.Core.Machine;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MNES.Tests.Machine
+namespace Mnes.Tests.Machine
 {
     [TestClass]
     public class TimerTests

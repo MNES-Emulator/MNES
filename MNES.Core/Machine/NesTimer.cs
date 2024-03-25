@@ -2,7 +2,7 @@
 using Newtonsoft.Json.Converters;
 using System.Diagnostics;
 
-namespace MNES.Core.Machine
+namespace Mnes.Core.Machine
 {
     public class NesTimer
     {

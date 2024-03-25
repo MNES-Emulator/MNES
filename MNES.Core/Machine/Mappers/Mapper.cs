@@ -1,4 +1,4 @@
-﻿using MNES.Core.Machine.Mappers.Implementation;
+﻿using Mnes.Core.Machine.Mappers.Implementation;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MNES.Core.Machine.Mappers
+namespace Mnes.Core.Machine.Mappers
 {
     // https://www.nesdev.org/wiki/Mapper
     public abstract class Mapper

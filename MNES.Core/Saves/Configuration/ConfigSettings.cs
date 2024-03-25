@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MNES.Core.Saves.Configuration
+namespace Mnes.Core.Saves.Configuration
 {
     public class ConfigSettings
     {

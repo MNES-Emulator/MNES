@@ -1,11 +1,11 @@
-﻿using MNES.Core.Machine.CPU;
-using MNES.Core.Machine.Input;
-using MNES.Core.Machine.Log;
-using MNES.Core.Machine.Mappers;
-using MNES.Core.Machine.Mappers.Implementation;
-using MNES.Core.Saves.Configuration;
+﻿using Mnes.Core.Machine.CPU;
+using Mnes.Core.Machine.Input;
+using Mnes.Core.Machine.Log;
+using Mnes.Core.Machine.Mappers;
+using Mnes.Core.Machine.Mappers.Implementation;
+using Mnes.Core.Saves.Configuration;
 
-namespace MNES.Core.Machine
+namespace Mnes.Core.Machine
 {
     public class MachineState
     {

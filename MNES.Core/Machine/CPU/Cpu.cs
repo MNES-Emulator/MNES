@@ -1,14 +1,14 @@
-﻿using MNES.Core.Machine.Log;
+﻿using Mnes.Core.Machine.Log;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using static MNES.Core.Machine.CPU.CpuInstruction;
-using static MNES.Core.Machine.CpuRegisters;
+using static Mnes.Core.Machine.CPU.CpuInstruction;
+using static Mnes.Core.Machine.CpuRegisters;
 
-namespace MNES.Core.Machine.CPU
+namespace Mnes.Core.Machine.CPU
 {
     // https://www.masswerk.at/6502/6502_instruction_set.html
     public class Cpu

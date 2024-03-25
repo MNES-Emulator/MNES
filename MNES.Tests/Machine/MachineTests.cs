@@ -1,13 +1,13 @@
-﻿using MNES.Core.Machine;
-using MNES.Core.Machine.Input;
-using MNES.Core.Saves.Configuration;
+﻿using Mnes.Core.Machine;
+using Mnes.Core.Machine.Input;
+using Mnes.Core.Saves.Configuration;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MNES.Tests.Machine
+namespace Mnes.Tests.Machine
 {
     [TestClass]
     public class MachineTests
