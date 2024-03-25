@@ -13,6 +13,7 @@ namespace MNES.Tests.Machine
     public class MachineTests
     {
         string rom_file = "Resources/Test Roms/other/nestest.nes";
+        //string rom_file = "C:\\Users\\jamie\\Desktop\\smb.nes";
 
         [TestMethod]
         public void TestCreation()

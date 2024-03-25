@@ -41,7 +41,9 @@ namespace MNES.Core.Machine
         public async Task Run()
         {
             SetPowerUpState();
-            //cpu.Registers.PC = (ushort)(this[0xFFFC] + (this[0xFFFD] << 8));
+            //Cpu.Registers.PC = (ushort)(this[0xFFFC] + (this[0xFFFD] << 8));
+            var r = ReadUShort(0xFFFC);
+
             Cpu.Registers.PC = 0xC000;
             timer.Start();
             await timer.RunningThread;
