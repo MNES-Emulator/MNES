@@ -1,4 +1,4 @@
-﻿using Mnes.Core.Machine.Log;
+﻿using MNES.Core.Machine.Logging;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
