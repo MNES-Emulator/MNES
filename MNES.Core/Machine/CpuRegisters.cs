@@ -35,7 +35,17 @@ namespace Mnes.Core.Machine
             P = 4,
         }
 
-        byte[] registers = new byte[5];
+        /// <summary> The 5 8-bit registers. </summary>
+        readonly byte[] registers = new byte[5];
+        /// <summary> The program counter. </summary>
+        public ushort PC;
+
+
+        public byte this[RegisterType index]
+        {
+            get => registers[(int)index];
+            set => registers[(int)index] = value;
+        }
 
         /// <summary> The accumulator. </summary>
         public byte A { get => registers[0]; set => SetRegisterAndFlags(RegisterType.A, value); }
@@ -45,9 +55,6 @@ namespace Mnes.Core.Machine
 
         /// <summary> The Y register. </summary>
         public byte Y { get => registers[2]; set => SetRegisterAndFlags(RegisterType.Y, value); }
-
-        /// <summary> The program counter. </summary>
-        public ushort PC;
 
         /// <summary> The stack pointer. </summary>
         public byte S { get => registers[3]; set => registers[3] = value; }

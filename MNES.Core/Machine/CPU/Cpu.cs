@@ -173,9 +173,9 @@ namespace Mnes.Core.Machine.CPU
                 m => { },
                 m => {
                     var target = m[(ushort)(m.Cpu.Registers.PC + 1)];
+                    if (m.Settings.System.DebugMode) m.Cpu.log_message = $"${target:X2} = {m[target]:X2}";
                     m[target] = m.Cpu.Registers.X;
                     m.Cpu.Registers.PC += 2;
-                    if (m.Settings.System.DebugMode) m.Cpu.log_message = $"${target:X2} = {m.Cpu.Registers.X:X2}";
                 },
             } },
 
@@ -246,9 +246,9 @@ namespace Mnes.Core.Machine.CPU
                 m => { },
                 m => {
                     var target = m[(ushort)(m.Cpu.Registers.PC + 1)];
+                    if (m.Settings.System.DebugMode) m.Cpu.log_message = $"${target:X2} = {m[target]:X2}";
                     m[target] = m.Cpu.Registers.A;
                     m.Cpu.Registers.PC += 2;
-                    if (m.Settings.System.DebugMode) m.Cpu.log_message = $"${target:X2} = {m.Cpu.Registers.A:X2}";
                 },
             } },
 
@@ -791,9 +791,57 @@ namespace Mnes.Core.Machine.CPU
                 m => { },
                 m => {
                     var target = m[(ushort)(m.Cpu.Registers.PC + 1)];
+                    if (m.Settings.System.DebugMode) m.Cpu.log_message = $"${target:X2} = {m[target]:X2}";
                     OpAddCarry(m, (byte)~m[target]);
                     m.Cpu.Registers.PC += 2;
+                },
+            } },
+
+            new() { Name = "CPX", OpCode = 0xE4, Bytes = 2, Process = new ProcessDelegate[] {
+                m => { },
+                m => {
+                    var target = m[(ushort)(m.Cpu.Registers.PC + 1)];
+                    OpCompare(m, m.Cpu.Registers.X, m[target]);
+                    m.Cpu.Registers.PC += 2;
                     if (m.Settings.System.DebugMode) m.Cpu.log_message = $"${target:X2} = {m[target]:X2}";
+                },
+            } },
+
+            new() { Name = "CPY", OpCode = 0xC4, Bytes = 2, Process = new ProcessDelegate[] {
+                m => { },
+                m => {
+                    var target = m[(ushort)(m.Cpu.Registers.PC + 1)];
+                    OpCompare(m, m.Cpu.Registers.Y, m[target]);
+                    m.Cpu.Registers.PC += 2;
+                    if (m.Settings.System.DebugMode) m.Cpu.log_message = $"${target:X2} = {m[target]:X2}";
+                },
+            } },
+
+            new() { Name = "LSR", OpCode = 0x46, Bytes = 2, Process = new ProcessDelegate[] {
+                m => { },
+                m => {
+                    var arg = m[(ushort)(m.Cpu.Registers.PC + 1)];
+                    if (m.Settings.System.DebugMode) m.Cpu.log_message = $"${arg:X2} = {m[arg]:X2}";
+
+                    var c_flag = (m[arg] & 0b_0000_0001) > 0;
+                    m[arg] >>= 1;
+                    m.Cpu.Registers.SetFlag(StatusFlagType.Carry, c_flag);
+
+                    m.Cpu.Registers.PC += 2;
+                },
+            } },
+
+            new() { Name = "ASL", OpCode = 0x06, Bytes = 1, Process = new ProcessDelegate[] {
+                m => { },
+                m => {
+                    var arg = m[(ushort)(m.Cpu.Registers.PC + 1)];
+                    if (m.Settings.System.DebugMode) m.Cpu.log_message = $"${arg:X2} = {m[arg]:X2}";
+
+                    var c_flag = (m[arg] & 0b_1000_0000) > 0;
+                    m[arg] <<= 1;
+                    m.Cpu.Registers.SetFlag(StatusFlagType.Carry, c_flag);
+
+                    m.Cpu.Registers.PC += 2;
                 },
             } },
 
