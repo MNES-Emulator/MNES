@@ -771,6 +771,26 @@ namespace Mnes.Core.Machine.CPU
                 m => { },
                 m => {
                     var target = m[(ushort)(m.Cpu.Registers.PC + 1)];
+                    OpAddCarry(m, (byte)m[target]);
+                    m.Cpu.Registers.PC += 2;
+                    if (m.Settings.System.DebugMode) m.Cpu.log_message = $"${target:X2} = {m[target]:X2}";
+                },
+            } },
+
+            new() { Name = "CMP", OpCode = 0xC5, Bytes = 2, Process = new ProcessDelegate[] {
+                m => { },
+                m => {
+                    var target = m[(ushort)(m.Cpu.Registers.PC + 1)];
+                    OpCompare(m, m.Cpu.Registers.A, m[target]);
+                    m.Cpu.Registers.PC += 2;
+                    if (m.Settings.System.DebugMode) m.Cpu.log_message = $"${target:X2} = {m[target]:X2}";
+                },
+            } },
+
+            new() { Name = "SBC", OpCode = 0xE5, Bytes = 2, Process = new ProcessDelegate[] {
+                m => { },
+                m => {
+                    var target = m[(ushort)(m.Cpu.Registers.PC + 1)];
                     OpAddCarry(m, (byte)~m[target]);
                     m.Cpu.Registers.PC += 2;
                     if (m.Settings.System.DebugMode) m.Cpu.log_message = $"${target:X2} = {m[target]:X2}";
