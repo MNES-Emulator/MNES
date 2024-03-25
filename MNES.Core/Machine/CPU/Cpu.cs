@@ -166,43 +166,25 @@ namespace Mnes.Core.Machine.CPU
             m.Cpu.Registers.UpdateFlags(m[target]);
             m.Cpu.Registers.SetFlag(StatusFlagType.Carry, c_flag);
         }
+        // Todo; make sure all address setting functions are setting flags properly
+        static void OpIncMem(MachineState m, ushort target)
+        {
+            m[target]++;
+            m.Cpu.Registers.UpdateFlags(m[target]);
+        }
 
-        //new()
-        //{
-        //    Name = "ROR",
-        //    OpCode = 0x6A,
-        //    Bytes = 1,
-        //    Process = new ProcessDelegate[] {
-        //    m => {
-        //        var prev_carry = m.Cpu.Registers.HasFlag(StatusFlagType.Carry);
-        //        var c_flag = (m.Cpu.Registers.A & 0b_0000_0001) > 0;
-        //        m.Cpu.Registers.A >>= 1;
-        //        if (prev_carry) m.Cpu.Registers.A |= 0b_1000_0000;
-        //        m.Cpu.Registers.SetFlag(StatusFlagType.Carry, c_flag);
-        //        m.Cpu.Registers.PC += 1;
-        //        if (m.Settings.System.DebugMode) m.Cpu.log_message = $"A";
-        //    },
-        //}
-        //},
+        static void OpDecMem(MachineState m, ushort target)
+        {
+            m[target]--;
+            m.Cpu.Registers.UpdateFlags(m[target]);
+        }
 
-        //new()
-        //{
-        //    Name = "ROL",
-        //    OpCode = 0x2A,
-        //    Bytes = 1,
-        //    Process = new ProcessDelegate[] {
-        //    m => {
-        //        var prev_carry = m.Cpu.Registers.HasFlag(StatusFlagType.Carry);
-        //        var c_flag = (m.Cpu.Registers.A & 0b_1000_0000) > 0;
-        //        m.Cpu.Registers.A <<= 1;
-        //        if (prev_carry) m.Cpu.Registers.A |= 0b_0000_0001;
-        //        m.Cpu.Registers.SetFlag(StatusFlagType.Carry, c_flag);
-        //        m.Cpu.Registers.PC += 1;
-        //        if (m.Settings.System.DebugMode) m.Cpu.log_message = $"A";
-        //    },
-        //}
-        //},
-
+        static void OpBit(MachineState m, byte value)
+        {
+            m.Cpu.Registers.SetFlag(StatusFlagType.Zero, (m.Cpu.Registers.A & value) == 0);
+            m.Cpu.Registers.SetFlag(StatusFlagType.Negative, (value & 0b_1000_0000) > 0);
+            m.Cpu.Registers.SetFlag(StatusFlagType.Overflow, (value & 0b_0100_0000) > 0);
+        }
         #endregion
 
         static readonly CpuInstruction[] instructions_unordered = new CpuInstruction[] {
@@ -315,9 +297,7 @@ namespace Mnes.Core.Machine.CPU
                     var z_p_address = m[(ushort)(m.Cpu.Registers.PC + 1)];
                     var value = m[z_p_address];
                     if (m.Settings.System.DebugMode) m.Cpu.log_message = $"${z_p_address:X2} = {value:X2}";
-                    m.Cpu.Registers.SetFlag(StatusFlagType.Zero, (m.Cpu.Registers.A & value) == 0);
-                    m.Cpu.Registers.SetFlag(StatusFlagType.Negative, (value & 0b_1000_0000) > 0);
-                    m.Cpu.Registers.SetFlag(StatusFlagType.Overflow, (value & 0b_0100_0000) > 0);
+                    OpBit(m, value);
                     m.Cpu.Registers.PC += 2;
                 },
             } },
@@ -932,13 +912,123 @@ namespace Mnes.Core.Machine.CPU
                 },
             } },
 
-            //new() { Name = "AND", OpCode = 0x35, Bytes = 2, Process = new ProcessDelegate[] {
-            //    m => {
-            //        var zp = m[(ushort)(m.Cpu.Registers.PC + 1)];
-            //        m.Cpu.Registers.A &= target;
-            //        m.Cpu.Registers.PC += 2;
-            //    },
-            //} },
+            new() { Name = "INC", OpCode = 0xE6, Bytes = 2, Process = new ProcessDelegate[] {
+                m => { },
+                m => { },
+                m => { },
+                m => { },
+                m => {
+                    var arg = m[(ushort)(m.Cpu.Registers.PC + 1)];
+                    if (m.Settings.System.DebugMode) m.Cpu.log_message = $"${arg:X2} = {m[arg]:X2}";
+
+                    OpIncMem(m, arg);
+
+                    m.Cpu.Registers.PC += 2;
+                },
+            } },
+
+            new() { Name = "DEC", OpCode = 0xC6, Bytes = 2, Process = new ProcessDelegate[] {
+                m => { },
+                m => { },
+                m => { },
+                m => { },
+                m => {
+                    var arg = m[(ushort)(m.Cpu.Registers.PC + 1)];
+                    if (m.Settings.System.DebugMode) m.Cpu.log_message = $"${arg:X2} = {m[arg]:X2}";
+
+                    OpDecMem(m, arg);
+
+                    m.Cpu.Registers.PC += 2;
+                },
+            } },
+
+            new() { Name = "LDY", OpCode = 0xAC, Bytes = 3, Process = new ProcessDelegate[] {
+                m => { },
+                m => { },
+                m => {
+                    var target = m.ReadUShort(m.Cpu.Registers.PC + 1);
+                    m.Cpu.Registers.Y = m[target];
+                    m.Cpu.Registers.PC += 3;
+                    if (m.Settings.System.DebugMode) m.Cpu.log_message = $"${target:X4} = {m.Cpu.Registers.Y:X2}";
+                },
+            } },
+
+            new() { Name = "STY", OpCode = 0x8C, Bytes = 3, Process = new ProcessDelegate[] {
+                m => { },
+                m => { },
+                m => {
+                    var target = m.ReadUShort(m.Cpu.Registers.PC + 1);
+                    if (m.Settings.System.DebugMode) m.Cpu.log_message = $"${target:X4} = {m[target]:X2}";
+                    m[target] = m.Cpu.Registers.Y;
+                    m.Cpu.Registers.PC += 3;
+                },
+            } },
+
+            new() { Name = "BIT", OpCode = 0x2C, Bytes = 3, Process = new ProcessDelegate[] {
+                m => { },
+                m => { },
+                m => {
+                    var target = m.ReadUShort(m.Cpu.Registers.PC + 1);
+                    if (m.Settings.System.DebugMode) m.Cpu.log_message = $"${target:X4} = {m[target]:X2}";
+                    OpBit(m, m[target]);
+                    m.Cpu.Registers.PC += 3;
+                },
+            } },
+
+            new() { Name = "ORA", OpCode = 0x0D, Bytes = 3, Process = new ProcessDelegate[] {
+                m => { },
+                m => { },
+                m => {
+                    var target = m.ReadUShort(m.Cpu.Registers.PC + 1);
+                    if (m.Settings.System.DebugMode) m.Cpu.log_message = $"${target:X4} = {m[target]:X2}";
+                    m.Cpu.Registers.A |= m[target];
+                    m.Cpu.Registers.PC += 3;
+                },
+            } },
+
+            new() { Name = "AND", OpCode = 0x2D, Bytes = 3, Process = new ProcessDelegate[] {
+                m => { },
+                m => { },
+                m => {
+                    var target = m.ReadUShort(m.Cpu.Registers.PC + 1);
+                    if (m.Settings.System.DebugMode) m.Cpu.log_message = $"${target:X4} = {m[target]:X2}";
+                    m.Cpu.Registers.A &= m[target];
+                    m.Cpu.Registers.PC += 3;
+                },
+            } },
+
+            new() { Name = "EOR", OpCode = 0x4D, Bytes = 3, Process = new ProcessDelegate[] {
+                m => { },
+                m => { },
+                m => {
+                    var target = m.ReadUShort(m.Cpu.Registers.PC + 1);
+                    if (m.Settings.System.DebugMode) m.Cpu.log_message = $"${target:X4} = {m[target]:X2}";
+                    m.Cpu.Registers.A ^= m[target];
+                    m.Cpu.Registers.PC += 3;
+                },
+            } },
+
+            new() { Name = "ADC", OpCode = 0x6D, Bytes = 3, Process = new ProcessDelegate[] {
+                m => { },
+                m => { },
+                m => {
+                    var target = m.ReadUShort(m.Cpu.Registers.PC + 1);
+                    if (m.Settings.System.DebugMode) m.Cpu.log_message = $"${target:X4} = {m[target]:X2}";
+                    OpAddCarry(m, m[target]);
+                    m.Cpu.Registers.PC += 3;
+                },
+            } },
+
+            new() { Name = "CMP", OpCode = 0xCD, Bytes = 3, Process = new ProcessDelegate[] {
+                m => { },
+                m => { },
+                m => {
+                    var target = m.ReadUShort(m.Cpu.Registers.PC + 1);
+                    if (m.Settings.System.DebugMode) m.Cpu.log_message = $"${target:X4} = {m[target]:X2}";
+                    OpCompare(m, m.Cpu.Registers.A, m[target]);
+                    m.Cpu.Registers.PC += 3;
+                },
+            } },
         };
 
         public Cpu(MachineState machine)
