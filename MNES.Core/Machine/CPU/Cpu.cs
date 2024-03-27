@@ -95,11 +95,12 @@ public sealed class Cpu {
       return target;
    }
 
-   static ushort GetIndexedAbsoluteAddress(MachineState m, ushort arg, RegisterType r)
+   /// <summary> Returns the read value, not the address. </summary>
+   static byte ReadIndexedAbsoluteValue(MachineState m, ushort arg, RegisterType r)
    {
-      var address = (ushort)(m.Cpu.Registers[r] + m[arg]);
-      if (m.Settings.System.DebugMode) m.Cpu.log_message = $"${arg:X4},{r} @ {arg:X4} = {address:X2}";
-      return address;
+      var value = (byte)(m.Cpu.Registers[r] + m[arg]);
+      if (m.Settings.System.DebugMode) m.Cpu.log_message = $"${arg:X4},{r} @ {arg:X4} = {value:X2}";
+      return value;
    }
    #endregion
 
@@ -1246,8 +1247,7 @@ public sealed class Cpu {
          m => { },
          m => { },
          m => {
-            var address = GetIndexedAbsoluteAddress(m, m.ReadUShort(m.Cpu.Registers.PC + 1), RegisterType.Y);
-            m.Cpu.Registers.A = m[address];
+            m.Cpu.Registers.A = ReadIndexedAbsoluteValue(m, m.ReadUShort(m.Cpu.Registers.PC + 1), RegisterType.Y);
             m.Cpu.Registers.PC += 3;
          },
       } },
