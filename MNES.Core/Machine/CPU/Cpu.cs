@@ -96,16 +96,24 @@ public sealed class Cpu {
       return target;
    }
 
-   /// <summary> Returns the read value, not the address. </summary>
-   static byte ReadIndexedAbsoluteValue(MachineState m, ushort arg, RegisterType r) {
-      var value = (byte)(m.Cpu.Registers[r] + m[arg]);
-      if (m.Settings.System.DebugMode) m.Cpu.log_message = $"${arg:X4},{r} @ {arg:X4} = {value:X2}";
-      return value;
-   }
+   ///// <summary> Returns the read value, not the address. </summary>
+   //static byte ReadIndexedAbsoluteValue(MachineState m, ushort arg, RegisterType r) {
+   //   var value = m[(ushort)(arg + m.Cpu.Registers[r])];
+   //   if (m.Settings.System.DebugMode) m.Cpu.log_message = $"${arg:X4},{r} @ {(ushort)(m.Cpu.Registers[r] + arg):X4} = {value:X2}";
+   //   return value;
+   //}
+   
+   //static void SetIndexedAbsoluteValue(MachineState m, ushort arg, RegisterType r, byte value) {
+   //   var address = (ushort)(arg + m.Cpu.Registers[r]);
+   //   if (m.Settings.System.DebugMode) m.Cpu.log_message = $"${arg:X4},{r} @ {address:X4} = {m[address]:X2}";
+   //   m[address] = value;
+   //}
 
-   static void SetIndexedAbsoluteValue(MachineState m, ushort arg, RegisterType r, byte value) {
-      if (m.Settings.System.DebugMode) m.Cpu.log_message = $"${arg:X4},{r} @ {arg:X4} = {value:X2}";
-      m[(ushort)(m[arg] + m.Cpu.Registers[r])] = value;
+   static ushort GetIndexedAbsoluteAddress(MachineState m, ushort arg, RegisterType r)
+   {
+      var address = (ushort)(arg + m.Cpu.Registers[r]);
+      if (m.Settings.System.DebugMode) m.Cpu.log_message = $"${arg:X4},{r} @ {address:X4} = {m[address]:X2}";
+      return address;
    }
 
    static ushort GetIndexedZeroPageAddress(MachineState m, byte arg, RegisterType r) {
@@ -1257,7 +1265,7 @@ public sealed class Cpu {
          m => { },
          m => { },
          m => {
-            m.Cpu.Registers.A = ReadIndexedAbsoluteValue(m, m.ReadUShort(m.Cpu.Registers.PC + 1), RegisterType.Y);
+            m.Cpu.Registers.A = m[GetIndexedAbsoluteAddress(m, m.ReadUShort(m.Cpu.Registers.PC + 1), RegisterType.Y)];
             m.Cpu.Registers.PC += 3;
          },
       } },
@@ -1266,7 +1274,7 @@ public sealed class Cpu {
          m => { },
          m => { },
          m => {
-            m.Cpu.Registers.A |= ReadIndexedAbsoluteValue(m, m.ReadUShort(m.Cpu.Registers.PC + 1), RegisterType.Y);
+            m.Cpu.Registers.A |= m[GetIndexedAbsoluteAddress(m, m.ReadUShort(m.Cpu.Registers.PC + 1), RegisterType.Y)];
             m.Cpu.Registers.PC += 3;
          },
       } },
@@ -1275,7 +1283,7 @@ public sealed class Cpu {
          m => { },
          m => { },
          m => {
-            m.Cpu.Registers.A &= ReadIndexedAbsoluteValue(m, m.ReadUShort(m.Cpu.Registers.PC + 1), RegisterType.Y);
+            m.Cpu.Registers.A &= m[GetIndexedAbsoluteAddress(m, m.ReadUShort(m.Cpu.Registers.PC + 1), RegisterType.Y)];
             m.Cpu.Registers.PC += 3;
          },
       } },
@@ -1284,7 +1292,7 @@ public sealed class Cpu {
          m => { },
          m => { },
          m => {
-            m.Cpu.Registers.A ^= ReadIndexedAbsoluteValue(m, m.ReadUShort(m.Cpu.Registers.PC + 1), RegisterType.Y);
+            m.Cpu.Registers.A ^= m[GetIndexedAbsoluteAddress(m, m.ReadUShort(m.Cpu.Registers.PC + 1), RegisterType.Y)];
             m.Cpu.Registers.PC += 3;
          },
       } },
@@ -1293,7 +1301,7 @@ public sealed class Cpu {
          m => { },
          m => { },
          m => {
-            OpAddCarry(m, ReadIndexedAbsoluteValue(m, m.ReadUShort(m.Cpu.Registers.PC + 1), RegisterType.Y));
+            OpAddCarry(m, m[GetIndexedAbsoluteAddress(m, m.ReadUShort(m.Cpu.Registers.PC + 1), RegisterType.Y)]);
             m.Cpu.Registers.PC += 3;
          },
       } },
@@ -1302,7 +1310,7 @@ public sealed class Cpu {
          m => { },
          m => { },
          m => {
-            OpCompare(m, m.Cpu.Registers.A, ReadIndexedAbsoluteValue(m, m.ReadUShort(m.Cpu.Registers.PC + 1), RegisterType.Y));
+            OpCompare(m, m.Cpu.Registers.A, m[GetIndexedAbsoluteAddress(m, m.ReadUShort(m.Cpu.Registers.PC + 1), RegisterType.Y)]);
             m.Cpu.Registers.PC += 3;
          },
       } },
@@ -1311,7 +1319,7 @@ public sealed class Cpu {
          m => { },
          m => { },
          m => {
-            OpAddCarry(m, (byte)~ReadIndexedAbsoluteValue(m, m.ReadUShort(m.Cpu.Registers.PC + 1), RegisterType.Y));
+            OpAddCarry(m, (byte)~m[GetIndexedAbsoluteAddress(m, m.ReadUShort(m.Cpu.Registers.PC + 1), RegisterType.Y)]);
             m.Cpu.Registers.PC += 3;
          },
       } },
@@ -1320,7 +1328,7 @@ public sealed class Cpu {
          m => { },
          m => { },
          m => {
-            SetIndexedAbsoluteValue(m, m.ReadUShort(m.Cpu.Registers.PC + 1), RegisterType.Y, m.Cpu.Registers.A);
+            m[GetIndexedAbsoluteAddress(m, m.ReadUShort(m.Cpu.Registers.PC + 1), RegisterType.Y)] = m.Cpu.Registers.A;
             m.Cpu.Registers.PC += 3;
          },
       } },
@@ -1329,7 +1337,7 @@ public sealed class Cpu {
          m => { },
          m => { },
          m => {
-            var address = GetIndexedZeroPageAddress(m, (byte)(m.Cpu.Registers.PC + 1), RegisterType.X);
+            var address = GetIndexedZeroPageAddress(m, m[(ushort)(m.Cpu.Registers.PC + 1)], RegisterType.X);
             m.Cpu.Registers.Y = m[address];
             m.Cpu.Registers.PC += 2;
          },
@@ -1339,7 +1347,7 @@ public sealed class Cpu {
          m => { },
          m => { },
          m => {
-            var address = GetIndexedZeroPageAddress(m, (byte)(m.Cpu.Registers.PC + 1), RegisterType.X);
+            var address = GetIndexedZeroPageAddress(m, m[(ushort)(m.Cpu.Registers.PC + 1)], RegisterType.X);
             m[address] = m.Cpu.Registers.Y;
             m.Cpu.Registers.PC += 2;
          },
@@ -1349,7 +1357,7 @@ public sealed class Cpu {
          m => { },
          m => { },
          m => {
-            var address = GetIndexedZeroPageAddress(m, (byte)(m.Cpu.Registers.PC + 1), RegisterType.X);
+            var address = GetIndexedZeroPageAddress(m, m[(ushort)(m.Cpu.Registers.PC + 1)], RegisterType.X);
             m.Cpu.Registers.A |= m[address];
             m.Cpu.Registers.PC += 2;
          },
@@ -1359,7 +1367,7 @@ public sealed class Cpu {
          m => { },
          m => { },
          m => {
-            var address = GetIndexedZeroPageAddress(m, (byte)(m.Cpu.Registers.PC + 1), RegisterType.X);
+            var address = GetIndexedZeroPageAddress(m, m[(ushort)(m.Cpu.Registers.PC + 1)], RegisterType.X);
             m.Cpu.Registers.A &= m[address];
             m.Cpu.Registers.PC += 2;
          },
@@ -1369,7 +1377,7 @@ public sealed class Cpu {
          m => { },
          m => { },
          m => {
-            var address = GetIndexedZeroPageAddress(m, (byte)(m.Cpu.Registers.PC + 1), RegisterType.X);
+            var address = GetIndexedZeroPageAddress(m, m[(ushort)(m.Cpu.Registers.PC + 1)], RegisterType.X);
             m.Cpu.Registers.A ^= m[address];
             m.Cpu.Registers.PC += 2;
          },
@@ -1379,7 +1387,7 @@ public sealed class Cpu {
          m => { },
          m => { },
          m => {
-            var address = GetIndexedZeroPageAddress(m, (byte)(m.Cpu.Registers.PC + 1), RegisterType.X);
+            var address = GetIndexedZeroPageAddress(m, m[(ushort)(m.Cpu.Registers.PC + 1)], RegisterType.X);
             OpAddCarry(m, m[address]);
             m.Cpu.Registers.PC += 2;
          },
@@ -1389,7 +1397,7 @@ public sealed class Cpu {
          m => { },
          m => { },
          m => {
-            var address = GetIndexedZeroPageAddress(m, (byte)(m.Cpu.Registers.PC + 1), RegisterType.X);
+            var address = GetIndexedZeroPageAddress(m, m[(ushort)(m.Cpu.Registers.PC + 1)], RegisterType.X);
             OpCompare(m, m.Cpu.Registers.A, m[address]);
             m.Cpu.Registers.PC += 2;
          },
@@ -1399,7 +1407,7 @@ public sealed class Cpu {
          m => { },
          m => { },
          m => {
-            var address = GetIndexedZeroPageAddress(m, (byte)(m.Cpu.Registers.PC + 1), RegisterType.X);
+            var address = GetIndexedZeroPageAddress(m, m[(ushort)(m.Cpu.Registers.PC + 1)], RegisterType.X);
             OpAddCarry(m, (byte)~m[address]);
             m.Cpu.Registers.PC += 2;
          },
@@ -1409,7 +1417,7 @@ public sealed class Cpu {
          m => { },
          m => { },
          m => {
-            var address = GetIndexedZeroPageAddress(m, (byte)(m.Cpu.Registers.PC + 1), RegisterType.X);
+            var address = GetIndexedZeroPageAddress(m, m[(ushort)(m.Cpu.Registers.PC + 1)], RegisterType.X);
             m.Cpu.Registers.A = m[address];
             m.Cpu.Registers.PC += 2;
          },
@@ -1419,7 +1427,7 @@ public sealed class Cpu {
          m => { },
          m => { },
          m => {
-            var address = GetIndexedZeroPageAddress(m, (byte)(m.Cpu.Registers.PC + 1), RegisterType.X);
+            var address = GetIndexedZeroPageAddress(m, m[(ushort)(m.Cpu.Registers.PC + 1)], RegisterType.X);
             m[address] = m.Cpu.Registers.A;
             m.Cpu.Registers.PC += 2;
          },
@@ -1431,7 +1439,7 @@ public sealed class Cpu {
          m => { },
          m => { },
          m => {
-            var address = GetIndexedZeroPageAddress(m, (byte)(m.Cpu.Registers.PC + 1), RegisterType.X);
+            var address = GetIndexedZeroPageAddress(m, m[(ushort)(m.Cpu.Registers.PC + 1)], RegisterType.X);
             var carry = (m[address] & 1) > 0;
             m[address] >>= 1;
             m.Cpu.Registers.SetFlag(StatusFlagType.Carry, carry);
@@ -1445,7 +1453,7 @@ public sealed class Cpu {
          m => { },
          m => { },
          m => {
-            var address = GetIndexedZeroPageAddress(m, (byte)(m.Cpu.Registers.PC + 1), RegisterType.X);
+            var address = GetIndexedZeroPageAddress(m, m[(ushort)(m.Cpu.Registers.PC + 1)], RegisterType.X);
             var carry = (m[address] & 0b_1000_0000) > 0;
             m[address] <<= 1;
             m.Cpu.Registers.SetFlag(StatusFlagType.Carry, carry);
@@ -1459,7 +1467,7 @@ public sealed class Cpu {
          m => { },
          m => { },
          m => {
-            var address = GetIndexedZeroPageAddress(m, (byte)(m.Cpu.Registers.PC + 1), RegisterType.X);
+            var address = GetIndexedZeroPageAddress(m, m[(ushort)(m.Cpu.Registers.PC + 1)], RegisterType.X);
             OpRollingRightShiftMem(m, address);
             m.Cpu.Registers.PC += 2;
          },
@@ -1471,7 +1479,7 @@ public sealed class Cpu {
          m => { },
          m => { },
          m => {
-            var address = GetIndexedZeroPageAddress(m, (byte)(m.Cpu.Registers.PC + 1), RegisterType.X);
+            var address = GetIndexedZeroPageAddress(m, m[(ushort)(m.Cpu.Registers.PC + 1)], RegisterType.X);
             OpRollingLeftShiftMem(m, address);
             m.Cpu.Registers.PC += 2;
          },
@@ -1483,7 +1491,7 @@ public sealed class Cpu {
          m => { },
          m => { },
          m => {
-            var address = GetIndexedZeroPageAddress(m, (byte)(m.Cpu.Registers.PC + 1), RegisterType.X);
+            var address = GetIndexedZeroPageAddress(m, m[(ushort)(m.Cpu.Registers.PC + 1)], RegisterType.X);
             OpIncMem(m, address);
             m.Cpu.Registers.PC += 2;
          },
@@ -1495,7 +1503,7 @@ public sealed class Cpu {
          m => { },
          m => { },
          m => {
-            var address = GetIndexedZeroPageAddress(m, (byte)(m.Cpu.Registers.PC + 1), RegisterType.X);
+            var address = GetIndexedZeroPageAddress(m, m[(ushort)(m.Cpu.Registers.PC + 1)], RegisterType.X);
             OpDecMem(m, address);
             m.Cpu.Registers.PC += 2;
          },
@@ -1505,7 +1513,7 @@ public sealed class Cpu {
          m => { },
          m => { },
          m => {
-            var address = GetIndexedZeroPageAddress(m, (byte)(m.Cpu.Registers.PC + 1), RegisterType.Y);
+            var address = GetIndexedZeroPageAddress(m, m[(ushort)(m.Cpu.Registers.PC + 1)], RegisterType.Y);
             m.Cpu.Registers.X = m[address];
             m.Cpu.Registers.PC += 2;
          },
@@ -1515,17 +1523,17 @@ public sealed class Cpu {
          m => { },
          m => { },
          m => {
-            var address = GetIndexedZeroPageAddress(m, (byte)(m.Cpu.Registers.PC + 1), RegisterType.Y);
+            var address = GetIndexedZeroPageAddress(m, m[(ushort)(m.Cpu.Registers.PC + 1)], RegisterType.Y);
             m[address] = m.Cpu.Registers.X;
             m.Cpu.Registers.PC += 2;
          },
       } },
 
-      new() { Name = "LDX", OpCode = 0xBC, Bytes = 3, Process = new ProcessDelegate[] {
+      new() { Name = "LDY", OpCode = 0xBC, Bytes = 3, Process = new ProcessDelegate[] {
          m => { },
          m => { },
          m => {
-            m.Cpu.Registers.A = ReadIndexedAbsoluteValue(m, m.ReadUShort(m.Cpu.Registers.PC + 1), RegisterType.X);
+            m.Cpu.Registers.Y = m[GetIndexedAbsoluteAddress(m, m.ReadUShort(m.Cpu.Registers.PC + 1), RegisterType.X)];
             m.Cpu.Registers.PC += 3;
          },
       } },
@@ -1534,7 +1542,7 @@ public sealed class Cpu {
          m => { },
          m => { },
          m => {
-            m.Cpu.Registers.A |= ReadIndexedAbsoluteValue(m, m.ReadUShort(m.Cpu.Registers.PC + 1), RegisterType.X);
+            m.Cpu.Registers.A |= m[GetIndexedAbsoluteAddress(m, m.ReadUShort(m.Cpu.Registers.PC + 1), RegisterType.X)];
             m.Cpu.Registers.PC += 3;
          },
       } },
@@ -1543,7 +1551,7 @@ public sealed class Cpu {
          m => { },
          m => { },
          m => {
-            m.Cpu.Registers.A &= ReadIndexedAbsoluteValue(m, m.ReadUShort(m.Cpu.Registers.PC + 1), RegisterType.X);
+            m.Cpu.Registers.A &= m[GetIndexedAbsoluteAddress(m, m.ReadUShort(m.Cpu.Registers.PC + 1), RegisterType.X)];
             m.Cpu.Registers.PC += 3;
          },
       } },
@@ -1552,7 +1560,7 @@ public sealed class Cpu {
          m => { },
          m => { },
          m => {
-            m.Cpu.Registers.A ^= ReadIndexedAbsoluteValue(m, m.ReadUShort(m.Cpu.Registers.PC + 1), RegisterType.X);
+            m.Cpu.Registers.A ^= m[GetIndexedAbsoluteAddress(m, m.ReadUShort(m.Cpu.Registers.PC + 1), RegisterType.X)];
             m.Cpu.Registers.PC += 3;
          },
       } },
@@ -1561,7 +1569,7 @@ public sealed class Cpu {
          m => { },
          m => { },
          m => {
-            OpAddCarry(m, ReadIndexedAbsoluteValue(m, m.ReadUShort(m.Cpu.Registers.PC + 1), RegisterType.X));
+            OpAddCarry(m, m[GetIndexedAbsoluteAddress(m, m.ReadUShort(m.Cpu.Registers.PC + 1), RegisterType.X)]);
             m.Cpu.Registers.PC += 3;
          },
       } },
@@ -1570,7 +1578,7 @@ public sealed class Cpu {
          m => { },
          m => { },
          m => {
-            OpCompare(m, m.Cpu.Registers.A, ReadIndexedAbsoluteValue(m, m.ReadUShort(m.Cpu.Registers.PC + 1), RegisterType.X));
+            OpCompare(m, m.Cpu.Registers.A, m[GetIndexedAbsoluteAddress(m, m.ReadUShort(m.Cpu.Registers.PC + 1), RegisterType.X)]);
             m.Cpu.Registers.PC += 3;
          },
       } },
@@ -1579,7 +1587,7 @@ public sealed class Cpu {
          m => { },
          m => { },
          m => {
-            OpAddCarry(m, (byte)~ReadIndexedAbsoluteValue(m, m.ReadUShort(m.Cpu.Registers.PC + 1), RegisterType.X));
+            OpAddCarry(m, (byte)~m[GetIndexedAbsoluteAddress(m, m.ReadUShort(m.Cpu.Registers.PC + 1), RegisterType.X)]);
             m.Cpu.Registers.PC += 3;
          },
       } },
@@ -1588,7 +1596,7 @@ public sealed class Cpu {
          m => { },
          m => { },
          m => {
-            m.Cpu.Registers.A = ReadIndexedAbsoluteValue(m, m.ReadUShort(m.Cpu.Registers.PC + 1), RegisterType.X);
+            m.Cpu.Registers.A = m[GetIndexedAbsoluteAddress(m, m.ReadUShort(m.Cpu.Registers.PC + 1), RegisterType.X)];
             m.Cpu.Registers.PC += 3;
          },
       } },
@@ -1597,7 +1605,10 @@ public sealed class Cpu {
          m => { },
          m => { },
          m => {
-            SetIndexedAbsoluteValue(m, m.ReadUShort(m.Cpu.Registers.PC + 1), RegisterType.X, m.Cpu.Registers.A);
+            var address = GetIndexedAbsoluteAddress(m, m.ReadUShort(m.Cpu.Registers.PC + 1), RegisterType.X);
+            m[address] = m.Cpu.Registers.A;
+            
+            //SetIndexedAbsoluteValue(m, m.ReadUShort(m.Cpu.Registers.PC + 1), RegisterType.X, m.Cpu.Registers.A);
             m.Cpu.Registers.PC += 3;
          },
       } },
@@ -1608,7 +1619,12 @@ public sealed class Cpu {
          m => { },
          m => { },
          m => {
-            var address = ReadIndexedAbsoluteValue(m, m.ReadUShort(m.Cpu.Registers.PC + 1), RegisterType.X);
+            if (m.Cpu.log_inst_count == 4784)
+            {
+
+            }
+
+            var address = GetIndexedAbsoluteAddress(m, m.ReadUShort(m.Cpu.Registers.PC + 1), RegisterType.X);
             var carry = (m[address] & 1) > 0;
             m[address] >>= 1;
             m.Cpu.Registers.SetFlag(StatusFlagType.Carry, carry);
@@ -1622,7 +1638,7 @@ public sealed class Cpu {
          m => { },
          m => { },
          m => {
-            var address = ReadIndexedAbsoluteValue(m, m.ReadUShort(m.Cpu.Registers.PC + 1), RegisterType.X);
+            var address = GetIndexedAbsoluteAddress(m, m.ReadUShort(m.Cpu.Registers.PC + 1), RegisterType.X);
             var carry = (m[address] & 0b_1000_0000) > 0;
             m[address] <<= 1;
             m.Cpu.Registers.SetFlag(StatusFlagType.Carry, carry);
@@ -1637,7 +1653,7 @@ public sealed class Cpu {
          m => { },
          m => { },
          m => {
-            var address = ReadIndexedAbsoluteValue(m, m.ReadUShort(m.Cpu.Registers.PC + 1), RegisterType.X);
+            var address = GetIndexedAbsoluteAddress(m, m.ReadUShort(m.Cpu.Registers.PC + 1), RegisterType.X);
             OpRollingRightShiftMem(m, address);
             m.Cpu.Registers.PC += 3;
          },
@@ -1650,7 +1666,7 @@ public sealed class Cpu {
          m => { },
          m => { },
          m => {
-            var address = ReadIndexedAbsoluteValue(m, m.ReadUShort(m.Cpu.Registers.PC + 1), RegisterType.X);
+            var address = GetIndexedAbsoluteAddress(m, m.ReadUShort(m.Cpu.Registers.PC + 1), RegisterType.X);
             OpRollingLeftShiftMem(m, address);
             m.Cpu.Registers.PC += 3;
          },
@@ -1663,7 +1679,7 @@ public sealed class Cpu {
          m => { },
          m => { },
          m => {
-            var address = ReadIndexedAbsoluteValue(m, m.ReadUShort(m.Cpu.Registers.PC + 1), RegisterType.X);
+            var address = GetIndexedAbsoluteAddress(m, m.ReadUShort(m.Cpu.Registers.PC + 1), RegisterType.X);
             OpIncMem(m, address);
             m.Cpu.Registers.PC += 3;
          },
@@ -1676,7 +1692,7 @@ public sealed class Cpu {
          m => { },
          m => { },
          m => {
-            var address = ReadIndexedAbsoluteValue(m, m.ReadUShort(m.Cpu.Registers.PC + 1), RegisterType.X);
+            var address = GetIndexedAbsoluteAddress(m, m.ReadUShort(m.Cpu.Registers.PC + 1), RegisterType.X);
             OpDecMem(m, address);
             m.Cpu.Registers.PC += 3;
          },
@@ -1686,7 +1702,7 @@ public sealed class Cpu {
          m => { },
          m => { },
          m => {
-            var address = ReadIndexedAbsoluteValue(m, m.ReadUShort(m.Cpu.Registers.PC + 1), RegisterType.Y);
+            var address = GetIndexedAbsoluteAddress(m, m.ReadUShort(m.Cpu.Registers.PC + 1), RegisterType.Y);
             m.Cpu.Registers.X = m[address];
             m.Cpu.Registers.PC += 3;
          },

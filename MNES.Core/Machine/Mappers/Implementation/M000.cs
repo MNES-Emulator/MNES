@@ -17,7 +17,7 @@ sealed class M000 : Mapper {
 
       if (i >= 0xC000)
          return mirror_rom_8000_BFFF
-            ? Machine.Rom[(i - 0xC000) % 16000]
+            ? Machine.Rom[(i - 0xC000) % 0x4000]
             : Machine.Rom[i - 0xC000];
 
       return null;
