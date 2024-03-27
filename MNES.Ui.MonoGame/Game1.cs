@@ -20,7 +20,8 @@ public sealed class Game1 : Game {
       base.Initialize();
    }
 
-   protected override void LoadContent() { _spriteBatch = new SpriteBatch(GraphicsDevice); }
+   protected override void LoadContent() =>
+      _spriteBatch = new SpriteBatch(GraphicsDevice);
 
    protected override void Update(GameTime gameTime) {
       if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape)) Exit();

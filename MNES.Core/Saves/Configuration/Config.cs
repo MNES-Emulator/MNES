@@ -27,9 +27,7 @@ public static class Config {
       if (Initialized) throw new Exception("Config already initialized.");
 
       if (!File.Exists(LOCAL_CONFIG_FILE))
-      {
          File.WriteAllText(LOCAL_CONFIG_FILE, DEFAULT_INI_TEXT);
-      }
 
       var parser = new FileIniDataParser();
       IniData data = parser.ReadFile(LOCAL_CONFIG_FILE);

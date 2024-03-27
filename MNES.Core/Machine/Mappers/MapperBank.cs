@@ -18,7 +18,12 @@ public sealed class MapperBank {
    public Range DestinationRange { get; init; }
    public ushort MemorySize { get; init; }
 
-   public MapperBank(AccessorType accessor, BankType type, Range access_range, Range destination_range) {
+   public MapperBank(
+      AccessorType accessor,
+      BankType type,
+      Range access_range,
+      Range destination_range
+   ) {
       Accessor = accessor;
       Type = type;
       AccessRange = access_range;

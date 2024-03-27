@@ -21,7 +21,11 @@ public sealed class MachineState {
    public readonly MachineLogger Logger;
    public readonly ConfigSettings Settings;
 
-   public MachineState(string rom_path, ConfigSettings settings, InputState input) {
+   public MachineState(
+      string rom_path,
+      ConfigSettings settings,
+      InputState input
+   ) {
       this.Settings = settings;
       this.input = input;
       var nes_bytes = File.ReadAllBytes(rom_path);

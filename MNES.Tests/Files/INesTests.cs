@@ -3,8 +3,7 @@
 namespace Mnes.Tests.Files;
 
 [TestClass]
-public sealed class INesTests
-{
+public sealed class INesTests {
    [TestMethod]
    public void TestHeader() {
       var rom_file = "Resources/Test Roms/other/nestest.nes";

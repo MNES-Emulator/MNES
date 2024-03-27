@@ -54,8 +54,7 @@ public sealed class NesTimer {
 
       int ticks_per_ms = _hertz / 1000;
 
-      void reset_state()
-      {
+      void reset_state() {
          TotalTickCount = 0;
          _is_running = false;
          _is_paused = false;
@@ -63,8 +62,7 @@ public sealed class NesTimer {
       }
 
       stop_watch.Start();
-      while (_is_running)
-      {
+      while (_is_running) {
          Thread.Sleep(1);
          var elapsed = stop_watch.Elapsed;
          if (_is_stopping) {

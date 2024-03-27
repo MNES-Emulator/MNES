@@ -8,10 +8,14 @@ public sealed class MachineLogger {
 
    public List<InstructionLog> CpuLog { get; init; } = new();
 
-   public MachineLogger(MachineState machine) =>
+   public MachineLogger(
+      MachineState machine
+   ) =>
       this.machine = machine;
 
-   public void Log(InstructionLog log) {
+   public void Log(
+      InstructionLog log
+   ) {
       CpuLog.Add(log);
       Debug.WriteLine(CpuLog.Count.ToString().PadLeft(4) + " " + log);
    }

@@ -30,7 +30,9 @@ public sealed class INesHeader {
    public readonly bool PrgRam_6000_7FFF_Present;
    public readonly bool HasBusConflicts;
 
-   public INesHeader(byte[] nes_file) {
+   public INesHeader(
+      byte[] nes_file
+   ) {
       // 0-3	Constant $4E $45 $53 $1A (ASCII "NES" followed by MS-DOS end-of-file)
       if (!nes_file[..4].SequenceEqual(ines_text)) throw new Exception("ROM invalid, INES header not found.");
       // 4	Size of PRG ROM in 16 KB units
