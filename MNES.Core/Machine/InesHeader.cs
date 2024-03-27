@@ -1,7 +1,7 @@
 ﻿namespace Mnes.Core.Machine;
 
 // https://www.nesdev.org/wiki/INES
-public sealed class INesHeader {
+public sealed class InesHeader {
    static readonly byte[] ines_text = new byte[] { 0x4E, 0x45, 0x53, 0x1A };
 
    public readonly int PrgRomSize;
@@ -30,7 +30,7 @@ public sealed class INesHeader {
    public readonly bool PrgRam_6000_7FFF_Present;
    public readonly bool HasBusConflicts;
 
-   public INesHeader(
+   public InesHeader(
       byte[] nes_file
    ) {
       // 0-3	Constant $4E $45 $53 $1A (ASCII "NES" followed by MS-DOS end-of-file)

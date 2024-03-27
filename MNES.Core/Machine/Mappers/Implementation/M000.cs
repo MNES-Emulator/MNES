@@ -24,7 +24,7 @@ internal sealed class M000 : Mapper {
    }
 
    public M000(
-      INesHeader header,
+      InesHeader header,
       MachineState machine
    ) : base(header, machine) {
       if (header.PrgRam_6000_7FFF_Present) prg_ram = new byte[header.PrgRamSize];
