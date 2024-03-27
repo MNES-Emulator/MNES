@@ -32,6 +32,7 @@ public sealed class Cpu {
    long log_inst_count;
 
    #region Utility Functions
+
    /// <summary> Set PC lower byte. </summary>
    static void PCL(MachineState m, byte value) {
       m.Cpu.Registers.PC &= 0b_1111_1111_0000_0000;
@@ -98,52 +99,44 @@ public sealed class Cpu {
 
    // Some opcodes do similar things
    #region Generic Opcode Methods
-   static void OpSetFlag(MachineState m, StatusFlagType flag)
-   {
+
+   static void OpSetFlag(MachineState m, StatusFlagType flag) {
       m.Cpu.Registers.P |= (byte)flag;
       m.Cpu.Registers.PC++;
    }
 
-   static void OpClearFlag(MachineState m, StatusFlagType flag)
-   {
+   static void OpClearFlag(MachineState m, StatusFlagType flag) {
       m.Cpu.Registers.ClearFlag(flag);
       m.Cpu.Registers.PC++;
    }
 
-   static void OpBranchOnFlagRelative(MachineState m, StatusFlagType flag)
-   {
+   static void OpBranchOnFlagRelative(MachineState m, StatusFlagType flag) {
       if (m.Settings.System.DebugMode) m.Cpu.log_message = $"${m.Cpu.Registers.PC + m[(ushort)(m.Cpu.Registers.PC + 1)] + 2:X4}";
 
       if (m.Cpu.Registers.HasFlag(flag))
-      {
          m.Cpu.Registers.PC += m[(ushort)(m.Cpu.Registers.PC + 1)];
-      }
 
       m.Cpu.add_cycles = 1; // Todo: Add another if branch is on another page
       m.Cpu.Registers.PC += 2;
    }
 
-   static void OpBranchOnClearFlagRelative(MachineState m, StatusFlagType flag)
-   {
+   static void OpBranchOnClearFlagRelative(MachineState m, StatusFlagType flag) {
       if (m.Settings.System.DebugMode) m.Cpu.log_message = $"${m.Cpu.Registers.PC + m[(ushort)(m.Cpu.Registers.PC + 1)] + 2:X4}";
 
       if (!m.Cpu.Registers.HasFlag(flag))
-      {
          m.Cpu.Registers.PC += m[(ushort)(m.Cpu.Registers.PC + 1)];
-      }
+
       m.Cpu.add_cycles = 1; // Todo: Add another if branch is on another page
       m.Cpu.Registers.PC += 2;
    }
 
-   static void OpCompare(MachineState m, byte r, byte mem)
-   {
+   static void OpCompare(MachineState m, byte r, byte mem) {
       m.Cpu.Registers.SetFlag(StatusFlagType.Negative, ((r - mem) & 0b_1000_0000) > 0);
       m.Cpu.Registers.SetFlag(StatusFlagType.Zero, r == mem);
       m.Cpu.Registers.SetFlag(StatusFlagType.Carry, mem <= r);
    }
 
-   static void OpAddCarry(MachineState m, byte value)
-   {
+   static void OpAddCarry(MachineState m, byte value) {
       var a = m.Cpu.Registers.A;
       var sum = a + value + (m.Cpu.Registers.HasFlag(StatusFlagType.Carry)? 1 : 0);
       var carry = sum > 0xFF;
@@ -153,8 +146,7 @@ public sealed class Cpu {
       m.Cpu.Registers.SetFlag(StatusFlagType.Overflow, overflow);
    }
 
-   static void OpRollingLeftShiftMem(MachineState m, ushort target)
-   {
+   static void OpRollingLeftShiftMem(MachineState m, ushort target) {
       var prev_carry = m.Cpu.Registers.HasFlag(StatusFlagType.Carry);
       var c_flag = (m[target] & 0b_1000_0000) > 0;
       m[target] <<= 1;
@@ -163,8 +155,7 @@ public sealed class Cpu {
       m.Cpu.Registers.SetFlag(StatusFlagType.Carry, c_flag);
    }
 
-   static void OpRollingRightShiftMem(MachineState m, ushort target)
-   {
+   static void OpRollingRightShiftMem(MachineState m, ushort target) {
       var prev_carry = m.Cpu.Registers.HasFlag(StatusFlagType.Carry);
       var c_flag = (m[target] & 0b_0000_0001) > 0;
       m[target] >>= 1;
@@ -172,25 +163,24 @@ public sealed class Cpu {
       m.Cpu.Registers.UpdateFlags(m[target]);
       m.Cpu.Registers.SetFlag(StatusFlagType.Carry, c_flag);
    }
+
    // Todo; make sure all address setting functions are setting flags properly
-   static void OpIncMem(MachineState m, ushort target)
-   {
+   static void OpIncMem(MachineState m, ushort target) {
       m[target]++;
       m.Cpu.Registers.UpdateFlags(m[target]);
    }
 
-   static void OpDecMem(MachineState m, ushort target)
-   {
+   static void OpDecMem(MachineState m, ushort target) {
       m[target]--;
       m.Cpu.Registers.UpdateFlags(m[target]);
    }
 
-   static void OpBit(MachineState m, byte value)
-   {
+   static void OpBit(MachineState m, byte value) {
       m.Cpu.Registers.SetFlag(StatusFlagType.Zero, (m.Cpu.Registers.A & value) == 0);
       m.Cpu.Registers.SetFlag(StatusFlagType.Negative, (value & 0b_1000_0000) > 0);
       m.Cpu.Registers.SetFlag(StatusFlagType.Overflow, (value & 0b_0100_0000) > 0);
    }
+
    #endregion
 
    static readonly CpuInstruction[] instructions_unordered = new CpuInstruction[] {
