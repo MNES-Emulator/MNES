@@ -1,7 +1,6 @@
 ﻿using Mnes.Core.Machine.CPU;
 using Mnes.Core.Machine.Input;
 using Mnes.Core.Machine.Mappers;
-using Mnes.Core.Machine.Mappers.Implementation;
 using Mnes.Core.Saves.Configuration;
 using MNES.Core.Machine.Logging;
 

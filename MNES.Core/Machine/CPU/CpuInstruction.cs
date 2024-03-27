@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Mnes.Core.Machine.CPU;
+﻿namespace Mnes.Core.Machine.CPU;
 
 public class CpuInstruction
 {

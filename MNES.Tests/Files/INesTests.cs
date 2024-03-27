@@ -1,10 +1,4 @@
-﻿using Mnes.Core;
-using Mnes.Core.Machine;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Mnes.Core.Machine;
 
 namespace Mnes.Tests.Files;
 
