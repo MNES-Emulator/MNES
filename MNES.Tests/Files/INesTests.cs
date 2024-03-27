@@ -6,8 +6,7 @@ namespace Mnes.Tests.Files;
 public sealed class INesTests
 {
     [TestMethod]
-    public void TestHeader()
-    {
+    public void TestHeader() {
         var rom_file = "Resources/Test Roms/other/nestest.nes";
 
         var nes_bytes = File.ReadAllBytes(rom_file);

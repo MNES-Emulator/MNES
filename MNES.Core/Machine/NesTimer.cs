@@ -4,14 +4,12 @@ using System.Diagnostics;
 
 namespace Mnes.Core.Machine;
 
-public sealed class NesTimer
-{
+public sealed class NesTimer {
     public const int PAL_TIMING_HZ = 1660000;
     public const int NTSC_TIMING_HZ = 1790000;
 
     [JsonConverter(typeof(StringEnumConverter))]
-    public enum RegionType : int
-    {
+    public enum RegionType : int {
         PAL = PAL_TIMING_HZ,
         NTSC = NTSC_TIMING_HZ,
         DUAL_COMPATIBLE,
@@ -34,8 +32,7 @@ public sealed class NesTimer
         }
     }
 
-    public NesTimer(RegionType region, Action tick)
-    {
+    public NesTimer(RegionType region, Action tick) {
         Region = region;
         tick_callback = tick;
     }
@@ -50,8 +47,7 @@ public sealed class NesTimer
         RunningThread = Task.Run(Run);
     }
 
-    void Run()
-    {
+    void Run() {
         _is_running = true;
 
         var stop_watch = new Stopwatch();

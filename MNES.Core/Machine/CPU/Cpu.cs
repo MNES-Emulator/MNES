@@ -44,19 +44,15 @@ public sealed class Cpu {
         m.Cpu.Registers.PC |= (ushort)(value << 8);
     }
 
-    static void PUSH(MachineState m, byte value)
-    {
+    static void PUSH(MachineState m, byte value) =>
         m[(ushort)(m.Cpu.Registers.S-- + 0x0100)] = value;
-    }
 
-    static void PUSH_ushort(MachineState m, ushort value)
-    {
+    static void PUSH_ushort(MachineState m, ushort value) {
         PUSH(m, (byte)(value >> 8));
         PUSH(m, (byte)value);
     }
 
-    static ushort PULL_ushort(MachineState m)
-    {
+    static ushort PULL_ushort(MachineState m) {
         ushort value = PULL(m);
         value |= (ushort)((ushort)PULL(m) << 8);
         return value;
@@ -65,8 +61,7 @@ public sealed class Cpu {
     static byte PULL(MachineState m) =>
         m[(ushort)(++m.Cpu.Registers.S + 0x0100)];
 
-    static ushort GetIndexedZeroPageIndirectAddress(MachineState m, byte arg, RegisterType r)
-    {
+    static ushort GetIndexedZeroPageIndirectAddress(MachineState m, byte arg, RegisterType r) {
         // X-Indexed Zero Page Indirect https://www.pagetable.com/c64ref/6502/?tab=3#(a8,X)
         var x_target = (byte)(arg + m.Cpu.Registers[r]);
 
@@ -83,8 +78,7 @@ public sealed class Cpu {
         return target;
     }
 
-   static ushort GetZeroPageIndirectIndexedAddress(MachineState m, byte arg, RegisterType r)
-   {
+   static ushort GetZeroPageIndirectIndexedAddress(MachineState m, byte arg, RegisterType r) {
       byte z_p_address_1 = arg;
       byte z_p_address_2 = (byte)((arg + 1) % 256);
       var sum = m[z_p_address_1] + m.Cpu.Registers[r];
@@ -1242,8 +1236,7 @@ public sealed class Cpu {
         } },
     };
 
-    public Cpu(MachineState machine)
-    {
+    public Cpu(MachineState machine) {
         this.machine = machine;
         foreach (var i in instructions_unordered) {
             if (instructions[i.OpCode] != null) throw new Exception($"Duplicate OpCodes: {instructions[i.OpCode].Name} and {i.Name}");
@@ -1251,8 +1244,7 @@ public sealed class Cpu {
         }
     }
 
-    public void SetPowerUpState()
-    {
+    public void SetPowerUpState() {
         Registers.PC = 0x34;
         Registers.X = 0;
         Registers.Y = 0;
@@ -1263,8 +1255,7 @@ public sealed class Cpu {
         Registers.S = 0xFD;
     }
 
-    public void Tick()
-    {
+    public void Tick() {
         CycleCounter++;
         if (CurrentInstruction == null)
         {
@@ -1285,14 +1276,10 @@ public sealed class Cpu {
                 log_cpu = Registers.GetLog();
                 log_inst_count++;
             }
-        }
-        else
-        {
+        } else {
             if (CurrentInstructionCycle < CurrentInstruction.Process.Length) CurrentInstruction.Process[CurrentInstructionCycle++](machine);
-            if (CurrentInstructionCycle == CurrentInstruction.Process.Length)
-            {
-                if (add_cycles > 0)
-                {
+            if (CurrentInstructionCycle == CurrentInstruction.Process.Length) {
+                if (add_cycles > 0) {
                     add_cycles--;
                     return;
                 }
@@ -1306,8 +1293,7 @@ public sealed class Cpu {
         }
     }
 
-    void PrintCpuGrid()
-    {
+    void PrintCpuGrid() {
         StringBuilder sb = new();
 
         string block = "■";

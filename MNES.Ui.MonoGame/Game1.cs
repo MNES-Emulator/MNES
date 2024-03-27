@@ -4,8 +4,7 @@ using Microsoft.Xna.Framework.Input;
 
 namespace Mnes;
 
-public sealed class Game1 : Game
-{
+public sealed class Game1 : Game {
     public string StartupRom;
 
     private GraphicsDeviceManager _graphics;

@@ -1,8 +1,7 @@
 ﻿namespace Mnes.Core.Machine;
 
 // https://www.nesdev.org/wiki/PPU_registers
-public sealed class Ppu
-{
+public sealed class Ppu {
     public byte[] Registers = new byte[8];
     public byte OAMDMA;
 
@@ -31,8 +30,7 @@ public sealed class Ppu
     // PPU data read/write
     byte PpuData => Registers[7];
 
-    public void SetPowerUpState()
-    {
+    public void SetPowerUpState() {
         Array.Clear(Registers);
         OAMDMA = 0;
     }

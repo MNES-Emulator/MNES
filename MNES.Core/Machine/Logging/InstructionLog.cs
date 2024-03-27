@@ -2,8 +2,7 @@
 
 namespace MNES.Core.Machine.Logging;
 
-public readonly struct InstructionLog
-{
+public readonly struct InstructionLog {
     public readonly CpuInstruction Instruction;
     public readonly ushort Address;
     public readonly byte? D1;
@@ -12,8 +11,7 @@ public readonly struct InstructionLog
     public readonly long ClockCycle;
     public readonly string Message;
 
-    public InstructionLog(CpuInstruction instruction, ushort address, byte? d1, byte? d2, CpuRegisterLog log, long clock_cycle, string message)
-    {
+    public InstructionLog(CpuInstruction instruction, ushort address, byte? d1, byte? d2, CpuRegisterLog log, long clock_cycle, string message) {
         Instruction = instruction;
         Address = address;
         D1 = d1;
