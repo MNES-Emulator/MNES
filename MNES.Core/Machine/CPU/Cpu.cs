@@ -88,6 +88,16 @@ public class Cpu
         return target;
     }
 
+   static ushort GetZeroPageIndirectIndexedAddress(MachineState m, byte arg, RegisterType r)
+   {
+      var z_p_address = arg;
+      var sum = m[z_p_address] + m.Cpu.Registers[r];
+      var carry = (sum & 0b_1_0000_0000) > 0 ? 1 : 0;
+      var l_byte = (byte)sum;
+      var target = (ushort)(((m[(byte)(z_p_address + 1)] + carry) << 8) & l_byte);
+      return target;
+   }
+
     #endregion
 
     // Some opcodes do similar things
@@ -557,7 +567,7 @@ public class Cpu
             m => { },
             m => {
                 var target = m.ReadUShort(m.Cpu.Registers.PC + 1);
-                m[target]--;
+               OpDecMem(m, target);
                 m.Cpu.Registers.PC += 3;
                 if (m.Settings.System.DebugMode) m.Cpu.log_message = $"${target:X2} = {m.Cpu.Registers.A:X2}";
             },
@@ -1028,6 +1038,205 @@ public class Cpu
                 OpCompare(m, m.Cpu.Registers.A, m[target]);
                 m.Cpu.Registers.PC += 3;
             },
+        } },
+
+        new() { Name = "SBC", OpCode = 0xED, Bytes = 3, Process = new ProcessDelegate[] {
+            m => { },
+            m => { },
+            m => {
+                var target = m.ReadUShort(m.Cpu.Registers.PC + 1);
+                if (m.Settings.System.DebugMode) m.Cpu.log_message = $"${target:X4} = {m[target]:X2}";
+                OpAddCarry(m, (byte)~m[target]);
+                m.Cpu.Registers.PC += 3;
+            },
+        } },
+
+        new() { Name = "CPX", OpCode = 0xEC, Bytes = 3, Process = new ProcessDelegate[] {
+            m => { },
+            m => { },
+            m => {
+                var target = m.ReadUShort(m.Cpu.Registers.PC + 1);
+                if (m.Settings.System.DebugMode) m.Cpu.log_message = $"${target:X4} = {m[target]:X2}";
+                OpCompare(m, m.Cpu.Registers.X, m[target]);
+                m.Cpu.Registers.PC += 3;
+            },
+        } },
+
+        new() { Name = "CPY", OpCode = 0xCC, Bytes = 3, Process = new ProcessDelegate[] {
+            m => { },
+            m => { },
+            m => {
+                var target = m.ReadUShort(m.Cpu.Registers.PC + 1);
+                if (m.Settings.System.DebugMode) m.Cpu.log_message = $"${target:X4} = {m[target]:X2}";
+                OpCompare(m, m.Cpu.Registers.Y, m[target]);
+                m.Cpu.Registers.PC += 3;
+            },
+        } },
+
+        new() { Name = "LSR", OpCode = 0x4E, Bytes = 3, Process = new ProcessDelegate[] {
+            m => { },
+            m => { },
+            m => { },
+            m => { },
+            m => {
+                var target = m.ReadUShort(m.Cpu.Registers.PC + 1);
+                if (m.Settings.System.DebugMode) m.Cpu.log_message = $"${target:X4} = {m[target]:X2}";
+                var carry = (m[target] & 1) > 0;
+                m[target] >>= 1;
+               m.Cpu.Registers.SetFlag(StatusFlagType.Carry, carry);
+                m.Cpu.Registers.PC += 3;
+            },
+        } },
+
+        new() { Name = "ASL", OpCode = 0x0E, Bytes = 3, Process = new ProcessDelegate[] {
+            m => { },
+            m => { },
+            m => { },
+            m => { },
+            m => {
+                var target = m.ReadUShort(m.Cpu.Registers.PC + 1);
+                if (m.Settings.System.DebugMode) m.Cpu.log_message = $"${target:X4} = {m[target]:X2}";
+                var c_flag = (m[target] & 0b_1000_0000) > 0;
+                m[target] <<= 1;
+               m.Cpu.Registers.SetFlag(StatusFlagType.Carry, c_flag);
+                m.Cpu.Registers.PC += 3;
+            },
+        } },
+
+        new() { Name = "ROR", OpCode = 0x6E, Bytes = 2, Process = new ProcessDelegate[] {
+            m => { },
+            m => { },
+            m => { },
+            m => { },
+            m => {
+                var target = m.ReadUShort(m.Cpu.Registers.PC + 1);
+                if (m.Settings.System.DebugMode) m.Cpu.log_message = $"${target:X4} = {m[target]:X2}";
+                OpRollingRightShiftMem(m, target);
+                m.Cpu.Registers.PC += 3;
+            },
+        } },
+
+        new() { Name = "ROL", OpCode = 0x2E, Bytes = 2, Process = new ProcessDelegate[] {
+            m => { },
+            m => { },
+            m => { },
+            m => { },
+            m => {
+                var target = m.ReadUShort(m.Cpu.Registers.PC + 1);
+                if (m.Settings.System.DebugMode) m.Cpu.log_message = $"${target:X4} = {m[target]:X2}";
+                OpRollingLeftShiftMem(m, target);
+                m.Cpu.Registers.PC += 3;
+            },
+        } },
+
+        // almost certainly broken
+        new() { Name = "LDA", OpCode = 0xB1, Bytes = 2, Process = new ProcessDelegate[] {
+           m => { },
+           m => { },
+           m => { },
+           m => { },
+           m => {
+              var address = GetZeroPageIndirectIndexedAddress(m, m[(ushort)(m.Cpu.Registers.PC + 1)], RegisterType.Y);
+              m.Cpu.Registers.A = m[address];
+              m.Cpu.Registers.PC += 2;
+           },
+        } },
+
+         new() { Name = "INC", OpCode = 0xEE, Bytes = 2, Process = new ProcessDelegate[] {
+            m => { },
+            m => { },
+            m => { },
+            m => { },
+            m => {
+                var target = m.ReadUShort(m.Cpu.Registers.PC + 1);
+                if (m.Settings.System.DebugMode) m.Cpu.log_message = $"${target:X4} = {m[target]:X2}";
+                OpIncMem(m, target);
+                m.Cpu.Registers.PC += 3;
+            },
+        } },
+
+         new() { Name = "ORA", OpCode = 0x11, Bytes = 2, Process = new ProcessDelegate[] {
+           m => { },
+           m => { },
+           m => { },
+           m => { },
+           m => {
+              var address = GetZeroPageIndirectIndexedAddress(m, m[(ushort)(m.Cpu.Registers.PC + 1)], RegisterType.Y);
+              m.Cpu.Registers.A |= m[address];
+              m.Cpu.Registers.PC += 2;
+           },
+        } },
+
+         new() { Name = "AND", OpCode = 0x31, Bytes = 2, Process = new ProcessDelegate[] {
+           m => { },
+           m => { },
+           m => { },
+           m => { },
+           m => {
+              var address = GetZeroPageIndirectIndexedAddress(m, m[(ushort)(m.Cpu.Registers.PC + 1)], RegisterType.Y);
+              m.Cpu.Registers.A &= m[address];
+              m.Cpu.Registers.PC += 2;
+           },
+        } },
+
+         new() { Name = "EOR", OpCode = 0x51, Bytes = 2, Process = new ProcessDelegate[] {
+           m => { },
+           m => { },
+           m => { },
+           m => { },
+           m => {
+              var address = GetZeroPageIndirectIndexedAddress(m, m[(ushort)(m.Cpu.Registers.PC + 1)], RegisterType.Y);
+              m.Cpu.Registers.A ^= m[address];
+              m.Cpu.Registers.PC += 2;
+           },
+        } },
+
+         new() { Name = "ADC", OpCode = 0x71, Bytes = 2, Process = new ProcessDelegate[] {
+           m => { },
+           m => { },
+           m => { },
+           m => { },
+           m => {
+              var address = GetZeroPageIndirectIndexedAddress(m, m[(ushort)(m.Cpu.Registers.PC + 1)], RegisterType.Y);
+              OpAddCarry(m, m[address]);
+              m.Cpu.Registers.PC += 2;
+           },
+        } },
+
+         new() { Name = "CMP", OpCode = 0xD1, Bytes = 2, Process = new ProcessDelegate[] {
+           m => { },
+           m => { },
+           m => { },
+           m => { },
+           m => {
+              var address = GetZeroPageIndirectIndexedAddress(m, m[(ushort)(m.Cpu.Registers.PC + 1)], RegisterType.Y);
+              OpCompare(m, m.Cpu.Registers.A, m[address]);
+              m.Cpu.Registers.PC += 2;
+           },
+        } },
+
+         new() { Name = "SBC", OpCode = 0xF1, Bytes = 2, Process = new ProcessDelegate[] {
+           m => { },
+           m => { },
+           m => { },
+           m => { },
+           m => {
+              var address = GetZeroPageIndirectIndexedAddress(m, m[(ushort)(m.Cpu.Registers.PC + 1)], RegisterType.Y);
+              OpAddCarry(m, (byte)~m[address]);
+              m.Cpu.Registers.PC += 2;
+           },
+        } },
+
+        new() { Name = "STA", OpCode = 0x91, Bytes = 2, Process = new ProcessDelegate[] {
+           m => { },
+           m => { },
+           m => { },
+           m => { },
+           m => {
+              var address = GetZeroPageIndirectIndexedAddress(m, m[(ushort)(m.Cpu.Registers.PC + 1)], RegisterType.Y);
+              m[address] = m.Cpu.Registers.A;
+              m.Cpu.Registers.PC += 2;
+           },
         } },
     };
 
