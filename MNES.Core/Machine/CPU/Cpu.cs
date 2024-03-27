@@ -87,7 +87,7 @@ public sealed class Cpu {
       var l_byte = (byte)sum;
       var h_byte = m[z_p_address_2] + carry;
       var target = (ushort)((h_byte << 8) | l_byte);
-      
+
       // This output is wrong but it doesn't actually effect anything
       if (m.Settings.System.DebugMode) m.Cpu.log_message =
         $"(${arg:X2}),{r} = {target:X4} @ {target:X4} = {m[target]:X2}";
@@ -808,7 +808,7 @@ public sealed class Cpu {
          m => { },
          m => {
             var target = m[(ushort)(m.Cpu.Registers.PC + 1)];
-            OpAddCarry(m, (byte)m[target]);
+            OpAddCarry(m, m[target]);
             m.Cpu.Registers.PC += 2;
             if (m.Settings.System.DebugMode) m.Cpu.log_message = $"${target:X2} = {m[target]:X2}";
          },
@@ -1306,15 +1306,15 @@ public sealed class Cpu {
    }
 
    void PrintCpuGrid() {
+      const char block = '■';
       StringBuilder sb = new();
 
-      const string block = "■";
-
       for (int i = 0; i < 0xFF; i++) {
-         if (instructions[i] != null) sb.Append(block);
-         else sb.Append(' ');
-         if ((i % 16) == 15) sb.Append('\n');
+         var ch = instructions[i] == null ? ' ' : block;
+         sb.Append(ch);
 
+         if (i % 16 == 15)
+            sb.Append('\n');
       }
 
       Debug.WriteLine(sb.ToString());
