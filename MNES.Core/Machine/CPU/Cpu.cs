@@ -90,11 +90,17 @@ public class Cpu
 
    static ushort GetZeroPageIndirectIndexedAddress(MachineState m, byte arg, RegisterType r)
    {
-      var z_p_address = arg;
-      var sum = m[z_p_address] + m.Cpu.Registers[r];
+      byte z_p_address_1 = arg;
+      byte z_p_address_2 = (byte)((arg + 1) % 256);
+      var sum = m[z_p_address_1] + m.Cpu.Registers[r];
       var carry = (sum & 0b_1_0000_0000) > 0 ? 1 : 0;
       var l_byte = (byte)sum;
-      var target = (ushort)(((m[(byte)(z_p_address + 1)] + carry) << 8) & l_byte);
+      var h_byte = m[z_p_address_2] + carry;
+      var target = (ushort)((h_byte << 8) | l_byte);
+
+      if (m.Settings.System.DebugMode) m.Cpu.log_message =
+         $"(${arg:X2}),{r} = {target:X4} @ {target:X4} = {m[target]:X2}";
+
       return target;
    }
 

@@ -59,7 +59,7 @@ public class MachineState
         Cpu.SetPowerUpState();
         Ppu.SetPowerUpState();
         Apu.SetPowerUpState();
-        for (int i = 0; i < Ram.Length; i++) Ram[i] = 0xFF;
+        for (int i = 0; i < Ram.Length; i++) Ram[i] = 0x00;
     }
 
     public ushort ReadUShort(int index) => ReadUShort((ushort)index);
