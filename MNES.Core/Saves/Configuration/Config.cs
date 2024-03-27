@@ -11,19 +11,18 @@ public static class Config {
       $"SaveFolder = {DEFAULT_SAVE_FOLDER}";
 
    const string LOCAL_CONFIG_FILE = "local_config.ini";
-
    const string CONFIG_FILE = "config.json";
 
    public static bool Initialized => Settings != null;
 
    static string _save_folder;
+   static string SaveFile => Path.Combine(_save_folder, CONFIG_FILE);
 
    public static ConfigSettings Settings { get; private set; }
 
    public static void InitializeFromDisk() {
-      ConfigSettings settings;
-
-      if (Initialized) throw new Exception("Config already initialized.");
+      if (Initialized)
+         throw new Exception("Config already initialized.");
 
       if (!File.Exists(LOCAL_CONFIG_FILE))
          File.WriteAllText(LOCAL_CONFIG_FILE, DEFAULT_INI_TEXT);
@@ -32,24 +31,31 @@ public static class Config {
       var data = parser.ReadFile(LOCAL_CONFIG_FILE);
 
       data.TryGetKey("SaveFolder", out _save_folder);
-      if (string.IsNullOrEmpty(_save_folder)) _save_folder = DEFAULT_SAVE_FOLDER;
-      _save_folder = Environment.ExpandEnvironmentVariables(_save_folder);
-      if (!Directory.Exists(_save_folder)) Directory.CreateDirectory(_save_folder);
+      if (string.IsNullOrEmpty(_save_folder))
+         _save_folder = DEFAULT_SAVE_FOLDER;
 
-      if (!File.Exists(Path.Combine(_save_folder, CONFIG_FILE))) {
+      _save_folder = Environment.ExpandEnvironmentVariables(_save_folder);
+      if (!Directory.Exists(_save_folder))
+         Directory.CreateDirectory(_save_folder);
+
+      ConfigSettings settings;
+      if (!File.Exists(SaveFile)) {
          settings = new();
          File.WriteAllText(
-            Path.Combine(_save_folder, CONFIG_FILE),
-            JsonConvert.SerializeObject(settings));
+            SaveFile,
+            JsonConvert.SerializeObject(settings)
+         );
       } else
-         settings = JsonConvert.DeserializeObject<ConfigSettings>(Path.Combine(_save_folder, CONFIG_FILE));
+         settings = JsonConvert.DeserializeObject<ConfigSettings>(SaveFile);
 
       Settings = settings;
    }
 
    public static void Save() {
-      if (!Initialized) throw new Exception($"Cannot save config before {nameof(InitializeFromDisk)} has been called.");
-      File.WriteAllText(Path.Combine(_save_folder, CONFIG_FILE), JsonConvert.SerializeObject(Settings));
+      if (!Initialized)
+         throw new Exception($"Cannot save config before {nameof(InitializeFromDisk)} has been called.");
+
+      File.WriteAllText(SaveFile, JsonConvert.SerializeObject(Settings));
    }
 
    /// <summary> Resets the settings to default and saves. </summary>
