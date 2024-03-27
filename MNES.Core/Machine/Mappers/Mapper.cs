@@ -10,7 +10,7 @@ public abstract class Mapper {
    protected abstract MapperBank[] Banks { get; }
 
    public Mapper(
-      INesHeader header,
+      InesHeader header,
       MachineState machine
    ) =>
       Machine = machine;
@@ -19,7 +19,7 @@ public abstract class Mapper {
    public abstract byte? this[ushort index] { get; set; }
 
    public static Mapper GetMapper(
-      INesHeader header,
+      InesHeader header,
       MachineState machine
    ) =>
       header.MapperNumber == 0

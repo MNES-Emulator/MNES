@@ -20,7 +20,7 @@ internal sealed class M000 : Mapper {
       if (prg_ram != null && i - 0x6000 < prg_ram.Length) prg_ram[i - 0x6000] = value.Value;
    } }
 
-   public M000(INesHeader header, MachineState machine) : base(header, machine) {
+   public M000(InesHeader header, MachineState machine) : base(header, machine) {
       if (header.PrgRam_6000_7FFF_Present) prg_ram = new byte[header.PrgRamSize];
       mirror_rom_8000_BFFF = header.PrgRomSize == 16000;
    }

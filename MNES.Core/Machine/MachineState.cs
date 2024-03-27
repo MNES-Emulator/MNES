@@ -7,7 +7,7 @@ using Mnes.Core.Machine.Logging;
 namespace Mnes.Core.Machine;
 
 public sealed class MachineState {
-   readonly INesHeader header;
+   readonly InesHeader header;
    readonly Mapper mapper;
    readonly NesTimer timer;
    readonly InputState input;
@@ -29,7 +29,7 @@ public sealed class MachineState {
       this.Settings = settings;
       this.input = input;
       var nes_bytes = File.ReadAllBytes(rom_path);
-      header = new INesHeader(nes_bytes);
+      header = new InesHeader(nes_bytes);
       Rom = new byte[nes_bytes.Length - 16];
       nes_bytes[16..].CopyTo(Rom, 0);
       mapper = Mapper.GetMapper(header, this);
