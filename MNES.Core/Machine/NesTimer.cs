@@ -4,7 +4,7 @@ using System.Diagnostics;
 
 namespace Mnes.Core.Machine;
 
-public class NesTimer
+public sealed class NesTimer
 {
     public const int PAL_TIMING_HZ = 1660000;
     public const int NTSC_TIMING_HZ = 1790000;

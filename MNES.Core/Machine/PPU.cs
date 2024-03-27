@@ -1,7 +1,7 @@
 ﻿namespace Mnes.Core.Machine;
 
 // https://www.nesdev.org/wiki/PPU_registers
-public class Ppu
+public sealed class Ppu
 {
     public byte[] Registers = new byte[8];
     public byte OAMDMA;

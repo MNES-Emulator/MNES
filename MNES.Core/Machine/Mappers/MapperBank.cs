@@ -1,6 +1,6 @@
 ﻿namespace Mnes.Core.Machine.Mappers;
 
-public class MapperBank
+public sealed class MapperBank
 {
     public enum AccessorType
     {

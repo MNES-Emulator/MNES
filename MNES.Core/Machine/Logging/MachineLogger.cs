@@ -3,7 +3,7 @@ using System.Diagnostics;
 
 namespace MNES.Core.Machine.Logging;
 
-public class MachineLogger
+public sealed class MachineLogger
 {
     MachineState machine;
 

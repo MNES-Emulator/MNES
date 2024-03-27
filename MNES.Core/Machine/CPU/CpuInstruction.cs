@@ -1,6 +1,6 @@
 ﻿namespace Mnes.Core.Machine.CPU;
 
-public class CpuInstruction
+public sealed class CpuInstruction
 {
     /// <summary> Iterates through each clock cycle of a CPU instruction. </summary>
     public delegate void ProcessDelegate(MachineState state);
