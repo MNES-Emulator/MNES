@@ -83,7 +83,7 @@ public class Cpu
         var target = b_h;
 
         if (m.Settings.System.DebugMode) m.Cpu.log_message =
-            $"(${arg:X2},X) = @ {x_target:X2} = {target:X4} = {m[target]:X2}";
+            $"(${arg:X2},{r}) = @ {x_target:X2} = {target:X4} = {m[target]:X2}";
 
         return target;
     }
@@ -105,10 +105,16 @@ public class Cpu
       return target;
    }
 
-    #endregion
+   static ushort GetIndexedAbsoluteAddress(MachineState m, ushort arg, RegisterType r)
+   {
+      var address = (ushort)(m.Cpu.Registers[r] + m[arg]);
+      if (m.Settings.System.DebugMode) m.Cpu.log_message = $"${arg:X4},{r} @ {arg:X4} = {address:X2}";
+      return address;
+   }
+   #endregion
 
-    // Some opcodes do similar things
-    #region Generic Opcode Methods
+   // Some opcodes do similar things
+   #region Generic Opcode Methods
     static void OpSetFlag(MachineState m, StatusFlagType flag)
     {
         m.Cpu.Registers.P |= (byte)flag;
@@ -1136,7 +1142,6 @@ public class Cpu
             },
         } },
 
-        // almost certainly broken
         new() { Name = "LDA", OpCode = 0xB1, Bytes = 2, Process = new ProcessDelegate[] {
            m => { },
            m => { },
@@ -1243,6 +1248,29 @@ public class Cpu
               var address = GetZeroPageIndirectIndexedAddress(m, m[(ushort)(m.Cpu.Registers.PC + 1)], RegisterType.Y);
               m[address] = m.Cpu.Registers.A;
               m.Cpu.Registers.PC += 2;
+           },
+        } },
+
+        new() { Name = "JMP", OpCode = 0x6C, Bytes = 3, Process = new ProcessDelegate[] {
+           m => { },
+           m => { },
+           m => { },
+           m => { },
+           m => {
+              var address = m.ReadUShort(m.Cpu.Registers.PC + 1);
+              var target = m.ReadUShortSamePage(address);
+              m.Cpu.Registers.PC = target;
+               if (m.Settings.System.DebugMode) m.Cpu.log_message = $"(${address:X4}) = {target:X4}";
+           },
+        } },
+
+        new() { Name = "LDA", OpCode = 0xB9, Bytes = 3, Process = new ProcessDelegate[] {
+           m => { },
+           m => { },
+           m => {
+              var address = GetIndexedAbsoluteAddress(m, m.ReadUShort(m.Cpu.Registers.PC + 1), RegisterType.Y);
+              m.Cpu.Registers.A = m[address];
+              m.Cpu.Registers.PC += 3;
            },
         } },
     };

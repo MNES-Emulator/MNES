@@ -72,8 +72,23 @@ public class MachineState
         return b_h;
     }
 
-    /// <summary> If reads null, then open bus read. Don't write null. </summary>
-    public byte this[ushort index] {
+   public ushort ReadUShortSamePage(ushort index)
+   {
+      var b_l = this[index];
+
+      // force it to stay on the same page
+      var b_h_address = (ushort)(index + 1);
+      b_h_address &= 0b_0000_0000_1111_1111;
+      b_h_address |= (ushort)(0b_1111_1111_0000_0000 & index);
+
+      ushort b_h = this[b_h_address];
+      b_h <<= 8;
+      b_h |= b_l;
+      return b_h;
+   }
+
+   /// <summary> If reads null, then open bus read. Don't write null. </summary>
+   public byte this[ushort index] {
         get {
             last_read_value =
                 index < 0x2000 ? Ram[index % 0x0800] :
