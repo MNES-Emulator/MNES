@@ -27,9 +27,7 @@ public static class Config {
       if (Initialized) throw new Exception("Config already initialized.");
 
       if (!File.Exists(LOCAL_CONFIG_FILE))
-      {
          File.WriteAllText(LOCAL_CONFIG_FILE, DEFAULT_INI_TEXT);
-      }
 
       var parser = new FileIniDataParser();
       IniData data = parser.ReadFile(LOCAL_CONFIG_FILE);
@@ -39,14 +37,14 @@ public static class Config {
       _save_folder = Environment.ExpandEnvironmentVariables(_save_folder);
       if (!Directory.Exists(_save_folder)) Directory.CreateDirectory(_save_folder);
 
-      if (!File.Exists(Path.Combine(_save_folder, CONFIG_FILE)))
-      {
+      if (!File.Exists(Path.Combine(_save_folder, CONFIG_FILE))) {
          settings = new();
          File.WriteAllText(
             Path.Combine(_save_folder, CONFIG_FILE),
-            JsonConvert.SerializeObject(settings));
-      }
-      else settings = JsonConvert.DeserializeObject<ConfigSettings>(Path.Combine(_save_folder, CONFIG_FILE));
+            JsonConvert.SerializeObject(settings)
+         );
+      } else
+         settings = JsonConvert.DeserializeObject<ConfigSettings>(Path.Combine(_save_folder, CONFIG_FILE));
 
       Settings = settings;
    }
