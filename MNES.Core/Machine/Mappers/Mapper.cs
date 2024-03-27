@@ -9,14 +9,14 @@ public abstract class Mapper {
 
    protected abstract MapperBank[] Banks { get; }
 
+   /// <summary> If reads null, then open bus read. Don't write null. </summary>
+   public abstract byte? this[ushort index] { get; set; }
+
    public Mapper(
       InesHeader header,
       MachineState machine
    ) =>
       Machine = machine;
-
-   /// <summary> If reads null, then open bus read. Don't write null. </summary>
-   public abstract byte? this[ushort index] { get; set; }
 
    public static Mapper GetMapper(
       InesHeader header,

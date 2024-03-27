@@ -9,7 +9,7 @@ public sealed class NesTimer {
    public const int NTSC_TIMING_HZ = 1790000;
 
    [JsonConverter(typeof(StringEnumConverter))]
-   public enum RegionType : int {
+   public enum RegionType {
       PAL = PAL_TIMING_HZ,
       NTSC = NTSC_TIMING_HZ,
       DUAL_COMPATIBLE,
@@ -19,9 +19,9 @@ public sealed class NesTimer {
    Action tick_callback;
    int _hertz;
    RegionType _region_backing = RegionType.NTSC;
-   bool _is_running = false;
-   bool _is_paused = false;
-   bool _is_stopping = false;
+   bool _is_running;
+   bool _is_paused;
+   bool _is_stopping;
    public long TotalTickCount { get; private set; }
 
    RegionType Region {

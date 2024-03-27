@@ -1283,7 +1283,7 @@ public sealed class Cpu {
    void PrintCpuGrid() {
       StringBuilder sb = new();
 
-      string block = "■";
+      const string block = "■";
 
       for (int i = 0; i < 0xFF; i++) {
          if (instructions[i] != null) sb.Append(block);

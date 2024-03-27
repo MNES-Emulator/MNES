@@ -9,6 +9,6 @@ public sealed class INesTests {
       var rom_file = "Resources/Test Roms/other/nestest.nes";
 
       var nes_bytes = File.ReadAllBytes(rom_file);
-      InesHeader header = new(nes_bytes);
+      InesHeader _ = new(nes_bytes);
    }
 }

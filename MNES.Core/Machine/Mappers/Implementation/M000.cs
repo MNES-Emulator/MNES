@@ -1,8 +1,8 @@
 ﻿namespace Mnes.Core.Machine.Mappers.Implementation;
 
-internal sealed class M000 : Mapper {
-   byte[] prg_ram;
-   bool mirror_rom_8000_BFFF;
+sealed class M000 : Mapper {
+   readonly byte[] prg_ram;
+   readonly bool mirror_rom_8000_BFFF;
 
    public override int MapperNumber => 0;
 
@@ -17,10 +17,13 @@ internal sealed class M000 : Mapper {
       if (i >= 0xC000) return mirror_rom_8000_BFFF ? Machine.Rom[(i - 0xC000) % 16000] : Machine.Rom[i - 0xC000];
       return null;
    } set {
-      if (prg_ram != null && i - 0x6000 < prg_ram.Length) prg_ram[i - 0x6000] = value.Value;
+      if (prg_ram != null && i - 0x6000 < prg_ram.Length) prg_ram[i - 0x6000] = value.Value; // TODO: value is nullable this will throw when you set null
    } }
 
-   public M000(InesHeader header, MachineState machine) : base(header, machine) {
+   public M000(
+      InesHeader header,
+      MachineState machine
+   ) : base(header, machine) {
       if (header.PrgRam_6000_7FFF_Present) prg_ram = new byte[header.PrgRamSize];
       mirror_rom_8000_BFFF = header.PrgRomSize == 16000;
    }

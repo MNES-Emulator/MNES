@@ -11,7 +11,7 @@ public sealed class MachineState {
    readonly Mapper mapper;
    readonly NesTimer timer;
    readonly InputState input;
-   byte last_read_value = 0; // returns in case of open bus reads
+   byte last_read_value; // returns in case of open bus reads
 
    public readonly byte[] Ram = new byte[0x0800];
    public readonly byte[] Rom;

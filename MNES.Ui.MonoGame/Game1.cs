@@ -2,13 +2,13 @@
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 
-namespace Mnes;
+namespace Mnes.Ui.MonoGame;
 
 public sealed class Game1 : Game {
    public string StartupRom;
 
-   private GraphicsDeviceManager _graphics;
-   private SpriteBatch _spriteBatch;
+   GraphicsDeviceManager _graphics;
+   SpriteBatch _spriteBatch;
 
    public Game1() {
       _graphics = new GraphicsDeviceManager(this);

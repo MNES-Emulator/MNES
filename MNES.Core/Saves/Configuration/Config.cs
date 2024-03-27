@@ -1,5 +1,4 @@
 ﻿using IniParser;
-using IniParser.Model;
 using Newtonsoft.Json;
 
 namespace Mnes.Core.Saves.Configuration;
@@ -22,7 +21,7 @@ public static class Config {
    public static ConfigSettings Settings { get; private set; }
 
    public static void InitializeFromDisk() {
-      ConfigSettings settings = null;
+      ConfigSettings settings;
 
       if (Initialized) throw new Exception("Config already initialized.");
 
@@ -30,7 +29,7 @@ public static class Config {
          File.WriteAllText(LOCAL_CONFIG_FILE, DEFAULT_INI_TEXT);
 
       var parser = new FileIniDataParser();
-      IniData data = parser.ReadFile(LOCAL_CONFIG_FILE);
+      var data = parser.ReadFile(LOCAL_CONFIG_FILE);
 
       data.TryGetKey("SaveFolder", out _save_folder);
       if (string.IsNullOrEmpty(_save_folder)) _save_folder = DEFAULT_SAVE_FOLDER;
