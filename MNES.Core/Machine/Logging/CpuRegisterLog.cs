@@ -1,33 +1,42 @@
-﻿namespace Mnes.Core.Machine.Logging;
+﻿using Mnes.Core.Machine;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
-public readonly struct CpuRegisterLog {
-   /// <summary> The accumulator. </summary>
-   public readonly byte A;
+namespace Mnes.Core.Machine.Logging;
 
-   /// <summary> The X register. </summary>
-   public readonly byte X;
+public readonly struct CpuRegisterLog
+{
+    /// <summary> The accumulator. </summary>
+    public readonly byte A;
 
-   /// <summary> The Y register. </summary>
-   public readonly byte Y;
+    /// <summary> The X register. </summary>
+    public readonly byte X;
 
-   /// <summary> The program counter. </summary>
-   public readonly ushort PC;
+    /// <summary> The Y register. </summary>
+    public readonly byte Y;
 
-   /// <summary> The stack pointer. </summary>
-   public readonly byte S;
+    /// <summary> The program counter. </summary>
+    public readonly ushort PC;
 
-   /// <summary> The status register. </summary>
-   public readonly byte P;
+    /// <summary> The stack pointer. </summary>
+    public readonly byte S;
 
-   public override string ToString() =>
-      $"A:{A:X2} X:{X:X2} Y:{Y:X2} P:{P:X2} S:{S:X2}";
+    /// <summary> The status register. </summary>
+    public readonly byte P;
 
-   public CpuRegisterLog(CpuRegisters r) {
-      A = r.A;
-      X = r.X;
-      Y = r.Y;
-      PC = r.PC;
-      S = r.S;
-      P = r.P;
-   }
+    public override string ToString() =>
+        $"A:{A:X2} X:{X:X2} Y:{Y:X2} P:{P:X2} S:{S:X2}";
+
+    public CpuRegisterLog(CpuRegisters r)
+    {
+        A = r.A;
+        X = r.X;
+        Y = r.Y;
+        PC = r.PC;
+        S = r.S;
+        P = r.P;
+    }
 }

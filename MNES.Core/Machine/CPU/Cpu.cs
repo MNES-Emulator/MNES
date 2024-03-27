@@ -96,8 +96,7 @@ public sealed class Cpu {
    }
 
    /// <summary> Returns the read value, not the address. </summary>
-   static byte ReadIndexedAbsoluteValue(MachineState m, ushort arg, RegisterType r)
-   {
+   static byte ReadIndexedAbsoluteValue(MachineState m, ushort arg, RegisterType r) {
       var value = (byte)(m.Cpu.Registers[r] + m[arg]);
       if (m.Settings.System.DebugMode) m.Cpu.log_message = $"${arg:X4},{r} @ {arg:X4} = {value:X2}";
       return value;
@@ -106,8 +105,7 @@ public sealed class Cpu {
 
    // Some opcodes do similar things
    #region Generic Opcode Methods
-   static void OpSetFlag(MachineState m, StatusFlagType flag)
-   {
+   static void OpSetFlag(MachineState m, StatusFlagType flag) {
       m.Cpu.Registers.P |= (byte)flag;
       m.Cpu.Registers.PC++;
    }
