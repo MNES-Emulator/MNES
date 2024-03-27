@@ -98,6 +98,7 @@ public class Cpu
       var h_byte = m[z_p_address_2] + carry;
       var target = (ushort)((h_byte << 8) | l_byte);
 
+      // This output is wrong but it doesn't actually effect anything
       if (m.Settings.System.DebugMode) m.Cpu.log_message =
          $"(${arg:X2}),{r} = {target:X4} @ {target:X4} = {m[target]:X2}";
 
