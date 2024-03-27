@@ -1257,18 +1257,15 @@ public sealed class Cpu {
 
     public void Tick() {
         CycleCounter++;
-        if (CurrentInstruction == null)
-        {
+        if (CurrentInstruction == null) {
             var opcode = machine[Registers.PC];
             CurrentInstruction = instructions[opcode];
-            if (CurrentInstruction == null)
-            {
+            if (CurrentInstruction == null) {
                 var op_x = opcode.ToString("X2");
                 //PrintCpuGrid();
                 throw new NotImplementedException($"Opcode {opcode:X2} not implemented. {instructions_unordered.Length}/151 opcodes are implemented!");
             }
-            if (machine.Settings.System.DebugMode)
-            {
+            if (machine.Settings.System.DebugMode) {
                 log_pc = Registers.PC;
                 log_d1 = CurrentInstruction.Bytes < 2 ? null : machine[(ushort)(Registers.PC + 1)];
                 log_d2 = CurrentInstruction.Bytes < 3 ? null : machine[(ushort)(Registers.PC + 2)];
@@ -1298,8 +1295,7 @@ public sealed class Cpu {
 
         string block = "■";
 
-        for (int i = 0; i < 0xFF; i++)
-        {
+        for (int i = 0; i < 0xFF; i++) {
             if (instructions[i] != null) sb.Append(block);
             else sb.Append(' ');
             if ((i % 16) == 15) sb.Append('\n');
