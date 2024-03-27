@@ -73,34 +73,40 @@ public sealed class Cpu {
       b_h |= b_l;
       var target = b_h;
 
-      if (m.Settings.System.DebugMode) m.Cpu.log_message =
-         $"(${arg:X2},X) = @ {x_target:X2} = {target:X4} = {m[target]:X2}";
+        if (m.Settings.System.DebugMode) m.Cpu.log_message =
+            $"(${arg:X2},{r}) = @ {x_target:X2} = {target:X4} = {m[target]:X2}";
 
       return target;
    }
 
    static ushort GetZeroPageIndirectIndexedAddress(MachineState m, byte arg, RegisterType r) {
-     byte z_p_address_1 = arg;
-     byte z_p_address_2 = (byte)((arg + 1) % 256);
-     var sum = m[z_p_address_1] + m.Cpu.Registers[r];
-     var carry = (sum & 0b_1_0000_0000) > 0 ? 1 : 0;
-     var l_byte = (byte)sum;
-     var h_byte = m[z_p_address_2] + carry;
-     var target = (ushort)((h_byte << 8) | l_byte);
+      byte z_p_address_1 = arg;
+      byte z_p_address_2 = (byte)((arg + 1) % 256);
+      var sum = m[z_p_address_1] + m.Cpu.Registers[r];
+      var carry = (sum & 0b_1_0000_0000) > 0 ? 1 : 0;
+      var l_byte = (byte)sum;
+      var h_byte = m[z_p_address_2] + carry;
+      var target = (ushort)((h_byte << 8) | l_byte);
+      
+      // This output is wrong but it doesn't actually effect anything
+      if (m.Settings.System.DebugMode) m.Cpu.log_message =
+        $"(${arg:X2}),{r} = {target:X4} @ {target:X4} = {m[target]:X2}";
 
-     // This output is wrong but it doesn't actually effect anything
-     if (m.Settings.System.DebugMode) m.Cpu.log_message =
-       $"(${arg:X2}),{r} = {target:X4} @ {target:X4} = {m[target]:X2}";
-
-     return target;
+      return target;
    }
 
+   static ushort GetIndexedAbsoluteAddress(MachineState m, ushort arg, RegisterType r)
+   {
+      var address = (ushort)(m.Cpu.Registers[r] + m[arg]);
+      if (m.Settings.System.DebugMode) m.Cpu.log_message = $"${arg:X4},{r} @ {arg:X4} = {address:X2}";
+      return address;
+   }
    #endregion
 
    // Some opcodes do similar things
    #region Generic Opcode Methods
-
-   static void OpSetFlag(MachineState m, StatusFlagType flag) {
+   static void OpSetFlag(MachineState m, StatusFlagType flag)
+   {
       m.Cpu.Registers.P |= (byte)flag;
       m.Cpu.Registers.PC++;
    }
@@ -180,7 +186,6 @@ public sealed class Cpu {
       m.Cpu.Registers.SetFlag(StatusFlagType.Negative, (value & 0b_1000_0000) > 0);
       m.Cpu.Registers.SetFlag(StatusFlagType.Overflow, (value & 0b_0100_0000) > 0);
    }
-
    #endregion
 
    static readonly CpuInstruction[] instructions_unordered = new CpuInstruction[] {
@@ -1115,101 +1120,100 @@ public sealed class Cpu {
          },
       } },
 
-      // almost certainly broken
       new() { Name = "LDA", OpCode = 0xB1, Bytes = 2, Process = new ProcessDelegate[] {
          m => { },
          m => { },
          m => { },
          m => { },
          m => {
-           var address = GetZeroPageIndirectIndexedAddress(m, m[(ushort)(m.Cpu.Registers.PC + 1)], RegisterType.Y);
-           m.Cpu.Registers.A = m[address];
-           m.Cpu.Registers.PC += 2;
+            var address = GetZeroPageIndirectIndexedAddress(m, m[(ushort)(m.Cpu.Registers.PC + 1)], RegisterType.Y);
+            m.Cpu.Registers.A = m[address];
+            m.Cpu.Registers.PC += 2;
          },
       } },
 
-       new() { Name = "INC", OpCode = 0xEE, Bytes = 2, Process = new ProcessDelegate[] {
-         m => { },
-         m => { },
-         m => { },
-         m => { },
-         m => {
-            var target = m.ReadUShort(m.Cpu.Registers.PC + 1);
-            if (m.Settings.System.DebugMode) m.Cpu.log_message = $"${target:X4} = {m[target]:X2}";
-            OpIncMem(m, target);
-            m.Cpu.Registers.PC += 3;
+      new() { Name = "INC", OpCode = 0xEE, Bytes = 2, Process = new ProcessDelegate[] {
+      m => { },
+      m => { },
+      m => { },
+      m => { },
+      m => {
+         var target = m.ReadUShort(m.Cpu.Registers.PC + 1);
+         if (m.Settings.System.DebugMode) m.Cpu.log_message = $"${target:X4} = {m[target]:X2}";
+         OpIncMem(m, target);
+         m.Cpu.Registers.PC += 3;
          },
       } },
 
-       new() { Name = "ORA", OpCode = 0x11, Bytes = 2, Process = new ProcessDelegate[] {
-         m => { },
-         m => { },
-         m => { },
-         m => { },
-         m => {
-           var address = GetZeroPageIndirectIndexedAddress(m, m[(ushort)(m.Cpu.Registers.PC + 1)], RegisterType.Y);
-           m.Cpu.Registers.A |= m[address];
-           m.Cpu.Registers.PC += 2;
+      new() { Name = "ORA", OpCode = 0x11, Bytes = 2, Process = new ProcessDelegate[] {
+      m => { },
+      m => { },
+      m => { },
+      m => { },
+      m => {
+         var address = GetZeroPageIndirectIndexedAddress(m, m[(ushort)(m.Cpu.Registers.PC + 1)], RegisterType.Y);
+         m.Cpu.Registers.A |= m[address];
+         m.Cpu.Registers.PC += 2;
          },
       } },
 
-       new() { Name = "AND", OpCode = 0x31, Bytes = 2, Process = new ProcessDelegate[] {
-         m => { },
-         m => { },
-         m => { },
-         m => { },
-         m => {
-           var address = GetZeroPageIndirectIndexedAddress(m, m[(ushort)(m.Cpu.Registers.PC + 1)], RegisterType.Y);
-           m.Cpu.Registers.A &= m[address];
-           m.Cpu.Registers.PC += 2;
+      new() { Name = "AND", OpCode = 0x31, Bytes = 2, Process = new ProcessDelegate[] {
+      m => { },
+      m => { },
+      m => { },
+      m => { },
+      m => {
+         var address = GetZeroPageIndirectIndexedAddress(m, m[(ushort)(m.Cpu.Registers.PC + 1)], RegisterType.Y);
+         m.Cpu.Registers.A &= m[address];
+         m.Cpu.Registers.PC += 2;
          },
       } },
 
-       new() { Name = "EOR", OpCode = 0x51, Bytes = 2, Process = new ProcessDelegate[] {
-         m => { },
-         m => { },
-         m => { },
-         m => { },
-         m => {
-           var address = GetZeroPageIndirectIndexedAddress(m, m[(ushort)(m.Cpu.Registers.PC + 1)], RegisterType.Y);
-           m.Cpu.Registers.A ^= m[address];
-           m.Cpu.Registers.PC += 2;
+      new() { Name = "EOR", OpCode = 0x51, Bytes = 2, Process = new ProcessDelegate[] {
+      m => { },
+      m => { },
+      m => { },
+      m => { },
+      m => {
+         var address = GetZeroPageIndirectIndexedAddress(m, m[(ushort)(m.Cpu.Registers.PC + 1)], RegisterType.Y);
+         m.Cpu.Registers.A ^= m[address];
+         m.Cpu.Registers.PC += 2;
          },
       } },
 
-       new() { Name = "ADC", OpCode = 0x71, Bytes = 2, Process = new ProcessDelegate[] {
-         m => { },
-         m => { },
-         m => { },
-         m => { },
-         m => {
-           var address = GetZeroPageIndirectIndexedAddress(m, m[(ushort)(m.Cpu.Registers.PC + 1)], RegisterType.Y);
-           OpAddCarry(m, m[address]);
-           m.Cpu.Registers.PC += 2;
+      new() { Name = "ADC", OpCode = 0x71, Bytes = 2, Process = new ProcessDelegate[] {
+      m => { },
+      m => { },
+      m => { },
+      m => { },
+      m => {
+         var address = GetZeroPageIndirectIndexedAddress(m, m[(ushort)(m.Cpu.Registers.PC + 1)], RegisterType.Y);
+         OpAddCarry(m, m[address]);
+         m.Cpu.Registers.PC += 2;
          },
       } },
 
-       new() { Name = "CMP", OpCode = 0xD1, Bytes = 2, Process = new ProcessDelegate[] {
-         m => { },
-         m => { },
-         m => { },
-         m => { },
-         m => {
-           var address = GetZeroPageIndirectIndexedAddress(m, m[(ushort)(m.Cpu.Registers.PC + 1)], RegisterType.Y);
-           OpCompare(m, m.Cpu.Registers.A, m[address]);
-           m.Cpu.Registers.PC += 2;
+      new() { Name = "CMP", OpCode = 0xD1, Bytes = 2, Process = new ProcessDelegate[] {
+      m => { },
+      m => { },
+      m => { },
+      m => { },
+      m => {
+         var address = GetZeroPageIndirectIndexedAddress(m, m[(ushort)(m.Cpu.Registers.PC + 1)], RegisterType.Y);
+         OpCompare(m, m.Cpu.Registers.A, m[address]);
+         m.Cpu.Registers.PC += 2;
          },
       } },
 
-       new() { Name = "SBC", OpCode = 0xF1, Bytes = 2, Process = new ProcessDelegate[] {
-         m => { },
-         m => { },
-         m => { },
-         m => { },
-         m => {
-           var address = GetZeroPageIndirectIndexedAddress(m, m[(ushort)(m.Cpu.Registers.PC + 1)], RegisterType.Y);
-           OpAddCarry(m, (byte)~m[address]);
-           m.Cpu.Registers.PC += 2;
+      new() { Name = "SBC", OpCode = 0xF1, Bytes = 2, Process = new ProcessDelegate[] {
+      m => { },
+      m => { },
+      m => { },
+      m => { },
+      m => {
+         var address = GetZeroPageIndirectIndexedAddress(m, m[(ushort)(m.Cpu.Registers.PC + 1)], RegisterType.Y);
+         OpAddCarry(m, (byte)~m[address]);
+         m.Cpu.Registers.PC += 2;
          },
       } },
 
@@ -1219,12 +1223,35 @@ public sealed class Cpu {
          m => { },
          m => { },
          m => {
-           var address = GetZeroPageIndirectIndexedAddress(m, m[(ushort)(m.Cpu.Registers.PC + 1)], RegisterType.Y);
-           m[address] = m.Cpu.Registers.A;
-           m.Cpu.Registers.PC += 2;
+            var address = GetZeroPageIndirectIndexedAddress(m, m[(ushort)(m.Cpu.Registers.PC + 1)], RegisterType.Y);
+            m[address] = m.Cpu.Registers.A;
+            m.Cpu.Registers.PC += 2;
          },
       } },
-   };
+
+      new() { Name = "JMP", OpCode = 0x6C, Bytes = 3, Process = new ProcessDelegate[] {
+         m => { },
+         m => { },
+         m => { },
+         m => { },
+         m => {
+            var address = m.ReadUShort(m.Cpu.Registers.PC + 1);
+            var target = m.ReadUShortSamePage(address);
+            m.Cpu.Registers.PC = target;
+            if (m.Settings.System.DebugMode) m.Cpu.log_message = $"(${address:X4}) = {target:X4}";
+         },
+      } },
+
+      new() { Name = "LDA", OpCode = 0xB9, Bytes = 3, Process = new ProcessDelegate[] {
+         m => { },
+         m => { },
+         m => {
+            var address = GetIndexedAbsoluteAddress(m, m.ReadUShort(m.Cpu.Registers.PC + 1), RegisterType.Y);
+            m.Cpu.Registers.A = m[address];
+            m.Cpu.Registers.PC += 3;
+         },
+      } },
+    };
 
    public Cpu(MachineState machine) {
       this.machine = machine;
