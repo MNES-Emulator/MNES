@@ -1,6 +1,6 @@
 ﻿using Mnes.Core.Machine;
 
-namespace MNES.Core.Machine.Logging;
+namespace Mnes.Core.Machine.Logging;
 
 public readonly struct CpuRegisterLog {
    /// <summary> The accumulator. </summary>

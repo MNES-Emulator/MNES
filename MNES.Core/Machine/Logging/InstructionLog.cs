@@ -1,6 +1,6 @@
 ﻿using Mnes.Core.Machine.CPU;
 
-namespace MNES.Core.Machine.Logging;
+namespace Mnes.Core.Machine.Logging;
 
 public readonly struct InstructionLog {
    public readonly CpuInstruction Instruction;

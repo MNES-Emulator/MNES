@@ -1,4 +1,4 @@
-﻿using MNES.Core.Machine.Logging;
+﻿using Mnes.Core.Machine.Logging;
 
 namespace Mnes.Core.Machine;
 
