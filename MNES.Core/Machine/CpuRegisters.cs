@@ -13,7 +13,7 @@ public class CpuRegisters
         /// <summary> The Z flag. </summary>
         Zero =              0b_0000_0010,
         /// <summary> The I flag. </summary>
-        InerruptDisable =   0b_0000_0100,
+        InterruptDisable =   0b_0000_0100,
         /// <summary> The D flag. </summary>
         Decimal =           0b_0000_1000,
         /// <summary> The B flag. </summary>

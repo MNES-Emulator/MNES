@@ -327,7 +327,7 @@ public sealed class Cpu {
       } },
 
       new() { Name = "SEI", OpCode = 0x78, Bytes = 1, Process = new ProcessDelegate[] {
-         m => OpSetFlag(m, StatusFlagType.InerruptDisable),
+         m => OpSetFlag(m, StatusFlagType.InterruptDisable),
       } },
 
       new() { Name = "SED", OpCode = 0xF8, Bytes = 1, Process = new ProcessDelegate[] {
@@ -1701,7 +1701,7 @@ public sealed class Cpu {
          m => {
             PUSH_ushort(m, m.Cpu.Registers.PC);
             PUSH(m, m.Cpu.Registers.P);
-            m.Cpu.Registers.SetFlag(StatusFlagType.InerruptDisable);
+            m.Cpu.Registers.SetFlag(StatusFlagType.InterruptDisable);
             m.Cpu.Registers.PC += 1;
          },
       } },
@@ -1722,7 +1722,7 @@ public sealed class Cpu {
       Registers.A = 0;
 
       // I just put InerruptDisable/0xFD here because these seem to be set in the nestest.log file by the time it gets here but I haven't found anything in documentation to say why
-      Registers.P = (byte)StatusFlagType._1 | (byte)StatusFlagType.InerruptDisable;
+      Registers.P = (byte)StatusFlagType._1 | (byte)StatusFlagType.InterruptDisable;
       Registers.S = 0xFD;
    }
 
