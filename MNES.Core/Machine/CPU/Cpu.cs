@@ -7,8 +7,7 @@ using static Mnes.Core.Machine.CpuRegisters;
 namespace Mnes.Core.Machine.CPU;
 
 // https://www.masswerk.at/6502/6502_instruction_set.html
-public sealed class Cpu
-{
+public sealed class Cpu {
     public readonly CpuRegisters Registers = new();
     readonly MachineState machine;
     readonly CpuInstruction[] instructions = new CpuInstruction[256];
@@ -45,19 +44,15 @@ public sealed class Cpu
         m.Cpu.Registers.PC |= (ushort)(value << 8);
     }
 
-    static void PUSH(MachineState m, byte value)
-    {
+    static void PUSH(MachineState m, byte value) =>
         m[(ushort)(m.Cpu.Registers.S-- + 0x0100)] = value;
-    }
 
-    static void PUSH_ushort(MachineState m, ushort value)
-    {
+    static void PUSH_ushort(MachineState m, ushort value) {
         PUSH(m, (byte)(value >> 8));
         PUSH(m, (byte)value);
     }
 
-    static ushort PULL_ushort(MachineState m)
-    {
+    static ushort PULL_ushort(MachineState m) {
         ushort value = PULL(m);
         value |= (ushort)((ushort)PULL(m) << 8);
         return value;
@@ -66,8 +61,7 @@ public sealed class Cpu
     static byte PULL(MachineState m) =>
         m[(ushort)(++m.Cpu.Registers.S + 0x0100)];
 
-    static ushort GetIndexedZeroPageIndirectAddress(MachineState m, byte arg, RegisterType r)
-    {
+    static ushort GetIndexedZeroPageIndirectAddress(MachineState m, byte arg, RegisterType r) {
         // X-Indexed Zero Page Indirect https://www.pagetable.com/c64ref/6502/?tab=3#(a8,X)
         var x_target = (byte)(arg + m.Cpu.Registers[r]);
 
@@ -84,8 +78,7 @@ public sealed class Cpu
         return target;
     }
 
-   static ushort GetZeroPageIndirectIndexedAddress(MachineState m, byte arg, RegisterType r)
-   {
+   static ushort GetZeroPageIndirectIndexedAddress(MachineState m, byte arg, RegisterType r) {
       byte z_p_address_1 = arg;
       byte z_p_address_2 = (byte)((arg + 1) % 256);
       var sum = m[z_p_address_1] + m.Cpu.Registers[r];
@@ -105,52 +98,43 @@ public sealed class Cpu
 
     // Some opcodes do similar things
     #region Generic Opcode Methods
-    static void OpSetFlag(MachineState m, StatusFlagType flag)
-    {
+    static void OpSetFlag(MachineState m, StatusFlagType flag) {
         m.Cpu.Registers.P |= (byte)flag;
         m.Cpu.Registers.PC++;
     }
 
-    static void OpClearFlag(MachineState m, StatusFlagType flag)
-    {
+    static void OpClearFlag(MachineState m, StatusFlagType flag) {
         m.Cpu.Registers.ClearFlag(flag);
         m.Cpu.Registers.PC++;
     }
 
-    static void OpBranchOnFlagRelative(MachineState m, StatusFlagType flag)
-    {
+    static void OpBranchOnFlagRelative(MachineState m, StatusFlagType flag) {
         if (m.Settings.System.DebugMode) m.Cpu.log_message = $"${m.Cpu.Registers.PC + m[(ushort)(m.Cpu.Registers.PC + 1)] + 2:X4}";
 
         if (m.Cpu.Registers.HasFlag(flag))
-        {
-            m.Cpu.Registers.PC += m[(ushort)(m.Cpu.Registers.PC + 1)];
-        }
+           m.Cpu.Registers.PC += m[(ushort)(m.Cpu.Registers.PC + 1)];
 
         m.Cpu.add_cycles = 1; // Todo: Add another if branch is on another page
         m.Cpu.Registers.PC += 2;
     }
 
-    static void OpBranchOnClearFlagRelative(MachineState m, StatusFlagType flag)
-    {
+    static void OpBranchOnClearFlagRelative(MachineState m, StatusFlagType flag) {
         if (m.Settings.System.DebugMode) m.Cpu.log_message = $"${m.Cpu.Registers.PC + m[(ushort)(m.Cpu.Registers.PC + 1)] + 2:X4}";
 
         if (!m.Cpu.Registers.HasFlag(flag))
-        {
-            m.Cpu.Registers.PC += m[(ushort)(m.Cpu.Registers.PC + 1)];
-        }
+           m.Cpu.Registers.PC += m[(ushort)(m.Cpu.Registers.PC + 1)];
+
         m.Cpu.add_cycles = 1; // Todo: Add another if branch is on another page
         m.Cpu.Registers.PC += 2;
     }
 
-    static void OpCompare(MachineState m, byte r, byte mem)
-    {
+    static void OpCompare(MachineState m, byte r, byte mem) {
         m.Cpu.Registers.SetFlag(StatusFlagType.Negative, ((r - mem) & 0b_1000_0000) > 0);
         m.Cpu.Registers.SetFlag(StatusFlagType.Zero, r == mem);
         m.Cpu.Registers.SetFlag(StatusFlagType.Carry, mem <= r);
     }
 
-    static void OpAddCarry(MachineState m, byte value)
-    {
+    static void OpAddCarry(MachineState m, byte value) {
         var a = m.Cpu.Registers.A;
         var sum = a + value + (m.Cpu.Registers.HasFlag(StatusFlagType.Carry)? 1 : 0);
         var carry = sum > 0xFF;
@@ -160,8 +144,7 @@ public sealed class Cpu
         m.Cpu.Registers.SetFlag(StatusFlagType.Overflow, overflow);
     }
 
-    static void OpRollingLeftShiftMem(MachineState m, ushort target)
-    {
+    static void OpRollingLeftShiftMem(MachineState m, ushort target) {
         var prev_carry = m.Cpu.Registers.HasFlag(StatusFlagType.Carry);
         var c_flag = (m[target] & 0b_1000_0000) > 0;
         m[target] <<= 1;
@@ -170,8 +153,7 @@ public sealed class Cpu
         m.Cpu.Registers.SetFlag(StatusFlagType.Carry, c_flag);
     }
 
-    static void OpRollingRightShiftMem(MachineState m, ushort target)
-    {
+    static void OpRollingRightShiftMem(MachineState m, ushort target) {
         var prev_carry = m.Cpu.Registers.HasFlag(StatusFlagType.Carry);
         var c_flag = (m[target] & 0b_0000_0001) > 0;
         m[target] >>= 1;
@@ -180,20 +162,17 @@ public sealed class Cpu
         m.Cpu.Registers.SetFlag(StatusFlagType.Carry, c_flag);
     }
     // Todo; make sure all address setting functions are setting flags properly
-    static void OpIncMem(MachineState m, ushort target)
-    {
+    static void OpIncMem(MachineState m, ushort target) {
         m[target]++;
         m.Cpu.Registers.UpdateFlags(m[target]);
     }
 
-    static void OpDecMem(MachineState m, ushort target)
-    {
+    static void OpDecMem(MachineState m, ushort target) {
         m[target]--;
         m.Cpu.Registers.UpdateFlags(m[target]);
     }
 
-    static void OpBit(MachineState m, byte value)
-    {
+    static void OpBit(MachineState m, byte value) {
         m.Cpu.Registers.SetFlag(StatusFlagType.Zero, (m.Cpu.Registers.A & value) == 0);
         m.Cpu.Registers.SetFlag(StatusFlagType.Negative, (value & 0b_1000_0000) > 0);
         m.Cpu.Registers.SetFlag(StatusFlagType.Overflow, (value & 0b_0100_0000) > 0);
@@ -1243,8 +1222,7 @@ public sealed class Cpu
         } },
     };
 
-    public Cpu(MachineState machine)
-    {
+    public Cpu(MachineState machine) {
         this.machine = machine;
         foreach (var i in instructions_unordered) {
             if (instructions[i.OpCode] != null) throw new Exception($"Duplicate OpCodes: {instructions[i.OpCode].Name} and {i.Name}");
@@ -1252,8 +1230,7 @@ public sealed class Cpu
         }
     }
 
-    public void SetPowerUpState()
-    {
+    public void SetPowerUpState() {
         Registers.PC = 0x34;
         Registers.X = 0;
         Registers.Y = 0;
@@ -1264,15 +1241,12 @@ public sealed class Cpu
         Registers.S = 0xFD;
     }
 
-    public void Tick()
-    {
+    public void Tick() {
         CycleCounter++;
-        if (CurrentInstruction == null)
-        {
+        if (CurrentInstruction == null) {
             var opcode = machine[Registers.PC];
             CurrentInstruction = instructions[opcode];
-            if (CurrentInstruction == null)
-            {
+            if (CurrentInstruction == null) {
                 var op_x = opcode.ToString("X2");
                 //PrintCpuGrid();
                 throw new NotImplementedException($"Opcode {opcode:X2} not implemented. {instructions_unordered.Length}/151 opcodes are implemented!");
@@ -1286,9 +1260,7 @@ public sealed class Cpu
                 log_cpu = Registers.GetLog();
                 log_inst_count++;
             }
-        }
-        else
-        {
+        } else {
             if (CurrentInstructionCycle < CurrentInstruction.Process.Length) CurrentInstruction.Process[CurrentInstructionCycle++](machine);
             if (CurrentInstructionCycle == CurrentInstruction.Process.Length)
             {
@@ -1307,14 +1279,12 @@ public sealed class Cpu
         }
     }
 
-    void PrintCpuGrid()
-    {
+    void PrintCpuGrid() {
         StringBuilder sb = new();
 
         string block = "■";
 
-        for (int i = 0; i < 0xFF; i++)
-        {
+        for (int i = 0; i < 0xFF; i++) {
             if (instructions[i] != null) sb.Append(block);
             else sb.Append(' ');
             if ((i % 16) == 15) sb.Append('\n');

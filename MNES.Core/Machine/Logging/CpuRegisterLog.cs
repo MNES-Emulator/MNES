@@ -2,8 +2,7 @@
 
 namespace MNES.Core.Machine.Logging;
 
-public readonly struct CpuRegisterLog
-{
+public readonly struct CpuRegisterLog {
     /// <summary> The accumulator. </summary>
     public readonly byte A;
 
@@ -25,8 +24,7 @@ public readonly struct CpuRegisterLog
     public override string ToString() =>
         $"A:{A:X2} X:{X:X2} Y:{Y:X2} P:{P:X2} S:{S:X2}";
 
-    public CpuRegisterLog(CpuRegisters r)
-    {
+    public CpuRegisterLog(CpuRegisters r) {
         A = r.A;
         X = r.X;
         Y = r.Y;

@@ -4,8 +4,7 @@ using Newtonsoft.Json;
 
 namespace Mnes.Core.Saves.Configuration;
 
-public static class Config
-{
+public static class Config {
     const string DEFAULT_SAVE_FOLDER = "%AppData%/MNES";
 
     const string DEFAULT_INI_TEXT =
@@ -22,8 +21,7 @@ public static class Config
 
     public static ConfigSettings Settings { get; private set; }
 
-    public static void InitializeFromDisk()
-    {
+    public static void InitializeFromDisk() {
         ConfigSettings settings = null;
 
         if (Initialized) throw new Exception("Config already initialized.");
@@ -53,15 +51,13 @@ public static class Config
         Settings = settings;
     }
 
-    public static void Save()
-    {
+    public static void Save() {
         if (!Initialized) throw new Exception($"Cannot save config before {nameof(InitializeFromDisk)} has been called.");
         File.WriteAllText(Path.Combine(_save_folder, CONFIG_FILE), JsonConvert.SerializeObject(Settings));
     }
 
     /// <summary> Resets the settings to default and saves. </summary>
-    public static void Reset()
-    {
+    public static void Reset() {
         Settings = new();
         Save();
     }

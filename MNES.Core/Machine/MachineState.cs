@@ -6,8 +6,7 @@ using MNES.Core.Machine.Logging;
 
 namespace Mnes.Core.Machine;
 
-public sealed class MachineState
-{
+public sealed class MachineState {
     readonly INesHeader header;
     readonly Mapper mapper;
     readonly NesTimer timer;
@@ -22,8 +21,7 @@ public sealed class MachineState
     public readonly MachineLogger Logger;
     public readonly ConfigSettings Settings;
 
-    public MachineState(string rom_path, ConfigSettings settings, InputState input)
-    {
+    public MachineState(string rom_path, ConfigSettings settings, InputState input) {
         this.Settings = settings;
         this.input = input;
         var nes_bytes = File.ReadAllBytes(rom_path);
@@ -37,8 +35,7 @@ public sealed class MachineState
         Logger = new(this);
     }
 
-    public async Task Run()
-    {
+    public async Task Run() {
         SetPowerUpState();
         //Cpu.Registers.PC = (ushort)(this[0xFFFC] + (this[0xFFFD] << 8));
         var r = ReadUShort(0xFFFC);
@@ -48,13 +45,10 @@ public sealed class MachineState
         await timer.RunningThread;
     }
 
-    void DebugTick()
-    {
+    void DebugTick() =>
         Cpu.Tick();
-    }
 
-    void SetPowerUpState()
-    {
+    void SetPowerUpState() {
         Cpu.SetPowerUpState();
         Ppu.SetPowerUpState();
         Apu.SetPowerUpState();
@@ -62,8 +56,7 @@ public sealed class MachineState
     }
 
     public ushort ReadUShort(int index) => ReadUShort((ushort)index);
-    public ushort ReadUShort(ushort index)
-    {
+    public ushort ReadUShort(ushort index) {
         var b_l = this[index];
         ushort b_h = this[(ushort)(index + 1)];
         b_h <<= 8;
@@ -72,21 +65,17 @@ public sealed class MachineState
     }
 
     /// <summary> If reads null, then open bus read. Don't write null. </summary>
-    public byte this[ushort index] {
-        get {
-            last_read_value =
-                index < 0x2000 ? Ram[index % 0x0800] :
-                index < 0x4000 ? Ppu.Registers[index % 8] :
-                index < 0x4020 ? Apu.Registers[index - 0x4000] :
-                mapper[index] ?? last_read_value;
-            return last_read_value;
-        }
-        set
-        {
-            if (index < 0x2000) Ram[index % 0x0800] = value;
-            else if (index < 0x4000) Ppu.Registers[index % 8] = value;
-            else if (index < 0x4020) Apu.Registers[index - 0x4000] = value;
-            else mapper[index] = value;
-        }
-    }
+    public byte this[ushort index] { get {
+        last_read_value =
+            index < 0x2000 ? Ram[index % 0x0800] :
+            index < 0x4000 ? Ppu.Registers[index % 8] :
+            index < 0x4020 ? Apu.Registers[index - 0x4000] :
+            mapper[index] ?? last_read_value;
+        return last_read_value;
+    } set {
+        if (index < 0x2000) Ram[index % 0x0800] = value;
+        else if (index < 0x4000) Ppu.Registers[index % 8] = value;
+        else if (index < 0x4020) Apu.Registers[index - 0x4000] = value;
+        else mapper[index] = value;
+    } }
 }

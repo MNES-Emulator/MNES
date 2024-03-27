@@ -4,19 +4,16 @@ using System.Diagnostics;
 namespace Mnes.Tests.Machine;
 
 [TestClass]
-public sealed class TimerTests
-{
+public sealed class TimerTests {
     [TestMethod]
-    public void TestTimer()
-    {
+    public void TestTimer() {
         ulong tick_count = 0;
         ulong seconds_count = 0;
         var stopwatch = new Stopwatch();
         stopwatch.Start();
 
         void tick() {
-            if (tick_count++ % NesTimer.NTSC_TIMING_HZ == 0)
-            {
+            if (tick_count++ % NesTimer.NTSC_TIMING_HZ == 0) {
                 Debug.WriteLine($"{nameof(NesTimer)} seconds elapsed: {seconds_count++}");
                 Debug.WriteLine($"{nameof(Stopwatch)} seconds elapsed: {stopwatch.Elapsed.TotalSeconds}");
             }

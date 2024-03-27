@@ -1,15 +1,12 @@
 ﻿namespace Mnes.Core.Machine.Mappers;
 
-public sealed class MapperBank
-{
-    public enum AccessorType
-    {
+public sealed class MapperBank {
+    public enum AccessorType {
         CPU,
         PPU,
     }
 
-    public enum BankType
-    {
+    public enum BankType {
         PRG_RAM,
         ROM,
         CHR,
@@ -21,8 +18,7 @@ public sealed class MapperBank
     public Range DestinationRange { get; init; }
     public ushort MemorySize { get; init; }
 
-    public MapperBank(AccessorType accessor, BankType type, Range access_range, Range destination_range)
-    {
+    public MapperBank(AccessorType accessor, BankType type, Range access_range, Range destination_range) {
         Accessor = accessor;
         Type = type;
         AccessRange = access_range;

@@ -1,7 +1,6 @@
 ﻿namespace Mnes.Core.Machine.Mappers.Implementation;
 
-internal sealed class M000 : Mapper
-{
+internal sealed class M000 : Mapper {
     byte[] prg_ram;
     bool mirror_rom_8000_BFFF;
 

@@ -4,10 +4,8 @@ namespace Mnes.Core.Machine;
 
 // https://www.nesdev.org/wiki/CPU_registers
 /// <summary> Represents all the registers of the CPU. </summary>
-public sealed class CpuRegisters
-{
-    public enum StatusFlagType
-    {
+public sealed class CpuRegisters {
+    public enum StatusFlagType {
         /// <summary> The C flag. </summary>
         Carry =             0b_0000_0001,
         /// <summary> The Z flag. </summary>
@@ -26,8 +24,7 @@ public sealed class CpuRegisters
         Negative =          0b_1000_0000,
     }
 
-    public enum RegisterType
-    {
+    public enum RegisterType {
         A = 0,
         X = 1,
         Y = 2,
@@ -41,8 +38,7 @@ public sealed class CpuRegisters
     public ushort PC;
 
 
-    public byte this[RegisterType index]
-    {
+    public byte this[RegisterType index] {
         get => registers[(int)index];
         set => registers[(int)index] = value;
     }
@@ -64,15 +60,13 @@ public sealed class CpuRegisters
 
     public byte GetRegister(RegisterType r) => registers[(int)r];
 
-    public void SetRegister(RegisterType r, byte value)
-    {
+    public void SetRegister(RegisterType r, byte value) {
         if ((int)r < (int)RegisterType.S) SetRegisterAndFlags(r, value);
         else registers[(int)r] = value;
     }
 
     /// <summary> Set register value and handle status flag updating. </summary>
-    void SetRegisterAndFlags(RegisterType r, byte value)
-    {
+    void SetRegisterAndFlags(RegisterType r, byte value) {
         registers[(int)r] = value;
         SetFlag(StatusFlagType.Negative, (value & 0b_1000_0000) > 0);
         SetFlag(StatusFlagType.Zero, value == 0);
@@ -80,16 +74,14 @@ public sealed class CpuRegisters
 
     /// <summary> Set relevant flags from value in memory. </summary>
     /// <param name="value"></param>
-    public void UpdateFlags(byte value)
-    {
+    public void UpdateFlags(byte value) {
         SetFlag(StatusFlagType.Negative, (value & 0b_1000_0000) > 0);
         SetFlag(StatusFlagType.Zero, value == 0);
     }
 
     public bool HasFlag(StatusFlagType flag) => (P & (byte)flag) > 0;
     public void SetFlag(StatusFlagType flag) => P |= (byte)flag;
-    public void SetFlag(StatusFlagType flag, bool value)
-    {
+    public void SetFlag(StatusFlagType flag, bool value) {
         if (value) P |= (byte)flag;
         else P &= (byte)~(byte)flag;
     }
