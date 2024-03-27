@@ -26,7 +26,7 @@ public sealed class MachineState {
       ConfigSettings settings,
       InputState input
    ) {
-      this.Settings = settings;
+      Settings = settings;
       this.input = input;
       var nes_bytes = File.ReadAllBytes(rom_path);
       header = new InesHeader(nes_bytes);

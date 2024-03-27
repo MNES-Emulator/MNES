@@ -2,7 +2,7 @@
 
 // https://www.nesdev.org/wiki/INES
 public sealed class InesHeader {
-   static readonly byte[] ines_text = new byte[] { 0x4E, 0x45, 0x53, 0x1A };
+   static readonly byte[] ines_text = { 0x4E, 0x45, 0x53, 0x1A };
 
    public readonly int PrgRomSize;
    public readonly int ChrRomSize;
