@@ -1751,7 +1751,7 @@ public sealed class Cpu {
                return;
             }
             if (machine.Settings.System.DebugMode) {
-               //machine.Logger.Log(new(CurrentInstruction, log_pc, log_d1, log_d2, log_cpu, log_cyc, log_message));
+               machine.Logger.Log(new(CurrentInstruction, log_pc, log_d1, log_d2, log_cpu, log_cyc, log_message));
                log_message = null;
             }
             CurrentInstruction = null;
