@@ -79,12 +79,12 @@ public sealed class Cpu {
    }
 
    static ushort GetZeroPageIndirectIndexedAddress(MachineState m, byte arg, RegisterType r) {
-     var z_p_address = arg;
-     var sum = m[z_p_address] + m.Cpu.Registers[r];
-     var carry = (sum & 0b_1_0000_0000) > 0 ? 1 : 0;
-     var l_byte = (byte)sum;
-     var target = (ushort)(((m[(byte)(z_p_address + 1)] + carry) << 8) & l_byte);
-     return target;
+      var z_p_address = arg;
+      var sum = m[z_p_address] + m.Cpu.Registers[r];
+      var carry = (sum & 0b_1_0000_0000) > 0 ? 1 : 0;
+      var l_byte = (byte)sum;
+      var target = (ushort)(((m[(byte)(z_p_address + 1)] + carry) << 8) & l_byte);
+      return target;
    }
 
    #endregion
