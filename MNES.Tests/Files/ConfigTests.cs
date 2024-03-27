@@ -4,7 +4,7 @@ namespace Mnes.Tests.Files;
 
 [TestClass]
 public sealed class ConfigTests {
-    [TestMethod]
-    public void TestInitialization() =>
-        Config.InitializeFromDisk();
+   [TestMethod]
+   public void TestInitialization() =>
+      Config.InitializeFromDisk();
 }
