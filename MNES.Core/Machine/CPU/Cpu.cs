@@ -70,10 +70,10 @@ public class Cpu
     static byte PULL(MachineState m) =>
         m[(ushort)(++m.Cpu.Registers.S + 0x0100)];
 
-    static ushort GetIndexedZeroPageIndirectAddress(MachineState m, byte arg, byte r)
+    static ushort GetIndexedZeroPageIndirectAddress(MachineState m, byte arg, RegisterType r)
     {
         // X-Indexed Zero Page Indirect https://www.pagetable.com/c64ref/6502/?tab=3#(a8,X)
-        var x_target = (byte)(arg + r);
+        var x_target = (byte)(arg + m.Cpu.Registers[r]);
 
         // "var target = m.ReadUShort(x_target);", except both indexes must be in zero page
         var b_l = m[x_target];
@@ -664,7 +664,7 @@ public class Cpu
             m => { },
             m => {
                 var arg = m[(ushort)(m.Cpu.Registers.PC + 1)];
-                var target = GetIndexedZeroPageIndirectAddress(m, arg, m.Cpu.Registers.X);
+                var target = GetIndexedZeroPageIndirectAddress(m, arg, RegisterType.X);
                 m.Cpu.Registers.A = m[target];
                 m.Cpu.Registers.PC += 2;
             },
@@ -677,7 +677,7 @@ public class Cpu
             m => { },
             m => {
                 var arg = m[(ushort)(m.Cpu.Registers.PC + 1)];
-                var target = GetIndexedZeroPageIndirectAddress(m, arg, m.Cpu.Registers.X);
+                var target = GetIndexedZeroPageIndirectAddress(m, arg, RegisterType.X);
                 m[target] = m.Cpu.Registers.A;
                 m.Cpu.Registers.PC += 2;
             },
@@ -690,7 +690,7 @@ public class Cpu
             m => { },
             m => {
                 var arg = m[(ushort)(m.Cpu.Registers.PC + 1)];
-                var target = GetIndexedZeroPageIndirectAddress(m, arg, m.Cpu.Registers.X);
+                var target = GetIndexedZeroPageIndirectAddress(m, arg, RegisterType.X);
                 m.Cpu.Registers.A |= m[target];
                 m.Cpu.Registers.PC += 2;
             },
@@ -703,7 +703,7 @@ public class Cpu
             m => { },
             m => {
                 var arg = m[(ushort)(m.Cpu.Registers.PC + 1)];
-                var target = GetIndexedZeroPageIndirectAddress(m, arg, m.Cpu.Registers.X);
+                var target = GetIndexedZeroPageIndirectAddress(m, arg, RegisterType.X);
                 m.Cpu.Registers.A &= m[target];
                 m.Cpu.Registers.PC += 2;
             },
@@ -716,7 +716,7 @@ public class Cpu
             m => { },
             m => {
                 var arg = m[(ushort)(m.Cpu.Registers.PC + 1)];
-                var target = GetIndexedZeroPageIndirectAddress(m, arg, m.Cpu.Registers.X);
+                var target = GetIndexedZeroPageIndirectAddress(m, arg, RegisterType.X);
                 m.Cpu.Registers.A ^= m[target];
                 m.Cpu.Registers.PC += 2;
             },
@@ -729,7 +729,7 @@ public class Cpu
             m => { },
             m => {
                 var arg = m[(ushort)(m.Cpu.Registers.PC + 1)];
-                var target = GetIndexedZeroPageIndirectAddress(m, arg, m.Cpu.Registers.X);
+                var target = GetIndexedZeroPageIndirectAddress(m, arg, RegisterType.X);
                 OpAddCarry(m, m[target]);
                 m.Cpu.Registers.PC += 2;
             },
@@ -742,7 +742,7 @@ public class Cpu
             m => { },
             m => {
                 var arg = m[(ushort)(m.Cpu.Registers.PC + 1)];
-                var target = GetIndexedZeroPageIndirectAddress(m, arg, m.Cpu.Registers.X);
+                var target = GetIndexedZeroPageIndirectAddress(m, arg, RegisterType.X);
                 OpCompare(m, m.Cpu.Registers.A, m[target]);
                 m.Cpu.Registers.PC += 2;
             },
@@ -755,7 +755,7 @@ public class Cpu
             m => { },
             m => {
                 var arg = m[(ushort)(m.Cpu.Registers.PC + 1)];
-                var target = GetIndexedZeroPageIndirectAddress(m, arg, m.Cpu.Registers.X);
+                var target = GetIndexedZeroPageIndirectAddress(m, arg, RegisterType.X);
                 OpAddCarry(m, (byte)~m[target]);
                 m.Cpu.Registers.PC += 2;
             },
