@@ -45,8 +45,10 @@ public static class Config {
             SaveFile,
             JsonConvert.SerializeObject(settings)
          );
-      } else
-         settings = JsonConvert.DeserializeObject<ConfigSettings>(SaveFile);
+      } else {
+         var saveFileText = File.ReadAllText(SaveFile);
+         settings = JsonConvert.DeserializeObject<ConfigSettings>(saveFileText);
+      }
 
       Settings = settings;
    }
