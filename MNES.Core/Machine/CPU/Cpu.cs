@@ -1,5 +1,6 @@
 ﻿using Mnes.Core.Machine.Logging;
 using System.Diagnostics;
+using System.Net;
 using System.Text;
 using static Mnes.Core.Machine.CPU.CpuInstruction;
 using static Mnes.Core.Machine.CpuRegisters;
@@ -1499,6 +1500,211 @@ public sealed class Cpu {
             m.Cpu.Registers.PC += 2;
          },
       } },
+
+      new() { Name = "LDX", OpCode = 0xB6, Bytes = 2, Process = new ProcessDelegate[] {
+         m => { },
+         m => { },
+         m => {
+            var address = GetIndexedZeroPageAddress(m, (byte)(m.Cpu.Registers.PC + 1), RegisterType.Y);
+            m.Cpu.Registers.X = m[address];
+            m.Cpu.Registers.PC += 2;
+         },
+      } },
+
+      new() { Name = "STX", OpCode = 0x96, Bytes = 2, Process = new ProcessDelegate[] {
+         m => { },
+         m => { },
+         m => {
+            var address = GetIndexedZeroPageAddress(m, (byte)(m.Cpu.Registers.PC + 1), RegisterType.Y);
+            m[address] = m.Cpu.Registers.X;
+            m.Cpu.Registers.PC += 2;
+         },
+      } },
+
+      new() { Name = "LDX", OpCode = 0xBC, Bytes = 3, Process = new ProcessDelegate[] {
+         m => { },
+         m => { },
+         m => {
+            m.Cpu.Registers.A = ReadIndexedAbsoluteValue(m, m.ReadUShort(m.Cpu.Registers.PC + 1), RegisterType.X);
+            m.Cpu.Registers.PC += 3;
+         },
+      } },
+
+      new() { Name = "ORA", OpCode = 0x1D, Bytes = 3, Process = new ProcessDelegate[] {
+         m => { },
+         m => { },
+         m => {
+            m.Cpu.Registers.A |= ReadIndexedAbsoluteValue(m, m.ReadUShort(m.Cpu.Registers.PC + 1), RegisterType.X);
+            m.Cpu.Registers.PC += 3;
+         },
+      } },
+
+      new() { Name = "AND", OpCode = 0x3D, Bytes = 3, Process = new ProcessDelegate[] {
+         m => { },
+         m => { },
+         m => {
+            m.Cpu.Registers.A &= ReadIndexedAbsoluteValue(m, m.ReadUShort(m.Cpu.Registers.PC + 1), RegisterType.X);
+            m.Cpu.Registers.PC += 3;
+         },
+      } },
+
+      new() { Name = "EOR", OpCode = 0x5D, Bytes = 3, Process = new ProcessDelegate[] {
+         m => { },
+         m => { },
+         m => {
+            m.Cpu.Registers.A ^= ReadIndexedAbsoluteValue(m, m.ReadUShort(m.Cpu.Registers.PC + 1), RegisterType.X);
+            m.Cpu.Registers.PC += 3;
+         },
+      } },
+
+      new() { Name = "ADC", OpCode = 0x7D, Bytes = 3, Process = new ProcessDelegate[] {
+         m => { },
+         m => { },
+         m => {
+            OpAddCarry(m, ReadIndexedAbsoluteValue(m, m.ReadUShort(m.Cpu.Registers.PC + 1), RegisterType.X));
+            m.Cpu.Registers.PC += 3;
+         },
+      } },
+
+      new() { Name = "CMP", OpCode = 0xDD, Bytes = 3, Process = new ProcessDelegate[] {
+         m => { },
+         m => { },
+         m => {
+            OpCompare(m, m.Cpu.Registers.A, ReadIndexedAbsoluteValue(m, m.ReadUShort(m.Cpu.Registers.PC + 1), RegisterType.X));
+            m.Cpu.Registers.PC += 3;
+         },
+      } },
+
+      new() { Name = "SBC", OpCode = 0xFD, Bytes = 3, Process = new ProcessDelegate[] {
+         m => { },
+         m => { },
+         m => {
+            OpAddCarry(m, (byte)~ReadIndexedAbsoluteValue(m, m.ReadUShort(m.Cpu.Registers.PC + 1), RegisterType.X));
+            m.Cpu.Registers.PC += 3;
+         },
+      } },
+
+      new() { Name = "LDA", OpCode = 0xBD, Bytes = 3, Process = new ProcessDelegate[] {
+         m => { },
+         m => { },
+         m => {
+            m.Cpu.Registers.A = ReadIndexedAbsoluteValue(m, m.ReadUShort(m.Cpu.Registers.PC + 1), RegisterType.X);
+            m.Cpu.Registers.PC += 3;
+         },
+      } },
+
+      new() { Name = "STA", OpCode = 0x9D, Bytes = 3, Process = new ProcessDelegate[] {
+         m => { },
+         m => { },
+         m => {
+            SetIndexedAbsoluteValue(m, m.ReadUShort(m.Cpu.Registers.PC + 1), RegisterType.X, m.Cpu.Registers.A);
+            m.Cpu.Registers.PC += 3;
+         },
+      } },
+
+      new() { Name = "LSR", OpCode = 0x5E, Bytes = 3, Process = new ProcessDelegate[] {
+         m => { },
+         m => { },
+         m => { },
+         m => { },
+         m => {
+            var address = ReadIndexedAbsoluteValue(m, m.ReadUShort(m.Cpu.Registers.PC + 1), RegisterType.X);
+            var carry = (m[address] & 1) > 0;
+            m[address] >>= 1;
+            m.Cpu.Registers.SetFlag(StatusFlagType.Carry, carry);
+            m.Cpu.Registers.PC += 3;
+         },
+      } },
+
+      new() { Name = "ASL", OpCode = 0x1E, Bytes = 3, Process = new ProcessDelegate[] {
+         m => { },
+         m => { },
+         m => { },
+         m => { },
+         m => {
+            var address = ReadIndexedAbsoluteValue(m, m.ReadUShort(m.Cpu.Registers.PC + 1), RegisterType.X);
+            var carry = (m[address] & 0b_1000_0000) > 0;
+            m[address] <<= 1;
+            m.Cpu.Registers.SetFlag(StatusFlagType.Carry, carry);
+            m.Cpu.Registers.PC += 3;
+         },
+      } },
+
+      new() { Name = "ROR", OpCode = 0x7E, Bytes = 3, Process = new ProcessDelegate[] {
+         m => { },
+         m => { },
+         m => { },
+         m => { },
+         m => { },
+         m => {
+            var address = ReadIndexedAbsoluteValue(m, m.ReadUShort(m.Cpu.Registers.PC + 1), RegisterType.X);
+            OpRollingRightShiftMem(m, address);
+            m.Cpu.Registers.PC += 3;
+         },
+      } },
+
+      new() { Name = "ROL", OpCode = 0x3E, Bytes = 3, Process = new ProcessDelegate[] {
+         m => { },
+         m => { },
+         m => { },
+         m => { },
+         m => { },
+         m => {
+            var address = ReadIndexedAbsoluteValue(m, m.ReadUShort(m.Cpu.Registers.PC + 1), RegisterType.X);
+            OpRollingLeftShiftMem(m, address);
+            m.Cpu.Registers.PC += 3;
+         },
+      } },
+
+      new() { Name = "INC", OpCode = 0xFE, Bytes = 3, Process = new ProcessDelegate[] {
+         m => { },
+         m => { },
+         m => { },
+         m => { },
+         m => { },
+         m => {
+            var address = ReadIndexedAbsoluteValue(m, m.ReadUShort(m.Cpu.Registers.PC + 1), RegisterType.X);
+            OpIncMem(m, address);
+            m.Cpu.Registers.PC += 3;
+         },
+      } },
+
+      new() { Name = "DEC", OpCode = 0xDE, Bytes = 3, Process = new ProcessDelegate[] {
+         m => { },
+         m => { },
+         m => { },
+         m => { },
+         m => { },
+         m => {
+            var address = ReadIndexedAbsoluteValue(m, m.ReadUShort(m.Cpu.Registers.PC + 1), RegisterType.X);
+            OpDecMem(m, address);
+            m.Cpu.Registers.PC += 3;
+         },
+      } },
+
+      new() { Name = "LDX", OpCode = 0xBE, Bytes = 3, Process = new ProcessDelegate[] {
+         m => { },
+         m => { },
+         m => {
+            var address = ReadIndexedAbsoluteValue(m, m.ReadUShort(m.Cpu.Registers.PC + 1), RegisterType.Y);
+            m.Cpu.Registers.X = m[address];
+            m.Cpu.Registers.PC += 3;
+         },
+      } },
+
+      new() { Name = "BRK", OpCode = 0x00, Bytes = 1, Process = new ProcessDelegate[] {
+         m => { },
+         m => { },
+         m => { },
+         m => { },
+         m => { },
+         m => {
+            PUSH_ushort(m, m.Cpu.Registers.PC);
+            PUSH(m, m.Cpu.Registers.P);
+            m.Cpu.Registers.SetFlag(StatusFlagType.InerruptDisable);
+            m.Cpu.Registers.PC += 1;
+         },
+      } },
     };
 
    public Cpu(MachineState machine) {
@@ -1545,7 +1751,7 @@ public sealed class Cpu {
                return;
             }
             if (machine.Settings.System.DebugMode) {
-               machine.Logger.Log(new(CurrentInstruction, log_pc, log_d1, log_d2, log_cpu, log_cyc, log_message));
+               //machine.Logger.Log(new(CurrentInstruction, log_pc, log_d1, log_d2, log_cpu, log_cyc, log_message));
                log_message = null;
             }
             CurrentInstruction = null;
