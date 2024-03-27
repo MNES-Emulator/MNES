@@ -16,10 +16,6 @@ public sealed class Game1 : Game {
       IsMouseVisible = true;
    }
 
-   protected override void Initialize() {
-      base.Initialize();
-   }
-
    protected override void LoadContent() =>
       _spriteBatch = new SpriteBatch(GraphicsDevice);
 
