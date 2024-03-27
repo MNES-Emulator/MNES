@@ -1,7 +1,6 @@
-﻿using Mnes.Core.Machine;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 
-namespace MNES.Core.Machine.Logging;
+namespace Mnes.Core.Machine.Logging;
 
 public sealed class MachineLogger {
    MachineState machine;

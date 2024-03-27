@@ -2,7 +2,7 @@
 using Mnes.Core.Machine.Input;
 using Mnes.Core.Machine.Mappers;
 using Mnes.Core.Saves.Configuration;
-using MNES.Core.Machine.Logging;
+using Mnes.Core.Machine.Logging;
 
 namespace Mnes.Core.Machine;
 
