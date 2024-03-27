@@ -7,8 +7,7 @@ using static Mnes.Core.Machine.CpuRegisters;
 namespace Mnes.Core.Machine.CPU;
 
 // https://www.masswerk.at/6502/6502_instruction_set.html
-public class Cpu
-{
+public sealed class Cpu {
     public readonly CpuRegisters Registers = new();
     readonly MachineState machine;
     readonly CpuInstruction[] instructions = new CpuInstruction[256];

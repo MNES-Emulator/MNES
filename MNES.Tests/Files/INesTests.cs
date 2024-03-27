@@ -3,7 +3,7 @@
 namespace Mnes.Tests.Files;
 
 [TestClass]
-public class INesTests
+public sealed class INesTests
 {
     [TestMethod]
     public void TestHeader()

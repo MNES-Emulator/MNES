@@ -2,7 +2,7 @@
 
 namespace Mnes.Core.Saves.Configuration;
 
-public class SystemConfig
+public sealed class SystemConfig
 {
     public RegionType Region { get; set; } = RegionType.NTSC;
 

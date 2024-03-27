@@ -4,7 +4,7 @@ using System.Diagnostics;
 namespace Mnes.Tests.Machine;
 
 [TestClass]
-public class TimerTests
+public sealed class TimerTests
 {
     [TestMethod]
     public void TestTimer()

@@ -6,7 +6,7 @@ using MNES.Core.Machine.Logging;
 
 namespace Mnes.Core.Machine;
 
-public class MachineState
+public sealed class MachineState
 {
     readonly INesHeader header;
     readonly Mapper mapper;

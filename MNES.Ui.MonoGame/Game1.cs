@@ -4,7 +4,7 @@ using Microsoft.Xna.Framework.Input;
 
 namespace Mnes;
 
-public class Game1 : Game
+public sealed class Game1 : Game
 {
     public string StartupRom;
 

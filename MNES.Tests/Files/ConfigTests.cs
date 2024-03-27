@@ -3,7 +3,7 @@
 namespace Mnes.Tests.Files;
 
 [TestClass]
-public class ConfigTests
+public sealed class ConfigTests
 {
     [TestMethod]
     public void TestInitialization()

@@ -5,7 +5,7 @@ using Mnes.Core.Saves.Configuration;
 namespace Mnes.Tests.Machine;
 
 [TestClass]
-public class MachineTests
+public sealed class MachineTests
 {
     string rom_file = "Resources/Test Roms/other/nestest.nes";
 

@@ -4,7 +4,7 @@ namespace Mnes.Core.Machine;
 
 // https://www.nesdev.org/wiki/CPU_registers
 /// <summary> Represents all the registers of the CPU. </summary>
-public class CpuRegisters
+public sealed class CpuRegisters
 {
     public enum StatusFlagType
     {

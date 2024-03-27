@@ -1,7 +1,7 @@
 ﻿namespace Mnes.Core.Machine;
 
 // https://www.nesdev.org/wiki/INES
-public class INesHeader
+public sealed class INesHeader
 {
     static readonly byte[] ines_text = new byte[] { 0x4E, 0x45, 0x53, 0x1A };
 

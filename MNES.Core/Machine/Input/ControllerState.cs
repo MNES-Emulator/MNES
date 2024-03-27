@@ -1,6 +1,6 @@
 ﻿namespace Mnes.Core.Machine.Input;
 
-public class ControllerState
+public sealed class ControllerState
 {
     public bool Up { get; set; }
     public bool Down { get; set; }
