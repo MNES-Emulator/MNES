@@ -1,5 +1,4 @@
-﻿using Mnes.Core.Machine;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 
 namespace Mnes.Core.Machine.Logging;
 
