@@ -2,7 +2,7 @@
   <img width="460" height="300" src="/Resources/Images/MNES%20Logo.gif">
 </p>
 
-A WIP NES emulator written in C#. Uses Monogame for graphics. Currently does not boot anything or display any graphics.
+A WIP NES emulator written in C#. Currently does not boot anything or display any graphics.
 
 ## Community
 
