@@ -3,7 +3,7 @@
 namespace Mnes.Core.Saves.Configuration;
 
 public sealed class SystemConfig {
-    public RegionType Region { get; set; } = RegionType.NTSC;
+   public RegionType Region { get; set; } = RegionType.NTSC;
 
-    public bool DebugMode { get; set; }
+   public bool DebugMode { get; set; }
 }
