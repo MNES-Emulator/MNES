@@ -84,7 +84,7 @@ public sealed class InesHeaderTests {
    public void Test_NameTableArrangement_True() {
       var bytes = MakeBlankValidHeader();
 
-      bytes[6] = 0xFF;
+      bytes[6] = 0b0000_0001;
 
       var header = new InesHeader(bytes);
 
@@ -106,10 +106,43 @@ public sealed class InesHeaderTests {
    public void Test_HasBatteryBackedPrgRam_True() {
       var bytes = MakeBlankValidHeader();
 
-      bytes[6] = 0xFF;
+      bytes[6] = 0b0000_0010;
 
       var header = new InesHeader(bytes);
 
       Assert.IsTrue(header.HasBatteryBackedPrgRam);
+   }
+
+   [TestMethod]
+   public void Test_HasTrainer_False() {
+      var bytes = MakeBlankValidHeader();
+
+      bytes[6] = 0b1111_1011;
+
+      var header = new InesHeader(bytes);
+
+      Assert.IsFalse(header.HasTrainer);
+   }
+
+   [TestMethod]
+   public void Test_HasTrainer_True() {
+      var bytes = MakeBlankValidHeader();
+
+      bytes[6] = 0b0000_0100;
+
+      var header = new InesHeader(bytes);
+
+      Assert.IsTrue(header.HasTrainer);
+   }
+
+   [TestMethod]
+   public void Test_MapperNumber() {
+      var bytes = MakeBlankValidHeader();
+
+      bytes[6] = 0b1001_0110;
+
+      var header = new InesHeader(bytes);
+
+      Assert.AreEqual(0b0000_1001, header.MapperNumber);
    }
 }
