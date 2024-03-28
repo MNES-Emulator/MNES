@@ -4,10 +4,8 @@ namespace Mnes.Core.Machine.CPU;
 
 // https://www.nesdev.org/wiki/CPU_registers
 /// <summary> Represents all the registers of the CPU. </summary>
-public class CpuRegisters
-{
-   public enum StatusFlagType
-   {
+public sealed class CpuRegisters {
+   public enum StatusFlagType {
       /// <summary> The C flag. </summary>
       Carry = 0b_0000_0001,
       /// <summary> The Z flag. </summary>
@@ -26,8 +24,7 @@ public class CpuRegisters
       Negative = 0b_1000_0000,
    }
 
-   public enum RegisterType
-   {
+   public enum RegisterType {
       A = 0,
       X = 1,
       Y = 2,
@@ -40,9 +37,7 @@ public class CpuRegisters
    /// <summary> The program counter. </summary>
    public ushort PC;
 
-
-   public byte this[RegisterType index]
-   {
+   public byte this[RegisterType index] {
       get => registers[(int)index];
       set => registers[(int)index] = value;
    }
@@ -62,17 +57,18 @@ public class CpuRegisters
    /// <summary> The status register. </summary>
    public byte P { get => registers[4]; set => registers[4] = (byte)(value | (byte)StatusFlagType._1); }
 
-   public byte GetRegister(RegisterType r) => registers[(int)r];
+   public byte GetRegister(RegisterType r) =>
+      registers[(int)r];
 
-   public void SetRegister(RegisterType r, byte value)
-   {
-      if ((int)r < (int)RegisterType.S) SetRegisterAndFlags(r, value);
-      else registers[(int)r] = value;
+   public void SetRegister(RegisterType r, byte value) {
+      if ((int)r < (int)RegisterType.S)
+         SetRegisterAndFlags(r, value);
+      else
+         registers[(int)r] = value;
    }
 
    /// <summary> Set register value and handle status flag updating. </summary>
-   void SetRegisterAndFlags(RegisterType r, byte value)
-   {
+   void SetRegisterAndFlags(RegisterType r, byte value) {
       registers[(int)r] = value;
       SetFlag(StatusFlagType.Negative, (value & 0b_1000_0000) > 0);
       SetFlag(StatusFlagType.Zero, value == 0);
@@ -80,20 +76,27 @@ public class CpuRegisters
 
    /// <summary> Set relevant flags from value in memory. </summary>
    /// <param name="value"></param>
-   public void UpdateFlags(byte value)
-   {
+   public void UpdateFlags(byte value) {
       SetFlag(StatusFlagType.Negative, (value & 0b_1000_0000) > 0);
       SetFlag(StatusFlagType.Zero, value == 0);
    }
 
-   public bool HasFlag(StatusFlagType flag) => (P & (byte)flag) > 0;
-   public void SetFlag(StatusFlagType flag) => P |= (byte)flag;
-   public void SetFlag(StatusFlagType flag, bool value)
-   {
-      if (value) P |= (byte)flag;
-      else P &= (byte)~(byte)flag;
-   }
-   public void ClearFlag(StatusFlagType flag) => P &= (byte)~flag;
+   public bool HasFlag(StatusFlagType flag) =>
+      (P & (byte)flag) > 0;
 
-   public CpuRegisterLog GetLog() => new(this);
+   public void SetFlag(StatusFlagType flag) =>
+      P |= (byte)flag;
+
+   public void SetFlag(StatusFlagType flag, bool value) {
+      if (value)
+         P |= (byte)flag;
+      else
+         P &= (byte)~(byte)flag;
+   }
+
+   public void ClearFlag(StatusFlagType flag) =>
+      P &= (byte)~flag;
+
+   public CpuRegisterLog GetLog() =>
+      new(this);
 }

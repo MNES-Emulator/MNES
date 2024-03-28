@@ -1,6 +1,4 @@
 ﻿using Mnes.Core.Machine.Logging;
-using System.Diagnostics;
-using System.Text;
 using static Mnes.Core.Machine.CPU.CpuInstruction;
 using static Mnes.Core.Machine.CPU.CpuRegisters;
 
@@ -95,8 +93,7 @@ public sealed class Cpu {
       return target;
    }
 
-   static ushort GetIndexedAbsoluteAddress(MachineState m, ushort arg, RegisterType r)
-   {
+   static ushort GetIndexedAbsoluteAddress(MachineState m, ushort arg, RegisterType r) {
       var address = (ushort)(arg + m.Cpu.Registers[r]);
       if (m.Settings.System.DebugMode) m.Cpu.log_message = $"${arg:X4},{r} @ {address:X4} = {m[address]:X2}";
       return address;
@@ -107,6 +104,7 @@ public sealed class Cpu {
       if (m.Settings.System.DebugMode) m.Cpu.log_message = $"${arg:X2},{r} @ {arg:X2} = {m[address]:X2}";
       return address;
    }
+
    #endregion
 
    // Some opcodes do similar things

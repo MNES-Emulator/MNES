@@ -12,7 +12,7 @@ public sealed class Ppu
       Array.Clear(Vram);
       Array.Clear(Oam);
    }
-    
+
    public void Tick() {
 
    }

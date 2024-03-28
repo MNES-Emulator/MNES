@@ -1,6 +1,6 @@
 ﻿namespace Mnes.Core.Machine.PPU;
-public sealed class PpuRegisters
-{
+
+public sealed class PpuRegisters {
    readonly byte[] registers = new byte[8];
 
    // VPHB SINN
@@ -28,12 +28,11 @@ public sealed class PpuRegisters
    // PPU data read/write
    public byte PpuData => registers[7];
 
-   public byte this[int index] { 
+   public byte this[int index] {
       get => registers[index];
       set => registers[index] = value;
    }
 
-   public void SetPowerUpState() {
+   public void SetPowerUpState() =>
       Array.Clear(registers);
-   }
 }
