@@ -3,6 +3,8 @@
 // https://www.nesdev.org/wiki/INES
 public sealed class InesHeader {
    public const int header_length = 16;
+   public const int _8K = 8_192;
+   public const int _16K = 16_384;
    public static readonly byte[] ines_text = { 0x4E, 0x45, 0x53, 0x1A };
 
    public readonly int PrgRomSize;
@@ -42,10 +44,10 @@ public sealed class InesHeader {
          throw new Exception("ROM invalid, INES header not found.");
 
       // 4: Size of PRG ROM in 16 KB units
-      PrgRomSize = nes_file[4] * 16000;
+      PrgRomSize = nes_file[4] * _16K;
 
       // 5: Size of CHR ROM in 8 KB units (value 0 means the board uses CHR RAM)
-      ChrRomSize = nes_file[5] * 8000;
+      ChrRomSize = nes_file[5] * _8K;
 
       // 6: Flags 6 – Mapper, mirroring, battery, trainer
       NameTableArrangment = (nes_file[6] & 0b0000_0001) > 1;

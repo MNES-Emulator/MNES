@@ -16,17 +16,22 @@ public sealed class InesHeaderTests {
          new InesHeader(new byte[InesHeader.header_length])
       );
 
-   [TestMethod]
-   public void Test_CorrectSizeArrayWithMagicValueDoesntThrow() {
+   static byte[] MakeBlankValidHeader() {
       var bytes = new byte[InesHeader.header_length];
       InesHeader.ines_text.CopyTo(bytes, 0);
+      return bytes;
+   }
+
+   [TestMethod]
+   public void Test_CorrectSizeArrayWithMagicValueDoesntThrow() {
+      var bytes = MakeBlankValidHeader();
+
       _ = new InesHeader(bytes);
    }
 
    [TestMethod]
    public void Test_ZeroArrayResultingValues() {
-      var bytes = new byte[InesHeader.header_length];
-      InesHeader.ines_text.CopyTo(bytes, 0);
+      var bytes = MakeBlankValidHeader();
 
       var header = new InesHeader(bytes);
 
@@ -40,5 +45,16 @@ public sealed class InesHeaderTests {
       Assert.IsFalse(header.PlayChoice10);
       Assert.IsFalse(header.Nes2_0);
       Assert.AreEqual(0, header.PrgRamSize);
+   }
+
+   [TestMethod]
+   public void Test_CorrectPrgRomSize() {
+      var bytes = MakeBlankValidHeader();
+
+      bytes[4] = 3;
+
+      var header = new InesHeader(bytes);
+
+      Assert.AreEqual(49_152, header.PrgRomSize);
    }
 }
