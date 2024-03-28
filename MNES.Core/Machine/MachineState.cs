@@ -3,6 +3,8 @@ using Mnes.Core.Machine.Input;
 using Mnes.Core.Machine.Mappers;
 using Mnes.Core.Saves.Configuration;
 using Mnes.Core.Machine.Logging;
+using Mnes.Core.Machine.PPU;
+using Mnes.Core.Machine.IO;
 
 namespace Mnes.Core.Machine;
 
@@ -18,6 +20,7 @@ public sealed class MachineState {
    public readonly Ppu Ppu = new();
    public readonly Apu Apu = new();
    public readonly Cpu Cpu;
+   public readonly IoRegisters Io;
    public readonly MachineLogger Logger;
    public readonly ConfigSettings Settings;
 
@@ -39,27 +42,36 @@ public sealed class MachineState {
          throw new NotImplementedException($"Mapper {header.MapperNumber} is not implemented.");
 
       Cpu = new(this);
-      timer = new(settings.System.Region, settings.System.DebugMode ? DebugTick : Cpu.Tick);
+      timer = new(settings.System.Region, settings.System.DebugMode ? DebugTick : Tick);
       Logger = new(this);
+      Io = new(this);
    }
 
    public async Task Run() {
       SetPowerUpState();
-      //Cpu.Registers.PC = (ushort)(this[0xFFFC] + (this[0xFFFD] << 8));
-      ReadUShort(0xFFFC);
-
-      Cpu.Registers.PC = 0xC000;
+      Cpu.Registers.PC = ReadUShort(0xFFFC);
       timer.Start();
       await timer.RunningThread;
    }
 
-   void DebugTick() =>
+   void DebugTick() {
       Cpu.Tick();
+      Ppu.Tick();
+      Ppu.Tick();
+      Ppu.Tick();
+   }
+      
+
+   void Tick() {
+      Cpu.Tick();
+      Ppu.Tick();
+      Ppu.Tick();
+      Ppu.Tick();
+   }
 
    void SetPowerUpState() {
       Cpu.SetPowerUpState();
       Ppu.SetPowerUpState();
-      Apu.SetPowerUpState();
 
       for (int i = 0; i < Ram.Length; i++)
          Ram[i] = 0x00;
@@ -95,13 +107,13 @@ public sealed class MachineState {
       last_read_value =
           index < 0x2000 ? Ram[index % 0x0800] :
           index < 0x4000 ? Ppu.Registers[index % 8] :
-          index < 0x4020 ? Apu.Registers[index - 0x4000] :
+          index < 0x4020 ? Io[index - 0x4020] ?? last_read_value :
           mapper[index] ?? last_read_value;
       return last_read_value;
    } set {
       if (index < 0x2000) Ram[index % 0x0800] = value;
       else if (index < 0x4000) Ppu.Registers[index % 8] = value;
-      else if (index < 0x4020) Apu.Registers[index - 0x4000] = value;
+      else if (index < 0x4020) Io[index - 0x4020] = value;
       else mapper[index] = value;
    } }
 }

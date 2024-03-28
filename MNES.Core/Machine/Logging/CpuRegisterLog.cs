@@ -1,4 +1,4 @@
-﻿using Mnes.Core.Machine;
+﻿using Mnes.Core.Machine.CPU;
 using System;
 using System.Collections.Generic;
 using System.Linq;

@@ -3,7 +3,7 @@ using System.Diagnostics;
 using System.Net;
 using System.Text;
 using static Mnes.Core.Machine.CPU.CpuInstruction;
-using static Mnes.Core.Machine.CpuRegisters;
+using static Mnes.Core.Machine.CPU.CpuRegisters;
 
 namespace Mnes.Core.Machine.CPU;
 
@@ -56,7 +56,7 @@ public sealed class Cpu {
 
    static ushort PULL_ushort(MachineState m) {
       ushort value = PULL(m);
-      value |= (ushort)((ushort)PULL(m) << 8);
+      value |= (ushort)(PULL(m) << 8);
       return value;
    }
 
@@ -74,8 +74,8 @@ public sealed class Cpu {
       b_h |= b_l;
       var target = b_h;
 
-        if (m.Settings.System.DebugMode) m.Cpu.log_message =
-            $"(${arg:X2},{r}) = @ {x_target:X2} = {target:X4} = {m[target]:X2}";
+      if (m.Settings.System.DebugMode) m.Cpu.log_message =
+         $"(${arg:X2},{r}) = @ {x_target:X2} = {target:X4} = {m[target]:X2}";
 
       return target;
    }
@@ -95,19 +95,6 @@ public sealed class Cpu {
 
       return target;
    }
-
-   ///// <summary> Returns the read value, not the address. </summary>
-   //static byte ReadIndexedAbsoluteValue(MachineState m, ushort arg, RegisterType r) {
-   //   var value = m[(ushort)(arg + m.Cpu.Registers[r])];
-   //   if (m.Settings.System.DebugMode) m.Cpu.log_message = $"${arg:X4},{r} @ {(ushort)(m.Cpu.Registers[r] + arg):X4} = {value:X2}";
-   //   return value;
-   //}
-   
-   //static void SetIndexedAbsoluteValue(MachineState m, ushort arg, RegisterType r, byte value) {
-   //   var address = (ushort)(arg + m.Cpu.Registers[r]);
-   //   if (m.Settings.System.DebugMode) m.Cpu.log_message = $"${arg:X4},{r} @ {address:X4} = {m[address]:X2}";
-   //   m[address] = value;
-   //}
 
    static ushort GetIndexedAbsoluteAddress(MachineState m, ushort arg, RegisterType r)
    {
@@ -189,7 +176,6 @@ public sealed class Cpu {
       m.Cpu.Registers.SetFlag(StatusFlagType.Carry, c_flag);
    }
 
-   // Todo; make sure all address setting functions are setting flags properly
    static void OpIncMem(MachineState m, ushort target) {
       m[target]++;
       m.Cpu.Registers.UpdateFlags(m[target]);
@@ -1607,8 +1593,6 @@ public sealed class Cpu {
          m => {
             var address = GetIndexedAbsoluteAddress(m, m.ReadUShort(m.Cpu.Registers.PC + 1), RegisterType.X);
             m[address] = m.Cpu.Registers.A;
-            
-            //SetIndexedAbsoluteValue(m, m.ReadUShort(m.Cpu.Registers.PC + 1), RegisterType.X, m.Cpu.Registers.A);
             m.Cpu.Registers.PC += 3;
          },
       } },
@@ -1737,7 +1721,7 @@ public sealed class Cpu {
       Registers.Y = 0;
       Registers.A = 0;
 
-      // I just put InerruptDisable/0xFD here because these seem to be set in the nestest.log file by the time it gets here but I haven't found anything in documentation to say why
+      // I just put InterruptDisable/0xFD here because these seem to be set in the nestest.log file by the time it gets here but I haven't found anything in documentation to say why
       Registers.P = (byte)StatusFlagType._1 | (byte)StatusFlagType.InterruptDisable;
       Registers.S = 0xFD;
    }
@@ -1748,8 +1732,7 @@ public sealed class Cpu {
          var opcode = machine[Registers.PC];
          CurrentInstruction = instructions[opcode];
          if (CurrentInstruction == null) {
-            //PrintCpuGrid();
-            throw new NotImplementedException($"Opcode {opcode:X2} not implemented. {instructions_unordered.Length}/151 opcodes are implemented!");
+            throw new NotImplementedException($"{Registers.PC:X4}: Opcode {opcode:X2} not implemented. {instructions_unordered.Length}/151 opcodes are implemented!");
          }
          if (machine.Settings.System.DebugMode) {
             log_pc = Registers.PC;
@@ -1774,20 +1757,5 @@ public sealed class Cpu {
             CurrentInstructionCycle = 0;
          }
       }
-   }
-
-   void PrintCpuGrid() {
-      const char block = '■';
-      StringBuilder sb = new();
-
-      for (int i = 0; i < 0xFF; i++) {
-         var ch = instructions[i] == null ? ' ' : block;
-         sb.Append(ch);
-
-         if (i % 16 == 15)
-            sb.Append('\n');
-      }
-
-      Debug.WriteLine(sb.ToString());
    }
 }
