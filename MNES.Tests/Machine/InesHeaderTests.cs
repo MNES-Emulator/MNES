@@ -22,6 +22,15 @@ public sealed class InesHeaderTests {
       return bytes;
    }
 
+   static byte[] MakeBlankValidHeader(
+      int index,
+      byte value
+   ) {
+      var bytes = MakeBlankValidHeader();
+      bytes[index] = value;
+      return bytes;
+   }
+
    [TestMethod]
    public void Test_CorrectSizeArrayWithMagicValueDoesntThrow() {
       var bytes = MakeBlankValidHeader();
@@ -49,9 +58,7 @@ public sealed class InesHeaderTests {
 
    [TestMethod]
    public void Test_CorrectPrgRomSize() {
-      var bytes = MakeBlankValidHeader();
-
-      bytes[4] = 3;
+      var bytes = MakeBlankValidHeader(4, 3);
 
       var header = new InesHeader(bytes);
 
@@ -60,9 +67,7 @@ public sealed class InesHeaderTests {
 
    [TestMethod]
    public void Test_CorrectChrRomSize() {
-      var bytes = MakeBlankValidHeader();
-
-      bytes[5] = 4;
+      var bytes = MakeBlankValidHeader(5, 4);
 
       var header = new InesHeader(bytes);
 
@@ -71,9 +76,7 @@ public sealed class InesHeaderTests {
 
    [TestMethod]
    public void Test_NameTableArrangement_False() {
-      var bytes = MakeBlankValidHeader();
-
-      bytes[6] = 0b1111_1110;
+      var bytes = MakeBlankValidHeader(6, 0b1111_1110);
 
       var header = new InesHeader(bytes);
 
@@ -82,9 +85,7 @@ public sealed class InesHeaderTests {
 
    [TestMethod]
    public void Test_NameTableArrangement_True() {
-      var bytes = MakeBlankValidHeader();
-
-      bytes[6] = 0b0000_0001;
+      var bytes = MakeBlankValidHeader(6, 0b0000_0001);
 
       var header = new InesHeader(bytes);
 
@@ -93,9 +94,7 @@ public sealed class InesHeaderTests {
 
    [TestMethod]
    public void Test_HasBatteryBackedPrgRam_False() {
-      var bytes = MakeBlankValidHeader();
-
-      bytes[6] = 0b1111_1101;
+      var bytes = MakeBlankValidHeader(6, 0b1111_1101);
 
       var header = new InesHeader(bytes);
 
@@ -104,9 +103,7 @@ public sealed class InesHeaderTests {
 
    [TestMethod]
    public void Test_HasBatteryBackedPrgRam_True() {
-      var bytes = MakeBlankValidHeader();
-
-      bytes[6] = 0b0000_0010;
+      var bytes = MakeBlankValidHeader(6, 0b0000_0010);
 
       var header = new InesHeader(bytes);
 
@@ -115,9 +112,7 @@ public sealed class InesHeaderTests {
 
    [TestMethod]
    public void Test_HasTrainer_False() {
-      var bytes = MakeBlankValidHeader();
-
-      bytes[6] = 0b1111_1011;
+      var bytes = MakeBlankValidHeader(6, 0b1111_1011);
 
       var header = new InesHeader(bytes);
 
@@ -126,9 +121,7 @@ public sealed class InesHeaderTests {
 
    [TestMethod]
    public void Test_HasTrainer_True() {
-      var bytes = MakeBlankValidHeader();
-
-      bytes[6] = 0b0000_0100;
+      var bytes = MakeBlankValidHeader(6, 0b0000_0100);
 
       var header = new InesHeader(bytes);
 
@@ -137,9 +130,7 @@ public sealed class InesHeaderTests {
 
    [TestMethod]
    public void Test_MapperNumber() {
-      var bytes = MakeBlankValidHeader();
-
-      bytes[6] = 0b1001_0110;
+      var bytes = MakeBlankValidHeader(6, 0b1001_0110);
 
       var header = new InesHeader(bytes);
 
