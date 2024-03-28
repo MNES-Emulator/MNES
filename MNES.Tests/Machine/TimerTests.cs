@@ -3,7 +3,7 @@ using System.Diagnostics;
 
 namespace Mnes.Tests.Machine;
 
-[TestClass]
+[TestClass, TestCategory("Integration")]
 public sealed class TimerTests {
    [TestMethod]
    public void TestTimer() {
