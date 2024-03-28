@@ -2,9 +2,9 @@
 
 // https://www.nesdev.org/wiki/INES
 public sealed class InesHeader {
-   public const int header_length = 16;
-   public const int _8K = 8_192;
-   public const int _16K = 16_384;
+   public const int header_length = 0x10;
+   public const int _8K = 0x2000;
+   public const int _16K = 0x4000;
    public static readonly byte[] ines_text = { 0x4E, 0x45, 0x53, 0x1A };
 
    public readonly int PrgRomSize;
