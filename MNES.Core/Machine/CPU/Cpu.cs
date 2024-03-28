@@ -1,6 +1,5 @@
 ﻿using Mnes.Core.Machine.Logging;
 using System.Diagnostics;
-using System.Net;
 using System.Text;
 using static Mnes.Core.Machine.CPU.CpuInstruction;
 using static Mnes.Core.Machine.CPU.CpuRegisters;
