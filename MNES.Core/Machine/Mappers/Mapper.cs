@@ -18,11 +18,18 @@ public abstract class Mapper {
    ) =>
       Machine = machine;
 
-   public static Mapper GetMapper(
+   public static Mapper MaybeGetMapper(
       InesHeader header,
       MachineState machine
    ) =>
       header.MapperNumber == 0
          ? new M000(header, machine)
          : null;
+
+   public static Mapper GetMapperOrThrow(
+      InesHeader header,
+      MachineState machine
+   ) =>
+      MaybeGetMapper(header, machine)
+      ?? throw new NotImplementedException($"Mapper {header.MapperNumber} is not implemented.");
 }

@@ -2,7 +2,7 @@
 
 namespace Mnes.Tests.Files;
 
-[TestClass]
+[TestClass, TestCategory("Integration")]
 public sealed class ConfigTests {
    [TestMethod]
    public void TestInitialization() =>

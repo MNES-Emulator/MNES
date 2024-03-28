@@ -1,7 +1,6 @@
 ﻿namespace Mnes.Core.Machine.IO;
 
-public class IoRegisters
-{
+public class IoRegisters {
    readonly MachineState machine;
    readonly byte[] registers = new byte[0x20];
 
@@ -31,11 +30,11 @@ public class IoRegisters
    public byte JOY2 { get => registers[23]; set => registers[23] = value; }
 
    // $4000-$4014 are write only
-   public byte? this[int index] { 
-      get => index < 0x15 ? null : registers[index]; 
-      set => registers[index] = value.Value;
+   public byte? this[int index] {
+      get => index < 0x15 ? null : registers[index];
+      set => registers[index] = value.Value; // TODO: throws on null
    }
 
    public IoRegisters(MachineState m) =>
-       machine = m;
+      machine = m;
 }

@@ -23,8 +23,7 @@ public sealed class PpuRegisters {
       set => registers[index].CpuWrite(value);
    }
 
-   public PpuRegisters(MachineState m)
-   {
+   public PpuRegisters(MachineState m) {
       machine = m;
 
       registers = new Register[] {

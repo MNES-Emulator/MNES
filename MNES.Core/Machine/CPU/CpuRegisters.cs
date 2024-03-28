@@ -57,11 +57,14 @@ public sealed class CpuRegisters {
    /// <summary> The status register. </summary>
    public byte P { get => registers[4]; set => registers[4] = (byte)(value | (byte)StatusFlagType._1); }
 
-   public byte GetRegister(RegisterType r) => registers[(int)r];
+   public byte GetRegister(RegisterType r) =>
+      registers[(int)r];
 
    public void SetRegister(RegisterType r, byte value) {
-      if ((int)r < (int)RegisterType.S) SetRegisterAndFlags(r, value);
-      else registers[(int)r] = value;
+      if ((int)r < (int)RegisterType.S)
+         SetRegisterAndFlags(r, value);
+      else
+         registers[(int)r] = value;
    }
 
    /// <summary> Set register value and handle status flag updating. </summary>
@@ -78,13 +81,22 @@ public sealed class CpuRegisters {
       SetFlag(StatusFlagType.Zero, value == 0);
    }
 
-   public bool HasFlag(StatusFlagType flag) => (P & (byte)flag) > 0;
-   public void SetFlag(StatusFlagType flag) => P |= (byte)flag;
-   public void SetFlag(StatusFlagType flag, bool value) {
-      if (value) P |= (byte)flag;
-      else P &= (byte)~(byte)flag;
-   }
-   public void ClearFlag(StatusFlagType flag) => P &= (byte)~flag;
+   public bool HasFlag(StatusFlagType flag) =>
+      (P & (byte)flag) > 0;
 
-   public CpuRegisterLog GetLog() => new(this);
+   public void SetFlag(StatusFlagType flag) =>
+      P |= (byte)flag;
+
+   public void SetFlag(StatusFlagType flag, bool value) {
+      if (value)
+         P |= (byte)flag;
+      else
+         P &= (byte)~(byte)flag;
+   }
+
+   public void ClearFlag(StatusFlagType flag) =>
+      P &= (byte)~flag;
+
+   public CpuRegisterLog GetLog() =>
+      new(this);
 }

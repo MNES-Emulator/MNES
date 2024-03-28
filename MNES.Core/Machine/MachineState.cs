@@ -34,12 +34,9 @@ public sealed class MachineState {
 
       var nes_bytes = File.ReadAllBytes(rom_path);
       header = new InesHeader(nes_bytes);
-      Rom = new byte[nes_bytes.Length - 16];
-      nes_bytes[16..].CopyTo(Rom, 0);
+      Rom = nes_bytes[InesHeader.header_length..];
 
-      mapper = Mapper.GetMapper(header, this);
-      if (mapper == null)
-         throw new NotImplementedException($"Mapper {header.MapperNumber} is not implemented.");
+      mapper = Mapper.GetMapperOrThrow(header, this);
 
       Cpu = new(this);
       timer = new(settings.System.Region, settings.System.DebugMode ? DebugTick : Tick);
@@ -61,7 +58,7 @@ public sealed class MachineState {
       Ppu.Tick();
       Ppu.Tick();
    }
-      
+
 
    void Tick() {
       Cpu.Tick();
@@ -78,7 +75,9 @@ public sealed class MachineState {
          Ram[i] = 0x00;
    }
 
-   public ushort ReadUShort(int index) => ReadUShort((ushort)index);
+   public ushort ReadUShort(int index) =>
+      ReadUShort((ushort)index);
+
    public ushort ReadUShort(ushort index) {
       var b_l = this[index];
       ushort b_h = this[(ushort)(index + 1)];
