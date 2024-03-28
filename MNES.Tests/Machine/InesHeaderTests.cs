@@ -37,7 +37,7 @@ public sealed class InesHeaderTests {
 
       Assert.AreEqual(0, header.PrgRomSize);
       Assert.AreEqual(0, header.ChrRomSize);
-      Assert.IsFalse(header.NameTableArrangment);
+      Assert.IsFalse(header.NameTableArrangement);
       Assert.IsFalse(header.HasBatteryBackedPrgRam);
       Assert.IsFalse(header.HasTrainer);
       Assert.AreEqual(0, header.MapperNumber);
@@ -56,5 +56,60 @@ public sealed class InesHeaderTests {
       var header = new InesHeader(bytes);
 
       Assert.AreEqual(49_152, header.PrgRomSize);
+   }
+
+   [TestMethod]
+   public void Test_CorrectChrRomSize() {
+      var bytes = MakeBlankValidHeader();
+
+      bytes[5] = 4;
+
+      var header = new InesHeader(bytes);
+
+      Assert.AreEqual(32_768, header.ChrRomSize);
+   }
+
+   [TestMethod]
+   public void Test_NameTableArrangement_False() {
+      var bytes = MakeBlankValidHeader();
+
+      bytes[6] = 0b1111_1110;
+
+      var header = new InesHeader(bytes);
+
+      Assert.IsFalse(header.NameTableArrangement);
+   }
+
+   [TestMethod]
+   public void Test_NameTableArrangement_True() {
+      var bytes = MakeBlankValidHeader();
+
+      bytes[6] = 0xFF;
+
+      var header = new InesHeader(bytes);
+
+      Assert.IsTrue(header.NameTableArrangement);
+   }
+
+   [TestMethod]
+   public void Test_HasBatteryBackedPrgRam_False() {
+      var bytes = MakeBlankValidHeader();
+
+      bytes[6] = 0b1111_1101;
+
+      var header = new InesHeader(bytes);
+
+      Assert.IsFalse(header.HasBatteryBackedPrgRam);
+   }
+
+   [TestMethod]
+   public void Test_HasBatteryBackedPrgRam_True() {
+      var bytes = MakeBlankValidHeader();
+
+      bytes[6] = 0xFF;
+
+      var header = new InesHeader(bytes);
+
+      Assert.IsTrue(header.HasBatteryBackedPrgRam);
    }
 }
