@@ -2,7 +2,7 @@
 
 namespace Mnes.Tests.Files;
 
-[TestClass]
+[TestClass, TestCategory("Unit")]
 public sealed class InesTests {
    const string rom_file = "Resources/Test Roms/other/nestest.nes";
 

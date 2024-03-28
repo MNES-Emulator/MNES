@@ -4,7 +4,7 @@ using Mnes.Core.Saves.Configuration;
 
 namespace Mnes.Tests.Machine;
 
-[TestClass]
+[TestClass, TestCategory("Unit")]
 public sealed class MachineTests {
    const string rom_file = "Resources/Test Roms/other/nestest.nes";
 

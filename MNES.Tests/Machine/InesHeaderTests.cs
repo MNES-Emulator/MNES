@@ -2,7 +2,7 @@
 
 namespace Mnes.Tests.Machine;
 
-[TestClass]
+[TestClass, TestCategory("Unit")]
 public sealed class InesHeaderTests {
    [TestMethod]
    public void Test_EmptyByteArrayThrows() =>
