@@ -36,8 +36,8 @@ public sealed class InesHeader {
    public InesHeader(
       byte[] nes_file
    ) {
-      if (nes_file.Length != header_length)
-         throw new Exception($"ROM invalid, incorrect length (was {nes_file.Length}; expected {header_length}).");
+      if (nes_file.Length < header_length)
+         throw new Exception($"ROM invalid, whole file is smaller than the header (was {nes_file.Length}; expected at least {header_length}).");
 
       // 0-3: Constant $4E $45 $53 $1A (ASCII "NES" followed by MS-DOS end-of-file)
       if (!nes_file[..ines_text.Length].SequenceEqual(ines_text))
@@ -61,7 +61,7 @@ public sealed class InesHeader {
       Nes2_0 = (nes_file[7] & 0b0000_0100) == 0 && (nes_file[7] & 0b0000_1000) != 0;
 
       // 8: Flags 8 – PRG-RAM size (rarely used extension)
-      PrgRamSize = nes_file[6] * _8K;
+      PrgRamSize = nes_file[8] * _8K;
 
       // 9: Flags 9 – TV system (rarely used extension)
       // 10: Flags 10 – TV system, PRG-RAM presence (unofficial, rarely used extension)

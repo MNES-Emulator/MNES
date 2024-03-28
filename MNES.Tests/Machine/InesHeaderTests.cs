@@ -136,4 +136,86 @@ public sealed class InesHeaderTests {
 
       Assert.AreEqual(0b0000_1001, header.MapperNumber);
    }
+
+
+   [TestMethod]
+   public void Test_VsUnisystem_False() {
+      var bytes = MakeBlankValidHeader(7, 0b1111_1110);
+
+      var header = new InesHeader(bytes);
+
+      Assert.IsFalse(header.VsUnisystem);
+   }
+
+   [TestMethod]
+   public void Test_VsUnisystem_True() {
+      var bytes = MakeBlankValidHeader(7, 0b0000_0001);
+
+      var header = new InesHeader(bytes);
+
+      Assert.IsTrue(header.VsUnisystem);
+   }
+
+   [TestMethod]
+   public void Test_PlayChoice10_False() {
+      var bytes = MakeBlankValidHeader(7, 0b1111_1101);
+
+      var header = new InesHeader(bytes);
+
+      Assert.IsFalse(header.PlayChoice10);
+   }
+
+   [TestMethod]
+   public void Test_PlayChoice10_True() {
+      var bytes = MakeBlankValidHeader(7, 0b0000_0010);
+
+      var header = new InesHeader(bytes);
+
+      Assert.IsTrue(header.PlayChoice10);
+   }
+
+   [TestMethod]
+   public void Test_Nes2_0__00IsFalse() {
+      var bytes = MakeBlankValidHeader(7, 0b1111_0011);
+
+      var header = new InesHeader(bytes);
+
+      Assert.IsFalse(header.Nes2_0);
+   }
+
+   [TestMethod]
+   public void Test_Nes2_0__01IsFalse() {
+      var bytes = MakeBlankValidHeader(7, 0b1111_0111);
+
+      var header = new InesHeader(bytes);
+
+      Assert.IsFalse(header.Nes2_0);
+   }
+
+   [TestMethod]
+   public void Test_Nes2_0__10IsTrue() {
+      var bytes = MakeBlankValidHeader(7, 0b1111_1011);
+
+      var header = new InesHeader(bytes);
+
+      Assert.IsTrue(header.Nes2_0);
+   }
+
+   [TestMethod]
+   public void Test_Nes2_0__11IsFalse() {
+      var bytes = MakeBlankValidHeader(7, 0b1111_1111);
+
+      var header = new InesHeader(bytes);
+
+      Assert.IsFalse(header.Nes2_0);
+   }
+
+   [TestMethod]
+   public void Test_CorrectPrgRamSize() {
+      var bytes = MakeBlankValidHeader(8, 7);
+
+      var header = new InesHeader(bytes);
+
+      Assert.AreEqual(57_344, header.PrgRamSize);
+   }
 }
