@@ -78,7 +78,7 @@ public sealed class CpuRegistersTests {
    }
 
    [TestMethod]
-   public void Test_GetSetRegister() {
+   public void Test_GetSetRegister_Value() {
       var reg = F.Create<RegisterType>();
       var value = F.Create<byte>();
 
@@ -86,6 +86,10 @@ public sealed class CpuRegistersTests {
       cregs.SetRegister(reg, value);
       var result = cregs.GetRegister(reg);
 
-      Assert.AreEqual(value, result);
+      var expected = reg == RegisterType.P
+         ? value | 0b0010_0000
+         : value;
+
+      Assert.AreEqual(expected, result);
    }
 }
