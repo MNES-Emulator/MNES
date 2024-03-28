@@ -17,7 +17,7 @@ public sealed class MachineState {
 
    public readonly byte[] Ram = new byte[0x0800];
    public readonly byte[] Rom;
-   public readonly Ppu Ppu = new();
+   public readonly Ppu Ppu;
    public readonly Apu Apu = new();
    public readonly Cpu Cpu;
    public readonly IoRegisters Io;
@@ -45,6 +45,7 @@ public sealed class MachineState {
       timer = new(settings.System.Region, settings.System.DebugMode ? DebugTick : Tick);
       Logger = new(this);
       Io = new(this);
+      Ppu = new(this);
    }
 
    public async Task Run() {
