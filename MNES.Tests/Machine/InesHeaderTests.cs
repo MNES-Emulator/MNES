@@ -1,9 +1,12 @@
-﻿using Mnes.Core.Machine;
+﻿using AutoFixture;
+using Mnes.Core.Machine;
 
 namespace Mnes.Tests.Machine;
 
 [TestClass, TestCategory("Unit")]
 public sealed class InesHeaderTests {
+   readonly IFixture F = new Fixture();
+
    [TestMethod]
    public void Test_EmptyByteArrayThrows() =>
       Assert.ThrowsException<Exception>(() =>
@@ -58,22 +61,28 @@ public sealed class InesHeaderTests {
 
    [TestMethod]
    public void Test_CorrectPrgRomSize() {
-      var bytes = MakeBlankValidHeader(4, 3);
+      var size = F.Create<byte>();
+      var bytes = MakeBlankValidHeader(4, size);
 
       var header = new InesHeader(bytes);
 
-      Assert.AreEqual(49_152, header.PrgRomSize);
+      var expected = size * InesHeader._16K;
+      Assert.AreEqual(expected, header.PrgRomSize);
    }
 
    [TestMethod]
    public void Test_CorrectChrRomSize() {
-      var bytes = MakeBlankValidHeader(5, 4);
+      var size = F.Create<byte>();
+      var bytes = MakeBlankValidHeader(5, size);
 
       var header = new InesHeader(bytes);
 
-      Assert.AreEqual(32_768, header.ChrRomSize);
+      var expected = size * InesHeader._8K;
+      Assert.AreEqual(expected, header.ChrRomSize);
    }
 
+   // TODO: use autofixture for arbitrary bit patterns?
+   // TODO: but the anding/oring and casting that would involve makes me not want to
    [TestMethod]
    public void Test_NameTableArrangement_False() {
       var bytes = MakeBlankValidHeader(6, 0b1111_1110);
@@ -212,10 +221,12 @@ public sealed class InesHeaderTests {
 
    [TestMethod]
    public void Test_CorrectPrgRamSize() {
-      var bytes = MakeBlankValidHeader(8, 7);
+      var size = F.Create<byte>();
+      var bytes = MakeBlankValidHeader(8, size);
 
       var header = new InesHeader(bytes);
 
-      Assert.AreEqual(57_344, header.PrgRamSize);
+      var expected = size * InesHeader._8K;
+      Assert.AreEqual(expected, header.PrgRamSize);
    }
 }
