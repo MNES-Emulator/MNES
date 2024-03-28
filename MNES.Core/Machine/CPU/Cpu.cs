@@ -1,6 +1,5 @@
 ﻿using Mnes.Core.Machine.Logging;
 using System.Diagnostics;
-using System.Net;
 using System.Text;
 using static Mnes.Core.Machine.CPU.CpuInstruction;
 using static Mnes.Core.Machine.CpuRegisters;
@@ -102,7 +101,7 @@ public sealed class Cpu {
    //   if (m.Settings.System.DebugMode) m.Cpu.log_message = $"${arg:X4},{r} @ {(ushort)(m.Cpu.Registers[r] + arg):X4} = {value:X2}";
    //   return value;
    //}
-   
+
    //static void SetIndexedAbsoluteValue(MachineState m, ushort arg, RegisterType r, byte value) {
    //   var address = (ushort)(arg + m.Cpu.Registers[r]);
    //   if (m.Settings.System.DebugMode) m.Cpu.log_message = $"${arg:X4},{r} @ {address:X4} = {m[address]:X2}";
@@ -1607,7 +1606,7 @@ public sealed class Cpu {
          m => {
             var address = GetIndexedAbsoluteAddress(m, m.ReadUShort(m.Cpu.Registers.PC + 1), RegisterType.X);
             m[address] = m.Cpu.Registers.A;
-            
+
             //SetIndexedAbsoluteValue(m, m.ReadUShort(m.Cpu.Registers.PC + 1), RegisterType.X, m.Cpu.Registers.A);
             m.Cpu.Registers.PC += 3;
          },
