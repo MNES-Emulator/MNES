@@ -15,10 +15,10 @@ public sealed class MachineState {
    readonly InputState _input;
    byte _last_read_value; // returns in case of open bus reads
 
-   public byte[] Ram { get; } = new byte[0x0800];
+   public byte[] Ram { get; }
    public byte[] Rom { get; }
    public Ppu Ppu { get; }
-   public Apu Apu { get; } = new();
+   public Apu Apu { get; }
    public Cpu Cpu { get; }
    public IoRegisters Io { get; }
    public MachineLogger Logger { get; }
@@ -29,19 +29,19 @@ public sealed class MachineState {
       ConfigSettings settings,
       InputState input
    ) {
-      Settings = settings;
+      _header = new InesHeader(nes_bytes);
+      _mapper = Mapper.GetMapperOrThrow(_header, this);
+      _timer = new(settings.System.Region, settings.System.DebugMode ? DebugTick : Tick);
       _input = input;
 
-      _header = new InesHeader(nes_bytes);
+      Ram = new byte[0x0800];
       Rom = nes_bytes[InesHeader.header_length..];
-
-      _mapper = Mapper.GetMapperOrThrow(_header, this);
-
-      Cpu = new(this);
-      _timer = new(settings.System.Region, settings.System.DebugMode ? DebugTick : Tick);
-      Logger = new(this);
-      Io = new(this);
       Ppu = new(this);
+      Apu = new();
+      Cpu = new(this);
+      Io = new(this);
+      Logger = new(this);
+      Settings = settings;
    }
 
    public async Task Run() {
