@@ -17,6 +17,10 @@ partial class CpuRegisters {
       readonly int _index;
       public bool SetsFlags { get; }
 
+      public RegisterType()
+      : this(A._index, A.SetsFlags) {
+      }
+
       RegisterType(
          int index,
          bool setsFlags
