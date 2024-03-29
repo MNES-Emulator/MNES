@@ -1,4 +1,5 @@
 ﻿using Mnes.Core.Machine.Logging;
+using Mnes.Core.Machine.PPU;
 using static Mnes.Core.Machine.CPU.CpuInstruction;
 using static Mnes.Core.Machine.CPU.CpuRegisters;
 
@@ -191,7 +192,6 @@ public sealed class Cpu {
    #endregion
 
    static readonly CpuInstruction[] instructions_unordered = new CpuInstruction[] {
-
       new() { Name = "JMP", OpCode = 0x4C, Bytes = 3, Process = new ProcessDelegate[] {
          m => {
             m.Cpu.tmp_u = m.Cpu.Registers.PC;
@@ -1702,7 +1702,7 @@ public sealed class Cpu {
             m.Cpu.Registers.PC += 1;
          },
       } },
-    };
+   };
 
    public Cpu(MachineState machine) {
       this.machine = machine;
@@ -1752,6 +1752,13 @@ public sealed class Cpu {
             }
             CurrentInstruction = null;
             CurrentInstructionCycle = 0;
+            if (machine.Ppu.NMI_occurred)
+            {
+               // handle interrupt
+               PUSH(machine, machine.Cpu.Registers.P);
+               PUSH_ushort(machine, machine.Cpu.Registers.PC);
+               machine.Cpu.Registers.PC = machine.ReadUShort(0xFFFA);
+            }
          }
       }
    }
