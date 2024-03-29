@@ -69,9 +69,7 @@ public sealed class MachineState {
    void SetPowerUpState() {
       Cpu.SetPowerUpState();
       Ppu.SetPowerUpState();
-
-      for (int i = 0; i < Ram.Length; i++)
-         Ram[i] = 0x00;
+      Array.Clear(Ram);
    }
 
    public ushort ReadUShort(int index) =>
