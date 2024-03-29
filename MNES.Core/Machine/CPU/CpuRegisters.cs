@@ -28,7 +28,7 @@ public sealed partial class CpuRegisters {
    public byte S { get => registers[3]; set => registers[3] = value; }
 
    /// <summary> The status register. </summary>
-   public byte P { get => registers[4]; set => registers[4] = (byte)(value | (byte)StatusFlagType._1); }
+   public byte P { get => registers[4]; set => registers[4] = value | StatusFlagType._1; }
 
    public byte GetRegister(RegisterType r) =>
       registers[(int)r];
@@ -55,20 +55,20 @@ public sealed partial class CpuRegisters {
    }
 
    public bool HasFlag(StatusFlagType flag) =>
-      (P & (byte)flag) > 0;
+      flag.IsSet(P);
 
    public void SetFlag(StatusFlagType flag) =>
-      P |= (byte)flag;
+      P |= flag;
 
    public void SetFlag(StatusFlagType flag, bool value) {
       if (value)
-         P |= (byte)flag;
+         SetFlag(flag);
       else
-         P &= (byte)~(byte)flag;
+         ClearFlag(flag);
    }
 
    public void ClearFlag(StatusFlagType flag) =>
-      P &= (byte)~flag;
+      P &= ~flag;
 
    public CpuRegisterLog GetLog() =>
       new(this);

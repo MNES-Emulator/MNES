@@ -111,7 +111,7 @@ public sealed class Cpu {
    // Some opcodes do similar things
    #region Generic Opcode Methods
    static void OpSetFlag(MachineState m, StatusFlagType flag) {
-      m.Cpu.Registers.P |= (byte)flag;
+      m.Cpu.Registers.P |= flag;
       m.Cpu.Registers.PC++;
    }
 
@@ -1719,7 +1719,7 @@ public sealed class Cpu {
       Registers.A = 0;
 
       // I just put InterruptDisable/0xFD here because these seem to be set in the nestest.log file by the time it gets here but I haven't found anything in documentation to say why
-      Registers.P = (byte)StatusFlagType._1 | (byte)StatusFlagType.InterruptDisable;
+      Registers.P = StatusFlagType._1 | StatusFlagType.InterruptDisable;
       Registers.S = 0xFD;
    }
 
