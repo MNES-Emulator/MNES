@@ -1,7 +1,7 @@
 ﻿namespace Mnes.Core.Machine.CPU;
 
 partial class CpuRegisters {
-   public readonly struct StatusFlag {
+   public readonly record struct StatusFlag {
       /// <summary> The C flag. </summary>
       public static readonly StatusFlag Carry = new(0b_0000_0001);
       /// <summary> The Z flag. </summary>
@@ -20,6 +20,10 @@ partial class CpuRegisters {
       public static readonly StatusFlag Negative = new(0b_1000_0000);
 
       public byte Bits { get; }
+
+      public StatusFlag()
+      : this(Carry.Bits) {
+      }
 
       StatusFlag(
          byte bits
