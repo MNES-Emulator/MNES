@@ -19,7 +19,7 @@
     <Compile Update="Machine\CPU\CpuRegisters+RegisterType.cs">
       <DependentUpon>CpuRegisters.cs</DependentUpon>
     </Compile>
-    <Compile Update="Machine\CPU\CpuRegisters+StatusFlagType.cs">
+    <Compile Update="Machine\CPU\CpuRegisters+StatusFlag.cs">
       <DependentUpon>CpuRegisters.cs</DependentUpon>
     </Compile>
   </ItemGroup>
