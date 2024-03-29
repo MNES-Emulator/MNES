@@ -30,6 +30,9 @@ public sealed partial class CpuRegisters {
    /// <summary> The status register. </summary>
    public byte P { get => registers[4]; set => registers[4] = value | StatusFlag._1; }
 
+   public CpuRegisters() =>
+      P |= StatusFlag._1;
+
    public byte GetRegister(RegisterType r) =>
       registers[r];
 

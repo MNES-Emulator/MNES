@@ -1,7 +1,11 @@
-﻿namespace Mnes.Core.Machine.CPU;
+﻿using System.Collections.Immutable;
+
+namespace Mnes.Core.Machine.CPU;
 
 partial class CpuRegisters {
    public readonly record struct StatusFlag {
+      static readonly List<StatusFlag> sValues = new();
+
       /// <summary> The C flag. </summary>
       public static readonly StatusFlag Carry = new(0b_0000_0001);
       /// <summary> The Z flag. </summary>
@@ -19,6 +23,8 @@ partial class CpuRegisters {
       /// <summary> The N flag. </summary>
       public static readonly StatusFlag Negative = new(0b_1000_0000);
 
+      public static IReadOnlyList<StatusFlag> Values { get; } = sValues.ToImmutableList();
+
       public byte Bits { get; }
 
       public StatusFlag()
@@ -27,8 +33,11 @@ partial class CpuRegisters {
 
       StatusFlag(
          byte bits
-      ) =>
+      ) {
          Bits = bits;
+
+         sValues.Add(this);
+      }
 
       public static byte operator |(byte bits, StatusFlag flag) => (byte)(bits | flag.Bits);
       public static byte operator |(StatusFlag flag, byte bits) => bits | flag;
