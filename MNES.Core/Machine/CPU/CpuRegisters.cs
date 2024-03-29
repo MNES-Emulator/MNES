@@ -4,34 +4,7 @@ namespace Mnes.Core.Machine.CPU;
 
 // https://www.nesdev.org/wiki/CPU_registers
 /// <summary> Represents all the registers of the CPU. </summary>
-public sealed class CpuRegisters {
-   public enum StatusFlagType {
-      /// <summary> The C flag. </summary>
-      Carry = 0b_0000_0001,
-      /// <summary> The Z flag. </summary>
-      Zero = 0b_0000_0010,
-      /// <summary> The I flag. </summary>
-      InterruptDisable = 0b_0000_0100,
-      /// <summary> The D flag. </summary>
-      Decimal = 0b_0000_1000,
-      /// <summary> The B flag. </summary>
-      BFlag = 0b_0001_0000,
-      /// <summary> The 1 flag. </summary>
-      _1 = 0b_0010_0000,
-      /// <summary> The V flag. </summary>
-      Overflow = 0b_0100_0000,
-      /// <summary> The N flag. </summary>
-      Negative = 0b_1000_0000,
-   }
-
-   public enum RegisterType {
-      A = 0,
-      X = 1,
-      Y = 2,
-      S = 3,
-      P = 4,
-   }
-
+public sealed partial class CpuRegisters {
    /// <summary> The 5 8-bit registers. </summary>
    readonly byte[] registers = new byte[5];
    /// <summary> The program counter. </summary>

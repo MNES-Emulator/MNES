@@ -15,4 +15,13 @@
     <Folder Include="Machine\PPU\Registers\Data\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Compile Update="Machine\CPU\CpuRegisters+RegisterType.cs">
+      <DependentUpon>CpuRegisters.cs</DependentUpon>
+    </Compile>
+    <Compile Update="Machine\CPU\CpuRegisters+StatusFlagType.cs">
+      <DependentUpon>CpuRegisters.cs</DependentUpon>
+    </Compile>
+  </ItemGroup>
+
 </Project>
