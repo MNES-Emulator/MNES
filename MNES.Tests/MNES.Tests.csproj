@@ -28,4 +28,13 @@
     </Content>
   </ItemGroup>
 
+  <ItemGroup>
+    <Compile Update="Machine\CPU\CpuRegsiters+StatusFlagTests.cs">
+      <DependentUpon>CpuRegistersTests.cs</DependentUpon>
+    </Compile>
+    <Compile Update="Machine\CPU\CpuRegisters+RegisterTypeTests.cs">
+      <DependentUpon>CpuRegistersTests.cs</DependentUpon>
+    </Compile>
+  </ItemGroup>
+
 </Project>
