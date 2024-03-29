@@ -18,6 +18,7 @@ public sealed class PpuStatus : Register {
       res |= VBlankHasStarted ? 0b_1000_0000 : 0b_0000_0000;
       Machine.Ppu.Registers.OpenBus = (byte)res;
       VBlankHasStarted = false;
+      Machine.Ppu.W = false;
       return (byte)res;
    }
 
