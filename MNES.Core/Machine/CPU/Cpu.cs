@@ -6,13 +6,14 @@ namespace Mnes.Core.Machine.CPU;
 
 // https://www.masswerk.at/6502/6502_instruction_set.html
 public sealed class Cpu {
-   public readonly CpuRegisters Registers = new();
-   readonly MachineState machine;
-   readonly CpuInstruction[] instructions = new CpuInstruction[256];
+   readonly MachineState _machine;
+   readonly CpuInstruction[] _instructions = new CpuInstruction[256];
 
-   CpuInstruction CurrentInstruction;
-   int CurrentInstructionCycle;
-   long CycleCounter = 6;
+   public CpuRegisters Registers { get; } = new();
+
+   CpuInstruction _currentInstruction;
+   int _currentInstructionCycle;
+   long _cycleCounter = 6;
 
    // temp values used to store data across clock cycles within a single instruction
    ushort tmp_u;
@@ -1704,10 +1705,10 @@ public sealed class Cpu {
    };
 
    public Cpu(MachineState machine) {
-      this.machine = machine;
+      this._machine = machine;
       foreach (var i in instructions_unordered) {
-         if (instructions[i.OpCode] != null) throw new Exception($"Duplicate OpCodes: {instructions[i.OpCode].Name} and {i.Name}");
-         instructions[i.OpCode] = i;
+         if (_instructions[i.OpCode] != null) throw new Exception($"Duplicate OpCodes: {_instructions[i.OpCode].Name} and {i.Name}");
+         _instructions[i.OpCode] = i;
       }
    }
 
@@ -1723,40 +1724,40 @@ public sealed class Cpu {
    }
 
    public void Tick() {
-      CycleCounter++;
-      if (CurrentInstruction == null) {
-         var opcode = machine[Registers.PC];
-         CurrentInstruction = instructions[opcode];
-         if (CurrentInstruction == null) {
+      _cycleCounter++;
+      if (_currentInstruction == null) {
+         var opcode = _machine[Registers.PC];
+         _currentInstruction = _instructions[opcode];
+         if (_currentInstruction == null) {
             throw new NotImplementedException($"{Registers.PC:X4}: Opcode {opcode:X2} not implemented. {instructions_unordered.Length}/151 opcodes are implemented!");
          }
-         if (machine.Settings.System.DebugMode) {
+         if (_machine.Settings.System.DebugMode) {
             log_pc = Registers.PC;
-            log_d1 = CurrentInstruction.Bytes < 2 ? null : machine[(ushort)(Registers.PC + 1)];
-            log_d2 = CurrentInstruction.Bytes < 3 ? null : machine[(ushort)(Registers.PC + 2)];
-            log_cyc = CycleCounter;
+            log_d1 = _currentInstruction.Bytes < 2 ? null : _machine[(ushort)(Registers.PC + 1)];
+            log_d2 = _currentInstruction.Bytes < 3 ? null : _machine[(ushort)(Registers.PC + 2)];
+            log_cyc = _cycleCounter;
             log_cpu = Registers.GetLog();
             log_inst_count++;
          }
       } else {
-         if (CurrentInstructionCycle < CurrentInstruction.Process.Length) CurrentInstruction.Process[CurrentInstructionCycle++](machine);
-         if (CurrentInstructionCycle == CurrentInstruction.Process.Length) {
+         if (_currentInstructionCycle < _currentInstruction.Process.Length) _currentInstruction.Process[_currentInstructionCycle++](_machine);
+         if (_currentInstructionCycle == _currentInstruction.Process.Length) {
             if (add_cycles > 0) {
                add_cycles--;
                return;
             }
-            if (machine.Settings.System.DebugMode) {
-               machine.Logger.Log(new(CurrentInstruction, log_pc, log_d1, log_d2, log_cpu, log_cyc, log_message));
+            if (_machine.Settings.System.DebugMode) {
+               _machine.Logger.Log(new(_currentInstruction, log_pc, log_d1, log_d2, log_cpu, log_cyc, log_message));
                log_message = null;
             }
-            CurrentInstruction = null;
-            CurrentInstructionCycle = 0;
-            if (machine.Ppu.NMI_occurred)
+            _currentInstruction = null;
+            _currentInstructionCycle = 0;
+            if (_machine.Ppu.NMI_occurred)
             {
                // handle interrupt
-               PUSH(machine, machine.Cpu.Registers.P);
-               PUSH_ushort(machine, machine.Cpu.Registers.PC);
-               machine.Cpu.Registers.PC = machine.ReadUShort(0xFFFA);
+               PUSH(_machine, _machine.Cpu.Registers.P);
+               PUSH_ushort(_machine, _machine.Cpu.Registers.PC);
+               _machine.Cpu.Registers.PC = _machine.ReadUShort(0xFFFA);
             }
          }
       }
