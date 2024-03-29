@@ -180,4 +180,80 @@ public sealed class CpuRegistersTests {
 
       Assert.IsFalse(cregs.HasFlag(StatusFlag.Negative));
    }
+
+   [TestMethod]
+   public void Test_SetRegister_SetsFlagZero_WhenSetsFlagsAndZero() {
+      var cregs = new CpuRegisters();
+      var reg = RegisterType.Y;
+      Assert.IsTrue(reg.SetsFlags);
+      const byte value = 0;
+
+      cregs.SetRegister(reg, value);
+
+      Assert.IsTrue(cregs.HasFlag(StatusFlag.Zero));
+   }
+
+   [TestMethod]
+   public void Test_SetRegister_DoesntSetFlagZero_WhenNotZero() {
+      var cregs = new CpuRegisters();
+      var reg = RegisterType.Y;
+      Assert.IsTrue(reg.SetsFlags);
+      var value = F.Create<byte>();
+
+      cregs.SetRegister(reg, value);
+
+      Assert.IsFalse(cregs.HasFlag(StatusFlag.Zero));
+   }
+
+   [TestMethod]
+   public void Test_SetRegister_DoesntSetFlagZero_WhenDoesntSetFlags() {
+      var cregs = new CpuRegisters();
+      var reg = RegisterType.S;
+      Assert.IsFalse(reg.SetsFlags);
+      const byte value = 0;
+
+      cregs.SetRegister(reg, value);
+
+      Assert.IsFalse(cregs.HasFlag(StatusFlag.Zero));
+   }
+
+   [TestMethod]
+   public void Test_UpdateFlags_SetsNegativeFlag_WhenNegative() {
+      var cregs = new CpuRegisters();
+      const byte value = 0b1010_0101;
+
+      cregs.UpdateFlags(value);
+
+      Assert.IsTrue(cregs.HasFlag(StatusFlag.Negative));
+   }
+
+   [TestMethod]
+   public void Test_UpdateFlags_DoesntSetNegativeFlag_WhenNotNegative() {
+      var cregs = new CpuRegisters();
+      const byte value = 0b0010_0101;
+
+      cregs.UpdateFlags(value);
+
+      Assert.IsFalse(cregs.HasFlag(StatusFlag.Negative));
+   }
+
+   [TestMethod]
+   public void Test_UpdateFlags_SetsZeroFlag_WhenZero() {
+      var cregs = new CpuRegisters();
+      const byte value = 0;
+
+      cregs.UpdateFlags(value);
+
+      Assert.IsTrue(cregs.HasFlag(StatusFlag.Zero));
+   }
+
+   [TestMethod]
+   public void Test_UpdateFlags_DoesntSetZeroFlag_WhenNotZero() {
+      var cregs = new CpuRegisters();
+      var value = F.Create<byte>();
+
+      cregs.UpdateFlags(value);
+
+      Assert.IsFalse(cregs.HasFlag(StatusFlag.Zero));
+   }
 }

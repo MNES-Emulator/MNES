@@ -46,8 +46,7 @@ public sealed partial class CpuRegisters {
    /// <summary> Set register value and handle status flag updating. </summary>
    void SetRegisterAndFlags(RegisterType r, byte value) {
       registers[r] = value;
-      SetFlag(StatusFlag.Negative, (value & 0b_1000_0000) > 0);
-      SetFlag(StatusFlag.Zero, value == 0);
+      UpdateFlags(value);
    }
 
    /// <summary> Set relevant flags from value in memory. </summary>

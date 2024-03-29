@@ -41,7 +41,7 @@ partial class CpuRegisters {
 
       public static byte operator |(byte bits, StatusFlag flag) => (byte)(bits | flag.Bits);
       public static byte operator |(StatusFlag flag, byte bits) => bits | flag;
-      public static byte operator |(StatusFlag a, StatusFlag b) => a | b.Bits;
+      public static byte operator |(StatusFlag a, StatusFlag b) => a.Bits | b;
 
       public static byte operator &(byte bits, StatusFlag flag) => (byte)(bits & flag.Bits);
       public static byte operator &(StatusFlag flag, byte bits) => bits & flag;
