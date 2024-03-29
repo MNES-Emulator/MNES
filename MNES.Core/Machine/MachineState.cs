@@ -25,14 +25,13 @@ public sealed class MachineState {
    public readonly ConfigSettings Settings;
 
    public MachineState(
-      string rom_path,
+      byte[] nes_bytes,
       ConfigSettings settings,
       InputState input
    ) {
       Settings = settings;
       this.input = input;
 
-      var nes_bytes = File.ReadAllBytes(rom_path);
       header = new InesHeader(nes_bytes);
       Rom = nes_bytes[InesHeader.header_length..];
 
