@@ -3,8 +3,7 @@
 namespace Mnes.Core.Machine.PPU;
 
 // https://www.nesdev.org/wiki/PPU_registers
-public sealed class Ppu
-{
+public sealed class Ppu {
    readonly MachineState machine;
    public readonly PpuRegisters Registers;
    public readonly byte[] Vram = new byte[0x2000];
