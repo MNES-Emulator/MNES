@@ -10,9 +10,9 @@ public sealed partial class CpuRegisters {
    /// <summary> The program counter. </summary>
    public ushort PC;
 
-   public byte this[RegisterType index] {
-      get => registers[(int)index];
-      set => registers[(int)index] = value;
+   public byte this[RegisterType reg] {
+      get => registers[reg];
+      set => registers[reg] = value;
    }
 
    /// <summary> The accumulator. </summary>
@@ -31,18 +31,18 @@ public sealed partial class CpuRegisters {
    public byte P { get => registers[4]; set => registers[4] = value | StatusFlag._1; }
 
    public byte GetRegister(RegisterType r) =>
-      registers[(int)r];
+      registers[r];
 
    public void SetRegister(RegisterType r, byte value) {
-      if ((int)r < (int)RegisterType.S)
+      if (r.SetsFlags)
          SetRegisterAndFlags(r, value);
       else
-         registers[(int)r] = value;
+         registers[r] = value;
    }
 
    /// <summary> Set register value and handle status flag updating. </summary>
    void SetRegisterAndFlags(RegisterType r, byte value) {
-      registers[(int)r] = value;
+      registers[r] = value;
       SetFlag(StatusFlag.Negative, (value & 0b_1000_0000) > 0);
       SetFlag(StatusFlag.Zero, value == 0);
    }

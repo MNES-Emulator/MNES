@@ -8,11 +8,8 @@ namespace Mnes.Tests.Machine.CPU;
 public sealed class CpuRegistersTests {
    readonly IFixture F = new Fixture();
 
-   public CpuRegistersTests() {
-      // TODO: push somewhere reusable (make values arbitrary; default is in order)
-      var values = Enum.GetValues<RegisterType>();
-      F.Register(() => values[F.Create<int>() % values.Length]);
-   }
+   public CpuRegistersTests() =>
+      F.Register(() => RegisterType.Values[F.Create<int>() % RegisterType.Values.Count]);
 
    [TestMethod]
    public void Test_Indexer() {
