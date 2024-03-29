@@ -1,5 +1,4 @@
 ﻿using Mnes.Core.Machine.Logging;
-using Mnes.Core.Machine.PPU;
 using static Mnes.Core.Machine.CPU.CpuInstruction;
 using static Mnes.Core.Machine.CPU.CpuRegisters;
 

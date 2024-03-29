@@ -19,21 +19,25 @@ partial class CpuRegisters {
       /// <summary> The N flag. </summary>
       public static readonly StatusFlagType Negative = new(0b_1000_0000);
 
-      readonly byte _bits;
+      public byte Bits { get; }
 
       StatusFlagType(
          byte bits
       ) =>
-         _bits = bits;
+         Bits = bits;
 
-      public static byte operator |(StatusFlagType a, StatusFlagType b) => (byte)(a._bits | b._bits);
-      public static byte operator |(byte bits, StatusFlagType flag) => (byte)(bits | flag._bits);
-      public static byte operator &(byte bits, StatusFlagType flag) => (byte)(bits & flag._bits);
-      public static byte operator ~(StatusFlagType me) => (byte)~me._bits;
+      public static byte operator |(byte bits, StatusFlagType flag) => (byte)(bits | flag.Bits);
+      public static byte operator |(StatusFlagType flag, byte bits) => bits | flag;
+      public static byte operator |(StatusFlagType a, StatusFlagType b) => a | b.Bits;
+
+      public static byte operator &(byte bits, StatusFlagType flag) => (byte)(bits & flag.Bits);
+      public static byte operator &(StatusFlagType flag, byte bits) => bits & flag;
+
+      public static byte operator ~(StatusFlagType me) => (byte)~me.Bits;
 
       public bool IsSet(
          byte bits
       ) =>
-         (bits & _bits) != 0;
+         (bits & Bits) != 0;
    }
 }
