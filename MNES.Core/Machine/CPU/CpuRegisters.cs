@@ -6,7 +6,7 @@ namespace Mnes.Core.Machine.CPU;
 /// <summary> Represents all the registers of the CPU. </summary>
 public sealed partial class CpuRegisters {
    /// <summary> The 5 8-bit registers. </summary>
-   readonly byte[] registers = new byte[5];
+   readonly byte[] registers = new byte[RegisterType.Values.Count];
    /// <summary> The program counter. </summary>
    public ushort PC;
 
@@ -16,43 +16,42 @@ public sealed partial class CpuRegisters {
    }
 
    /// <summary> The accumulator. </summary>
-   public byte A { get => registers[0]; set => SetRegisterAndFlags(RegisterType.A, value); }
+   public byte A { get => registers[RegisterType.A]; set => SetRegister(RegisterType.A, value); }
 
    /// <summary> The X register. </summary>
-   public byte X { get => registers[1]; set => SetRegisterAndFlags(RegisterType.X, value); }
+   public byte X { get => registers[RegisterType.X]; set => SetRegister(RegisterType.X, value); }
 
    /// <summary> The Y register. </summary>
-   public byte Y { get => registers[2]; set => SetRegisterAndFlags(RegisterType.Y, value); }
+   public byte Y { get => registers[RegisterType.Y]; set => SetRegister(RegisterType.Y, value); }
 
    /// <summary> The stack pointer. </summary>
-   public byte S { get => registers[3]; set => registers[3] = value; }
+   public byte S { get => registers[RegisterType.S]; set => SetRegister(RegisterType.S, value); }
 
    /// <summary> The status register. </summary>
-   public byte P { get => registers[4]; set => registers[4] = value | StatusFlag._1; }
+   public byte P { get => registers[RegisterType.P]; set => SetRegister(RegisterType.P, value); }
 
-   public CpuRegisters() =>
-      P |= StatusFlag._1;
+   public CpuRegisters() {
+      foreach (var reg in RegisterType.Values)
+         SetRegister(reg, 0);
+   }
 
    public byte GetRegister(RegisterType r) =>
       registers[r];
 
    public void SetRegister(RegisterType r, byte value) {
-      if (r.SetsFlags)
-         SetRegisterAndFlags(r, value);
-      else
-         registers[r] = value;
-   }
-
-   /// <summary> Set register value and handle status flag updating. </summary>
-   void SetRegisterAndFlags(RegisterType r, byte value) {
       registers[r] = value;
-      UpdateFlags(value);
+
+      if (r == RegisterType.P)
+         registers[r] |= StatusFlag._1;
+
+      if (r.SetsFlags)
+         UpdateFlags(value);
    }
 
    /// <summary> Set relevant flags from value in memory. </summary>
    /// <param name="value"></param>
    public void UpdateFlags(byte value) {
-      SetFlag(StatusFlag.Negative, (value & 0b_1000_0000) > 0);
+      SetFlag(StatusFlag.Negative, StatusFlag.Negative.IsSet(value));
       SetFlag(StatusFlag.Zero, value == 0);
    }
 
