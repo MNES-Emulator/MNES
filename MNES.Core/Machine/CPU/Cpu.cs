@@ -9,8 +9,6 @@ public sealed class Cpu {
    readonly MachineState _machine;
    readonly CpuInstruction[] _instructions = new CpuInstruction[256];
 
-   public CpuRegisters Registers { get; } = new();
-
    CpuInstruction _currentInstruction;
    int _currentInstructionCycle;
    long _cycleCounter = 6;
@@ -29,6 +27,8 @@ public sealed class Cpu {
    string log_message;
    CpuRegisterLog log_cpu;
    long log_inst_count;
+
+   public CpuRegisters Registers { get; } = new();
 
    #region Utility Functions
 
