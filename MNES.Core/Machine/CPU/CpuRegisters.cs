@@ -28,7 +28,7 @@ public sealed partial class CpuRegisters {
    public byte S { get => registers[3]; set => registers[3] = value; }
 
    /// <summary> The status register. </summary>
-   public byte P { get => registers[4]; set => registers[4] = value | StatusFlagType._1; }
+   public byte P { get => registers[4]; set => registers[4] = value | StatusFlag._1; }
 
    public byte GetRegister(RegisterType r) =>
       registers[(int)r];
@@ -43,31 +43,31 @@ public sealed partial class CpuRegisters {
    /// <summary> Set register value and handle status flag updating. </summary>
    void SetRegisterAndFlags(RegisterType r, byte value) {
       registers[(int)r] = value;
-      SetFlag(StatusFlagType.Negative, (value & 0b_1000_0000) > 0);
-      SetFlag(StatusFlagType.Zero, value == 0);
+      SetFlag(StatusFlag.Negative, (value & 0b_1000_0000) > 0);
+      SetFlag(StatusFlag.Zero, value == 0);
    }
 
    /// <summary> Set relevant flags from value in memory. </summary>
    /// <param name="value"></param>
    public void UpdateFlags(byte value) {
-      SetFlag(StatusFlagType.Negative, (value & 0b_1000_0000) > 0);
-      SetFlag(StatusFlagType.Zero, value == 0);
+      SetFlag(StatusFlag.Negative, (value & 0b_1000_0000) > 0);
+      SetFlag(StatusFlag.Zero, value == 0);
    }
 
-   public bool HasFlag(StatusFlagType flag) =>
+   public bool HasFlag(StatusFlag flag) =>
       flag.IsSet(P);
 
-   public void SetFlag(StatusFlagType flag) =>
+   public void SetFlag(StatusFlag flag) =>
       P |= flag;
 
-   public void SetFlag(StatusFlagType flag, bool value) {
+   public void SetFlag(StatusFlag flag, bool value) {
       if (value)
          SetFlag(flag);
       else
          ClearFlag(flag);
    }
 
-   public void ClearFlag(StatusFlagType flag) =>
+   public void ClearFlag(StatusFlag flag) =>
       P &= ~flag;
 
    public CpuRegisterLog GetLog() =>
