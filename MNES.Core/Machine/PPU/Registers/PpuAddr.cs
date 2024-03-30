@@ -14,7 +14,6 @@ public sealed class PpuAddr : Register {
       Machine.Ppu.W = !Machine.Ppu.W;
    }
 
-   public override byte CpuRead() => 
+   public override byte CpuRead() =>
       Machine.Ppu.Registers.OpenBus;
-   
 }
