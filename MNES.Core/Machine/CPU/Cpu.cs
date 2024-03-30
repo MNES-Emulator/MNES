@@ -1,5 +1,4 @@
 ﻿using Mnes.Core.Machine.Logging;
-using Mnes.Core.Machine.PPU;
 using static Mnes.Core.Machine.CPU.CpuInstruction;
 using static Mnes.Core.Machine.CPU.CpuRegisters;
 
@@ -7,13 +6,12 @@ namespace Mnes.Core.Machine.CPU;
 
 // https://www.masswerk.at/6502/6502_instruction_set.html
 public sealed class Cpu {
-   public readonly CpuRegisters Registers = new();
-   readonly MachineState machine;
-   readonly CpuInstruction[] instructions = new CpuInstruction[256];
+   readonly MachineState _machine;
+   readonly CpuInstruction[] _instructions = new CpuInstruction[256];
 
-   CpuInstruction CurrentInstruction;
-   int CurrentInstructionCycle;
-   long CycleCounter = 6;
+   CpuInstruction _currentInstruction;
+   int _currentInstructionCycle;
+   long _cycleCounter = 6;
 
    // temp values used to store data across clock cycles within a single instruction
    ushort tmp_u;
@@ -29,6 +27,8 @@ public sealed class Cpu {
    string log_message;
    CpuRegisterLog log_cpu;
    long log_inst_count;
+
+   public CpuRegisters Registers { get; } = new();
 
    #region Utility Functions
 
@@ -110,17 +110,17 @@ public sealed class Cpu {
 
    // Some opcodes do similar things
    #region Generic Opcode Methods
-   static void OpSetFlag(MachineState m, StatusFlagType flag) {
-      m.Cpu.Registers.P |= (byte)flag;
+   static void OpSetFlag(MachineState m, StatusFlag flag) {
+      m.Cpu.Registers.P |= flag;
       m.Cpu.Registers.PC++;
    }
 
-   static void OpClearFlag(MachineState m, StatusFlagType flag) {
+   static void OpClearFlag(MachineState m, StatusFlag flag) {
       m.Cpu.Registers.ClearFlag(flag);
       m.Cpu.Registers.PC++;
    }
 
-   static void OpBranchOnFlagRelative(MachineState m, StatusFlagType flag) {
+   static void OpBranchOnFlagRelative(MachineState m, StatusFlag flag) {
       if (m.Settings.System.DebugMode) m.Cpu.log_message = $"${m.Cpu.Registers.PC + m[(ushort)(m.Cpu.Registers.PC + 1)] + 2:X4}";
 
       if (m.Cpu.Registers.HasFlag(flag))
@@ -130,7 +130,7 @@ public sealed class Cpu {
       m.Cpu.Registers.PC += 2;
    }
 
-   static void OpBranchOnClearFlagRelative(MachineState m, StatusFlagType flag) {
+   static void OpBranchOnClearFlagRelative(MachineState m, StatusFlag flag) {
       if (m.Settings.System.DebugMode) m.Cpu.log_message = $"${m.Cpu.Registers.PC + m[(ushort)(m.Cpu.Registers.PC + 1)] + 2:X4}";
 
       if (!m.Cpu.Registers.HasFlag(flag))
@@ -141,37 +141,37 @@ public sealed class Cpu {
    }
 
    static void OpCompare(MachineState m, byte r, byte mem) {
-      m.Cpu.Registers.SetFlag(StatusFlagType.Negative, ((r - mem) & 0b_1000_0000) > 0);
-      m.Cpu.Registers.SetFlag(StatusFlagType.Zero, r == mem);
-      m.Cpu.Registers.SetFlag(StatusFlagType.Carry, mem <= r);
+      m.Cpu.Registers.SetFlag(StatusFlag.Negative, ((r - mem) & 0b_1000_0000) > 0);
+      m.Cpu.Registers.SetFlag(StatusFlag.Zero, r == mem);
+      m.Cpu.Registers.SetFlag(StatusFlag.Carry, mem <= r);
    }
 
    static void OpAddCarry(MachineState m, byte value) {
       var a = m.Cpu.Registers.A;
-      var sum = a + value + (m.Cpu.Registers.HasFlag(StatusFlagType.Carry)? 1 : 0);
+      var sum = a + value + (m.Cpu.Registers.HasFlag(StatusFlag.Carry)? 1 : 0);
       var carry = sum > 0xFF;
       var overflow = (~(a ^ value) & (a ^ sum) & 0x80) > 0;
       m.Cpu.Registers.A = (byte)sum;
-      m.Cpu.Registers.SetFlag(StatusFlagType.Carry, carry);
-      m.Cpu.Registers.SetFlag(StatusFlagType.Overflow, overflow);
+      m.Cpu.Registers.SetFlag(StatusFlag.Carry, carry);
+      m.Cpu.Registers.SetFlag(StatusFlag.Overflow, overflow);
    }
 
    static void OpRollingLeftShiftMem(MachineState m, ushort target) {
-      var prev_carry = m.Cpu.Registers.HasFlag(StatusFlagType.Carry);
+      var prev_carry = m.Cpu.Registers.HasFlag(StatusFlag.Carry);
       var c_flag = (m[target] & 0b_1000_0000) > 0;
       m[target] <<= 1;
       if (prev_carry) m[target] |= 0b_0000_0001;
       m.Cpu.Registers.UpdateFlags(m[target]);
-      m.Cpu.Registers.SetFlag(StatusFlagType.Carry, c_flag);
+      m.Cpu.Registers.SetFlag(StatusFlag.Carry, c_flag);
    }
 
    static void OpRollingRightShiftMem(MachineState m, ushort target) {
-      var prev_carry = m.Cpu.Registers.HasFlag(StatusFlagType.Carry);
+      var prev_carry = m.Cpu.Registers.HasFlag(StatusFlag.Carry);
       var c_flag = (m[target] & 0b_0000_0001) > 0;
       m[target] >>= 1;
       if (prev_carry) m[target] |= 0b_1000_0000;
       m.Cpu.Registers.UpdateFlags(m[target]);
-      m.Cpu.Registers.SetFlag(StatusFlagType.Carry, c_flag);
+      m.Cpu.Registers.SetFlag(StatusFlag.Carry, c_flag);
    }
 
    static void OpIncMem(MachineState m, ushort target) {
@@ -185,9 +185,9 @@ public sealed class Cpu {
    }
 
    static void OpBit(MachineState m, byte value) {
-      m.Cpu.Registers.SetFlag(StatusFlagType.Zero, (m.Cpu.Registers.A & value) == 0);
-      m.Cpu.Registers.SetFlag(StatusFlagType.Negative, (value & 0b_1000_0000) > 0);
-      m.Cpu.Registers.SetFlag(StatusFlagType.Overflow, (value & 0b_0100_0000) > 0);
+      m.Cpu.Registers.SetFlag(StatusFlag.Zero, (m.Cpu.Registers.A & value) == 0);
+      m.Cpu.Registers.SetFlag(StatusFlag.Negative, (value & 0b_1000_0000) > 0);
+      m.Cpu.Registers.SetFlag(StatusFlag.Overflow, (value & 0b_0100_0000) > 0);
    }
    #endregion
 
@@ -253,19 +253,19 @@ public sealed class Cpu {
       } },
 
       new() { Name = "SEC", OpCode = 0x38, Bytes = 1, Process = new ProcessDelegate[] {
-         m => OpSetFlag(m, StatusFlagType.Carry),
+         m => OpSetFlag(m, StatusFlag.Carry),
       } },
 
       new() { Name = "BCS", OpCode = 0xB0, Bytes = 2, Process = new ProcessDelegate[] {
-         m => OpBranchOnFlagRelative(m, StatusFlagType.Carry),
+         m => OpBranchOnFlagRelative(m, StatusFlag.Carry),
       } },
 
       new() { Name = "CLC", OpCode = 0x18, Bytes = 1, Process = new ProcessDelegate[] {
-         m => OpClearFlag(m, StatusFlagType.Carry),
+         m => OpClearFlag(m, StatusFlag.Carry),
       } },
 
       new() { Name = "BCC", OpCode = 0x90, Bytes = 2, Process = new ProcessDelegate[] {
-         m => OpBranchOnClearFlagRelative(m, StatusFlagType.Carry),
+         m => OpBranchOnClearFlagRelative(m, StatusFlag.Carry),
       } },
 
       new() { Name = "LDA", OpCode = 0xA9, Bytes = 2, Process = new ProcessDelegate[] {
@@ -277,11 +277,11 @@ public sealed class Cpu {
       } },
 
       new() { Name = "BEQ", OpCode = 0xF0, Bytes = 2, Process = new ProcessDelegate[] {
-         m => OpBranchOnFlagRelative(m, StatusFlagType.Zero),
+         m => OpBranchOnFlagRelative(m, StatusFlag.Zero),
       } },
 
       new() { Name = "BNE", OpCode = 0xD0, Bytes = 2, Process = new ProcessDelegate[] {
-         m => OpBranchOnClearFlagRelative(m, StatusFlagType.Zero),
+         m => OpBranchOnClearFlagRelative(m, StatusFlag.Zero),
       } },
 
       new() { Name = "STA", OpCode = 0x85, Bytes = 2, Process = new ProcessDelegate[] {
@@ -306,23 +306,23 @@ public sealed class Cpu {
       } },
 
       new() { Name = "BVS", OpCode = 0x70, Bytes = 2, Process = new ProcessDelegate[] {
-         m => OpBranchOnFlagRelative(m, StatusFlagType.Overflow),
+         m => OpBranchOnFlagRelative(m, StatusFlag.Overflow),
       } },
 
       new() { Name = "BVC", OpCode = 0x50, Bytes = 2, Process = new ProcessDelegate[] {
-         m => OpBranchOnClearFlagRelative(m, StatusFlagType.Overflow),
+         m => OpBranchOnClearFlagRelative(m, StatusFlag.Overflow),
       } },
 
       new() { Name = "BPL", OpCode = 0x10, Bytes = 2, Process = new ProcessDelegate[] {
-         m => OpBranchOnClearFlagRelative(m, StatusFlagType.Negative),
+         m => OpBranchOnClearFlagRelative(m, StatusFlag.Negative),
       } },
 
       new() { Name = "SEI", OpCode = 0x78, Bytes = 1, Process = new ProcessDelegate[] {
-         m => OpSetFlag(m, StatusFlagType.InterruptDisable),
+         m => OpSetFlag(m, StatusFlag.InterruptDisable),
       } },
 
       new() { Name = "SED", OpCode = 0xF8, Bytes = 1, Process = new ProcessDelegate[] {
-         m => OpSetFlag(m, StatusFlagType.Decimal),
+         m => OpSetFlag(m, StatusFlag.Decimal),
       } },
 
       new() { Name = "PHP", OpCode = 0x08, Bytes = 1, Process = new ProcessDelegate[] {
@@ -361,7 +361,7 @@ public sealed class Cpu {
       } },
 
       new() { Name = "CLD", OpCode = 0xD8, Bytes = 1, Process = new ProcessDelegate[] {
-         m => OpClearFlag(m, StatusFlagType.Decimal),
+         m => OpClearFlag(m, StatusFlag.Decimal),
       } },
 
       new() { Name = "PHA", OpCode = 0x48, Bytes = 1, Process = new ProcessDelegate[] {
@@ -376,15 +376,15 @@ public sealed class Cpu {
          m => { },
          m => { },
          m => {
-            var b_flag = m.Cpu.Registers.HasFlag(StatusFlagType.BFlag);
+            var b_flag = m.Cpu.Registers.HasFlag(StatusFlag.BFlag);
             m.Cpu.Registers.P = PULL(m);
-            m.Cpu.Registers.SetFlag(StatusFlagType.BFlag, b_flag);
+            m.Cpu.Registers.SetFlag(StatusFlag.BFlag, b_flag);
             m.Cpu.Registers.PC++;
          },
       } },
 
       new() { Name = "BMI", OpCode = 0x30, Bytes = 2, Process = new ProcessDelegate[] {
-         m => OpBranchOnFlagRelative(m, StatusFlagType.Negative),
+         m => OpBranchOnFlagRelative(m, StatusFlag.Negative),
       } },
 
       new() { Name = "ORA", OpCode = 0x09, Bytes = 2, Process = new ProcessDelegate[] {
@@ -396,7 +396,7 @@ public sealed class Cpu {
       } },
 
       new() { Name = "CLV", OpCode = 0xB8, Bytes = 1, Process = new ProcessDelegate[] {
-         m => OpClearFlag(m, StatusFlagType.Overflow),
+         m => OpClearFlag(m, StatusFlag.Overflow),
       } },
 
       new() { Name = "EOR", OpCode = 0x49, Bytes = 2, Process = new ProcessDelegate[] {
@@ -581,7 +581,7 @@ public sealed class Cpu {
          m => {
             var c_flag = (m.Cpu.Registers.A & 0b_0000_0001) > 0;
             m.Cpu.Registers.A >>= 1;
-            m.Cpu.Registers.SetFlag(StatusFlagType.Carry, c_flag);
+            m.Cpu.Registers.SetFlag(StatusFlag.Carry, c_flag);
             m.Cpu.Registers.PC += 1;
             if (m.Settings.System.DebugMode) m.Cpu.log_message = $"A";
          },
@@ -591,7 +591,7 @@ public sealed class Cpu {
          m => {
             var c_flag = (m.Cpu.Registers.A & 0b_1000_0000) > 0;
             m.Cpu.Registers.A <<= 1;
-            m.Cpu.Registers.SetFlag(StatusFlagType.Carry, c_flag);
+            m.Cpu.Registers.SetFlag(StatusFlag.Carry, c_flag);
             m.Cpu.Registers.PC += 1;
             if (m.Settings.System.DebugMode) m.Cpu.log_message = $"A";
          },
@@ -599,11 +599,11 @@ public sealed class Cpu {
 
       new() { Name = "ROR", OpCode = 0x6A, Bytes = 1, Process = new ProcessDelegate[] {
          m => {
-            var prev_carry = m.Cpu.Registers.HasFlag(StatusFlagType.Carry);
+            var prev_carry = m.Cpu.Registers.HasFlag(StatusFlag.Carry);
             var c_flag = (m.Cpu.Registers.A & 0b_0000_0001) > 0;
             m.Cpu.Registers.A >>= 1;
             if (prev_carry) m.Cpu.Registers.A |= 0b_1000_0000;
-            m.Cpu.Registers.SetFlag(StatusFlagType.Carry, c_flag);
+            m.Cpu.Registers.SetFlag(StatusFlag.Carry, c_flag);
             m.Cpu.Registers.PC += 1;
             if (m.Settings.System.DebugMode) m.Cpu.log_message = $"A";
          },
@@ -611,11 +611,11 @@ public sealed class Cpu {
 
       new() { Name = "ROL", OpCode = 0x2A, Bytes = 1, Process = new ProcessDelegate[] {
          m => {
-            var prev_carry = m.Cpu.Registers.HasFlag(StatusFlagType.Carry);
+            var prev_carry = m.Cpu.Registers.HasFlag(StatusFlag.Carry);
             var c_flag = (m.Cpu.Registers.A & 0b_1000_0000) > 0;
             m.Cpu.Registers.A <<= 1;
             if (prev_carry) m.Cpu.Registers.A |= 0b_0000_0001;
-            m.Cpu.Registers.SetFlag(StatusFlagType.Carry, c_flag);
+            m.Cpu.Registers.SetFlag(StatusFlag.Carry, c_flag);
             m.Cpu.Registers.PC += 1;
             if (m.Settings.System.DebugMode) m.Cpu.log_message = $"A";
          },
@@ -865,7 +865,7 @@ public sealed class Cpu {
 
             var c_flag = (m[arg] & 0b_0000_0001) > 0;
             m[arg] >>= 1;
-            m.Cpu.Registers.SetFlag(StatusFlagType.Carry, c_flag);
+            m.Cpu.Registers.SetFlag(StatusFlag.Carry, c_flag);
 
             m.Cpu.Registers.PC += 2;
          },
@@ -879,7 +879,7 @@ public sealed class Cpu {
 
             var c_flag = (m[arg] & 0b_1000_0000) > 0;
             m[arg] <<= 1;
-            m.Cpu.Registers.SetFlag(StatusFlagType.Carry, c_flag);
+            m.Cpu.Registers.SetFlag(StatusFlag.Carry, c_flag);
 
             m.Cpu.Registers.PC += 2;
          },
@@ -1076,7 +1076,7 @@ public sealed class Cpu {
             if (m.Settings.System.DebugMode) m.Cpu.log_message = $"${target:X4} = {m[target]:X2}";
             var carry = (m[target] & 1) > 0;
             m[target] >>= 1;
-            m.Cpu.Registers.SetFlag(StatusFlagType.Carry, carry);
+            m.Cpu.Registers.SetFlag(StatusFlag.Carry, carry);
             m.Cpu.Registers.PC += 3;
          },
       } },
@@ -1091,7 +1091,7 @@ public sealed class Cpu {
             if (m.Settings.System.DebugMode) m.Cpu.log_message = $"${target:X4} = {m[target]:X2}";
             var c_flag = (m[target] & 0b_1000_0000) > 0;
             m[target] <<= 1;
-            m.Cpu.Registers.SetFlag(StatusFlagType.Carry, c_flag);
+            m.Cpu.Registers.SetFlag(StatusFlag.Carry, c_flag);
             m.Cpu.Registers.PC += 3;
          },
       } },
@@ -1425,7 +1425,7 @@ public sealed class Cpu {
             var address = GetIndexedZeroPageAddress(m, m[(ushort)(m.Cpu.Registers.PC + 1)], RegisterType.X);
             var carry = (m[address] & 1) > 0;
             m[address] >>= 1;
-            m.Cpu.Registers.SetFlag(StatusFlagType.Carry, carry);
+            m.Cpu.Registers.SetFlag(StatusFlag.Carry, carry);
             m.Cpu.Registers.PC += 2;
          },
       } },
@@ -1439,7 +1439,7 @@ public sealed class Cpu {
             var address = GetIndexedZeroPageAddress(m, m[(ushort)(m.Cpu.Registers.PC + 1)], RegisterType.X);
             var carry = (m[address] & 0b_1000_0000) > 0;
             m[address] <<= 1;
-            m.Cpu.Registers.SetFlag(StatusFlagType.Carry, carry);
+            m.Cpu.Registers.SetFlag(StatusFlag.Carry, carry);
             m.Cpu.Registers.PC += 2;
          },
       } },
@@ -1608,7 +1608,7 @@ public sealed class Cpu {
             var address = GetIndexedAbsoluteAddress(m, m.ReadUShort(m.Cpu.Registers.PC + 1), RegisterType.X);
             var carry = (m[address] & 1) > 0;
             m[address] >>= 1;
-            m.Cpu.Registers.SetFlag(StatusFlagType.Carry, carry);
+            m.Cpu.Registers.SetFlag(StatusFlag.Carry, carry);
             m.Cpu.Registers.PC += 3;
          },
       } },
@@ -1622,7 +1622,7 @@ public sealed class Cpu {
             var address = GetIndexedAbsoluteAddress(m, m.ReadUShort(m.Cpu.Registers.PC + 1), RegisterType.X);
             var carry = (m[address] & 0b_1000_0000) > 0;
             m[address] <<= 1;
-            m.Cpu.Registers.SetFlag(StatusFlagType.Carry, carry);
+            m.Cpu.Registers.SetFlag(StatusFlag.Carry, carry);
             m.Cpu.Registers.PC += 3;
          },
       } },
@@ -1698,17 +1698,17 @@ public sealed class Cpu {
          m => {
             PUSH_ushort(m, m.Cpu.Registers.PC);
             PUSH(m, m.Cpu.Registers.P);
-            m.Cpu.Registers.SetFlag(StatusFlagType.InterruptDisable);
+            m.Cpu.Registers.SetFlag(StatusFlag.InterruptDisable);
             m.Cpu.Registers.PC += 1;
          },
       } },
    };
 
    public Cpu(MachineState machine) {
-      this.machine = machine;
+      this._machine = machine;
       foreach (var i in instructions_unordered) {
-         if (instructions[i.OpCode] != null) throw new Exception($"Duplicate OpCodes: {instructions[i.OpCode].Name} and {i.Name}");
-         instructions[i.OpCode] = i;
+         if (_instructions[i.OpCode] != null) throw new Exception($"Duplicate OpCodes: {_instructions[i.OpCode].Name} and {i.Name}");
+         _instructions[i.OpCode] = i;
       }
    }
 
@@ -1719,45 +1719,45 @@ public sealed class Cpu {
       Registers.A = 0;
 
       // I just put InterruptDisable/0xFD here because these seem to be set in the nestest.log file by the time it gets here but I haven't found anything in documentation to say why
-      Registers.P = (byte)StatusFlagType._1 | (byte)StatusFlagType.InterruptDisable;
+      Registers.P = StatusFlag._1 | StatusFlag.InterruptDisable;
       Registers.S = 0xFD;
    }
 
    public void Tick() {
-      CycleCounter++;
-      if (CurrentInstruction == null) {
-         var opcode = machine[Registers.PC];
-         CurrentInstruction = instructions[opcode];
-         if (CurrentInstruction == null) {
+      _cycleCounter++;
+      if (_currentInstruction == null) {
+         var opcode = _machine[Registers.PC];
+         _currentInstruction = _instructions[opcode];
+         if (_currentInstruction == null) {
             throw new NotImplementedException($"{Registers.PC:X4}: Opcode {opcode:X2} not implemented. {instructions_unordered.Length}/151 opcodes are implemented!");
          }
-         if (machine.Settings.System.DebugMode) {
+         if (_machine.Settings.System.DebugMode) {
             log_pc = Registers.PC;
-            log_d1 = CurrentInstruction.Bytes < 2 ? null : machine[(ushort)(Registers.PC + 1)];
-            log_d2 = CurrentInstruction.Bytes < 3 ? null : machine[(ushort)(Registers.PC + 2)];
-            log_cyc = CycleCounter;
+            log_d1 = _currentInstruction.Bytes < 2 ? null : _machine[(ushort)(Registers.PC + 1)];
+            log_d2 = _currentInstruction.Bytes < 3 ? null : _machine[(ushort)(Registers.PC + 2)];
+            log_cyc = _cycleCounter;
             log_cpu = Registers.GetLog();
             log_inst_count++;
          }
       } else {
-         if (CurrentInstructionCycle < CurrentInstruction.Process.Length) CurrentInstruction.Process[CurrentInstructionCycle++](machine);
-         if (CurrentInstructionCycle == CurrentInstruction.Process.Length) {
+         if (_currentInstructionCycle < _currentInstruction.Process.Length) _currentInstruction.Process[_currentInstructionCycle++](_machine);
+         if (_currentInstructionCycle == _currentInstruction.Process.Length) {
             if (add_cycles > 0) {
                add_cycles--;
                return;
             }
-            if (machine.Settings.System.DebugMode) {
-               machine.Logger.Log(new(CurrentInstruction, log_pc, log_d1, log_d2, log_cpu, log_cyc, log_message));
+            if (_machine.Settings.System.DebugMode) {
+               _machine.Logger.Log(new(_currentInstruction, log_pc, log_d1, log_d2, log_cpu, log_cyc, log_message));
                log_message = null;
             }
-            CurrentInstruction = null;
-            CurrentInstructionCycle = 0;
-            if (machine.Ppu.NMI_occurred)
+            _currentInstruction = null;
+            _currentInstructionCycle = 0;
+            if (_machine.Ppu.NMI_occurred)
             {
                // handle interrupt
-               PUSH(machine, machine.Cpu.Registers.P);
-               PUSH_ushort(machine, machine.Cpu.Registers.PC);
-               machine.Cpu.Registers.PC = machine.ReadUShort(0xFFFA);
+               PUSH(_machine, _machine.Cpu.Registers.P);
+               PUSH_ushort(_machine, _machine.Cpu.Registers.PC);
+               _machine.Cpu.Registers.PC = _machine.ReadUShort(0xFFFA);
             }
          }
       }
