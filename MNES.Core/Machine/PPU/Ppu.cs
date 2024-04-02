@@ -8,6 +8,7 @@ public sealed class Ppu {
    public readonly PpuRegisters Registers;
    public readonly byte[] Vram = new byte[0x2000];
    public readonly byte[] Oam = new byte[0x100];
+   readonly PpuMapper mapper;
 
    // NMI interrupt https://www.nesdev.org/wiki/NMI
    public bool NMI_occurred;
@@ -22,6 +23,7 @@ public sealed class Ppu {
    public Ppu(MachineState m) {
       machine = m;
       Registers = new(m);
+      mapper = new(m, this);
    }
 
    public void SetPowerUpState() {
@@ -30,6 +32,7 @@ public sealed class Ppu {
       Array.Clear(Oam);
    }
 
+   // https://www.nesdev.org/wiki/PPU_rendering
    public void Tick() {
 
    }

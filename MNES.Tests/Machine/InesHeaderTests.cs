@@ -16,12 +16,12 @@ public sealed class InesHeaderTests {
    [TestMethod]
    public void Test_CorrectSizeArrayWithoutMagicValueThrows() =>
       Assert.ThrowsException<Exception>(() =>
-         new InesHeader(new byte[InesHeader.header_length])
+         new InesHeader(new byte[InesHeader.HEADER_LENGTH])
       );
 
    static byte[] MakeBlankValidHeader() {
-      var bytes = new byte[InesHeader.header_length];
-      InesHeader.ines_text.CopyTo(bytes, 0);
+      var bytes = new byte[InesHeader.HEADER_LENGTH];
+      InesHeader.InesText.ToArray().CopyTo(bytes, 0);
       return bytes;
    }
 

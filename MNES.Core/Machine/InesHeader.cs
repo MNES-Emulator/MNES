@@ -2,10 +2,10 @@
 
 // https://www.nesdev.org/wiki/INES
 public sealed class InesHeader {
-   public const int header_length = 0x10;
+   public const int HEADER_LENGTH = 0x10;
    public const int _8K = 0x2000;
    public const int _16K = 0x4000;
-   public static readonly byte[] ines_text = { 0x4E, 0x45, 0x53, 0x1A };
+   public static readonly IReadOnlyCollection<byte> InesText = new byte[]{ 0x4E, 0x45, 0x53, 0x1A };
 
    public readonly int PrgRomSize;
    public readonly int ChrRomSize;
@@ -36,11 +36,11 @@ public sealed class InesHeader {
    public InesHeader(
       byte[] nes_file
    ) {
-      if (nes_file.Length < header_length)
-         throw new Exception($"ROM invalid, whole file is smaller than the header (was {nes_file.Length}; expected at least {header_length}).");
+      if (nes_file.Length < HEADER_LENGTH)
+         throw new Exception($"ROM invalid, whole file is smaller than the header (was {nes_file.Length}; expected at least {HEADER_LENGTH}).");
 
       // 0-3: Constant $4E $45 $53 $1A (ASCII "NES" followed by MS-DOS end-of-file)
-      if (!nes_file[..ines_text.Length].SequenceEqual(ines_text))
+      if (!nes_file[..InesText.Count].SequenceEqual(InesText))
          throw new Exception("ROM invalid, INES header not found.");
 
       // 4: Size of PRG ROM in 16 KB units

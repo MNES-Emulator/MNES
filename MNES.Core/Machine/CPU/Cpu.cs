@@ -1759,8 +1759,7 @@ public sealed class Cpu {
             }
             _currentInstruction = null;
             _current_instruction_cycle = 0;
-            if (_machine.Ppu.NMI_occurred)
-            {
+            if (_machine.Ppu.NMI_occurred) {
                // handle interrupt
                PUSH(_machine, _machine.Cpu.Registers.P);
                PUSH_ushort(_machine, _machine.Cpu.Registers.PC);
