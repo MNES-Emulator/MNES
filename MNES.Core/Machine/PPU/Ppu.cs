@@ -20,6 +20,17 @@ public sealed class Ppu {
    public Byte3 X;
    public bool W;
 
+   public const int SCREEN_WIDTH = 256;
+   public const int SCREEN_HEIGHT = 240;
+
+   public readonly uint[] RawBitmap = new uint[SCREEN_WIDTH * SCREEN_HEIGHT];
+
+   const int SCANLINE_WIDTH = 341;
+   const int SCANLINE_HEIGHT = 261;
+
+   int x_pos;
+   int y_pos;
+
    public Ppu(MachineState m) {
       machine = m;
       Registers = new(m);
@@ -34,6 +45,21 @@ public sealed class Ppu {
 
    // https://www.nesdev.org/wiki/PPU_rendering
    public void Tick() {
+      if (x_pos == 1)
+      {
+         if (y_pos == 241)
+         {
+            Registers.PpuStatus.VBlankHasStarted = true;
+            NMI_occurred = true;
+         }
+         // leave here
+      }
+      IncrementDot();
+   }
 
+   void IncrementDot() {
+      x_pos++;
+      if (x_pos == SCANLINE_WIDTH) { x_pos = 0; y_pos++; }
+      if (y_pos == SCANLINE_HEIGHT) { y_pos = 0; }
    }
 }
