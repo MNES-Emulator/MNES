@@ -110,7 +110,7 @@ public sealed class MachineState {
    } set {
       if (index < 0x2000) Ram[index % 0x0800] = value;
       else if (index < 0x4000) Ppu.Registers[index % 8] = value;
-      else if (index < 0x4020) Io[index - 0x4020] = value;
+      else if (index < 0x4020) Io[index - 0x4000] = value;
       else _mapper[index] = value;
    } }
 }

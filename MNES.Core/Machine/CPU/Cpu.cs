@@ -47,8 +47,15 @@ public sealed class Cpu {
       m.Cpu.Registers.PC |= (ushort)(value << 8);
    }
 
-   static void PUSH(MachineState m, byte value) =>
+   static void PUSH(MachineState m, byte value) {
+      if (m.Cpu.Registers.S == 0) throw new Exception("NES stack overflow.");
       m[(ushort)(m.Cpu.Registers.S-- + 0x0100)] = value;
+   }
+
+   static byte PULL(MachineState m) {
+      if (m.Cpu.Registers.S == 0xFF) throw new Exception("NES stack underflow.");
+      return m[(ushort)(++m.Cpu.Registers.S + 0x0100)];
+   }
 
    static void PUSH_ushort(MachineState m, ushort value) {
       PUSH(m, (byte)(value >> 8));
@@ -60,9 +67,6 @@ public sealed class Cpu {
       value |= (ushort)(PULL(m) << 8);
       return value;
    }
-
-   static byte PULL(MachineState m) =>
-      m[(ushort)(++m.Cpu.Registers.S + 0x0100)];
 
    static ushort GetIndexedZeroPageIndirectAddress(MachineState m, byte arg, RegisterType r) {
       // X-Indexed Zero Page Indirect https://www.pagetable.com/c64ref/6502/?tab=3#(a8,X)
@@ -76,7 +80,7 @@ public sealed class Cpu {
       var target = b_h;
 
       if (m.Settings.System.DebugMode) m.Cpu._log_message =
-         $"(${arg:X2},{r}) = @ {x_target:X2} = {target:X4} = {m[target]:X2}";
+         $"(${arg:X2},{r.Name}) = @ {x_target:X2} = {target:X4} = {m[target]:X2}";
 
       return target;
    }
@@ -92,20 +96,20 @@ public sealed class Cpu {
 
       // This output is wrong but it doesn't actually effect anything
       if (m.Settings.System.DebugMode) m.Cpu._log_message =
-        $"(${arg:X2}),{r} = {target:X4} @ {target:X4} = {m[target]:X2}";
+        $"(${arg:X2}),{r.Name} = {target:X4} @ {target:X4} = {m[target]:X2}";
 
       return target;
    }
 
    static ushort GetIndexedAbsoluteAddress(MachineState m, ushort arg, RegisterType r) {
       var address = (ushort)(arg + m.Cpu.Registers[r]);
-      if (m.Settings.System.DebugMode) m.Cpu._log_message = $"${arg:X4},{r} @ {address:X4} = {m[address]:X2}";
+      if (m.Settings.System.DebugMode) m.Cpu._log_message = $"${arg:X4},{r.Name} @ {address:X4} = {m[address]:X2}";
       return address;
    }
 
    static ushort GetIndexedZeroPageAddress(MachineState m, byte arg, RegisterType r) {
       byte address = (byte)(arg + m.Cpu.Registers[r]);
-      if (m.Settings.System.DebugMode) m.Cpu._log_message = $"${arg:X2},{r} @ {arg:X2} = {m[address]:X2}";
+      if (m.Settings.System.DebugMode) m.Cpu._log_message = $"${arg:X2},{r.Name} @ {arg:X2} = {m[address]:X2}";
       return address;
    }
 
@@ -124,21 +128,29 @@ public sealed class Cpu {
    }
 
    static void OpBranchOnFlagRelative(MachineState m, StatusFlag flag) {
-      if (m.Settings.System.DebugMode) m.Cpu._log_message = $"${m.Cpu.Registers.PC + m[(ushort)(m.Cpu.Registers.PC + 1)] + 2:X4}";
+      var offset = Convert.ToInt32((sbyte)m[(ushort)(m.Cpu.Registers.PC + 1)]);
+      if (m.Settings.System.DebugMode) m.Cpu._log_message = $"${m.Cpu.Registers.PC + offset + 2:X4}";
 
-      if (m.Cpu.Registers.HasFlag(flag))
-         m.Cpu.Registers.PC += m[(ushort)(m.Cpu.Registers.PC + 1)];
+      if (m.Cpu.Registers.HasFlag(flag)) {
+         var pc = (int)m.Cpu.Registers.PC;
+         pc += offset;
+         m.Cpu.Registers.PC = (ushort)pc;
+      }
 
       m.Cpu._add_cycles = 1; // Todo: Add another if branch is on another page
       m.Cpu.Registers.PC += 2;
    }
 
    static void OpBranchOnClearFlagRelative(MachineState m, StatusFlag flag) {
-      if (m.Settings.System.DebugMode) m.Cpu._log_message = $"${m.Cpu.Registers.PC + m[(ushort)(m.Cpu.Registers.PC + 1)] + 2:X4}";
+      var offset = Convert.ToInt32((sbyte)m[(ushort)(m.Cpu.Registers.PC + 1)]);
+      if (m.Settings.System.DebugMode) m.Cpu._log_message = $"${m.Cpu.Registers.PC + offset + 2:X4}";
 
-      if (!m.Cpu.Registers.HasFlag(flag))
-         m.Cpu.Registers.PC += m[(ushort)(m.Cpu.Registers.PC + 1)];
-
+      if (!m.Cpu.Registers.HasFlag(flag)) {
+         var pc = (int)m.Cpu.Registers.PC;
+         pc += offset;
+         m.Cpu.Registers.PC = (ushort)pc;
+      }
+      
       m.Cpu._add_cycles = 1; // Todo: Add another if branch is on another page
       m.Cpu.Registers.PC += 2;
    }
@@ -1708,7 +1720,7 @@ public sealed class Cpu {
    };
 
    public Cpu(MachineState machine) {
-      this._machine = machine;
+      _machine = machine;
       foreach (var i in instructions_unordered) {
          if (_instructions[i.OpCode] != null) throw new Exception($"Duplicate OpCodes: {_instructions[i.OpCode].Name} and {i.Name}");
          _instructions[i.OpCode] = i;
@@ -1759,11 +1771,13 @@ public sealed class Cpu {
             }
             _currentInstruction = null;
             _current_instruction_cycle = 0;
-            if (_machine.Ppu.NMI_occurred) {
+            if (_machine.Ppu.NMI_output) {
                // handle interrupt
                PUSH(_machine, _machine.Cpu.Registers.P);
                PUSH_ushort(_machine, _machine.Cpu.Registers.PC);
                _machine.Cpu.Registers.PC = _machine.ReadUShort(0xFFFA);
+               _machine.Ppu.NMI_output = false;
+               _machine.Ppu.NMI_occurred = true;
             }
          }
       }

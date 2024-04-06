@@ -1,4 +1,5 @@
 ﻿using Mnes.Core.Machine.CPU;
+using static Mnes.Core.Machine.CPU.CpuRegisters;
 
 namespace Mnes.Core.Machine.Logging;
 
@@ -22,7 +23,13 @@ public readonly struct CpuRegisterLog {
    public readonly byte P;
 
    public override string ToString() =>
-      $"A:{A:X2} X:{X:X2} Y:{Y:X2} P:{P:X2} S:{S:X2}";
+      $"A:{A:X2} X:{X:X2} Y:{Y:X2} P:{P:X2} ({GetStatusString()}) S:{S:X2}";
+
+   string GetStatusString() {
+      var p = P;
+      var acronyms = string.Join("", StatusFlag.Values.Select(x => $"{x.Acronym}").Reverse());
+      return $"{acronyms} {string.Join("", StatusFlag.Values.Select(x => x.IsSet(p) ? "1" : "0").Reverse())}";
+   }
 
    public CpuRegisterLog(
       CpuRegisters r

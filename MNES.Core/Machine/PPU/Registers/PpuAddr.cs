@@ -23,7 +23,7 @@ public sealed class PpuAddr : Register {
       Address = (ushort)((Address & (w ? HighAnd : LowAnd)) | ushort_value);
 
       // Remove once validated
-      Debug.WriteLine($"Wrote to PpuAddr: value: {value}, result = {Address}, lower: {w}");
+      // Debug.WriteLine($"Wrote to PpuAddr: value: {value}, result = {Address}, lower: {w}");
 
       Machine.Ppu.W = !Machine.Ppu.W;
    }

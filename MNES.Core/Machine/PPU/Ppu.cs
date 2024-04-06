@@ -50,7 +50,7 @@ public sealed class Ppu {
          if (y_pos == 241)
          {
             Registers.PpuStatus.VBlankHasStarted = true;
-            NMI_occurred = true;
+            NMI_output = true;
          }
          // leave here
       }

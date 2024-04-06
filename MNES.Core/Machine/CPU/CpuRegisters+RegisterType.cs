@@ -16,6 +16,14 @@ partial class CpuRegisters {
 
       readonly int _index;
       public bool SetsFlags { get; }
+      public char Name => _index switch {
+         0 => 'A',
+         1 => 'X',
+         2 => 'Y',
+         3 => 'S',
+         4 => 'P',
+         _ => throw new Exception()
+      };
 
       public RegisterType()
       : this(A._index, A.SetsFlags) {

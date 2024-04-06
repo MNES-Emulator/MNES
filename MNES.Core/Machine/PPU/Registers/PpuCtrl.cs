@@ -13,8 +13,6 @@ public sealed class PpuCtrl : Register {
    public SpriteSizeType SpriteSize { get; private set; }
    /// <summary> 0: read backdrop from EXT pins; 1: output color on EXT pins </summary>
    public bool MasterSlaveSelect { get; private set; }
-   /// <summary> Generate an NMI at the start of the vertical blanking interval(0: off; 1: on) </summary>
-   public bool GenerateNmi { get; private set; }
 
    public PpuCtrl(MachineState m) : base(m) { }
 
@@ -32,7 +30,7 @@ public sealed class PpuCtrl : Register {
       BackgroundTableAddress = (ushort)((value & 0b_0001_0000) == 0 ? 0x0000 : 0x1000);
       SpriteSize = (value & 0b_0010_0000) == 0 ? SpriteSizeType._8x8 : SpriteSizeType._8x16;
       MasterSlaveSelect = (value & 0b_0100_0000) > 0;
-      GenerateNmi = (value & 0b_1000_0000) > 0;
+      Machine.Ppu.NMI_output = (value & 0b_1000_0000) > 0;
       Machine.Ppu.Registers.PpuScroll.XHighBit = (value & 0b_0000_0001) > 0;
       Machine.Ppu.Registers.PpuScroll.YHighBit = (value & 0b_0000_0010) > 0;
       Machine.Ppu.Registers.OpenBus = value;
