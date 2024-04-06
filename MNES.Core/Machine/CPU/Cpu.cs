@@ -587,8 +587,8 @@ public sealed class Cpu {
          m => { },
          m => { },
          m => {
-            m.Cpu.Registers.P = PULL(m);
             m.Cpu.Registers.PC = PULL_ushort(m);
+            m.Cpu.Registers.P = PULL(m);
          },
       } },
 
