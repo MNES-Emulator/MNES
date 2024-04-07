@@ -1,4 +1,6 @@
-﻿namespace Mnes.Core.Machine.CPU;
+﻿using Mnes.Core.Utility;
+
+namespace Mnes.Core.Machine.CPU;
 
 // https://www.nesdev.org/wiki/PPU_OAM
 public struct OamSprite {
@@ -22,7 +24,7 @@ public struct OamSprite {
 
    // attributes
    public readonly byte Palette => (byte)(b2 & 0b_0000_0011);
-   public readonly bool Priority => (b2 & 0b_0010_0000) > 1;
-   public readonly bool HorizontalFlip => (b2 & 0b_0100_0000) > 1;
-   public readonly bool VerticalFlip => (b2 & 0b_1000_0000) > 1;
+   public readonly bool Priority => (b2 & BitFlags.F5) > 1;
+   public readonly bool HorizontalFlip => (b2 & BitFlags.F6) > 1;
+   public readonly bool VerticalFlip => (b2 & BitFlags.F7) > 1;
 }

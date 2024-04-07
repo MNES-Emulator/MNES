@@ -8,21 +8,21 @@ partial class CpuRegisters {
       static readonly List<StatusFlag> sValues = new();
 
       /// <summary> The C flag. </summary>
-      public static readonly StatusFlag Carry = new('C', BitFlags._1);
+      public static readonly StatusFlag Carry = new('C', BitFlags.F0);
       /// <summary> The Z flag. </summary>
-      public static readonly StatusFlag Zero = new('Z', BitFlags._2);
+      public static readonly StatusFlag Zero = new('Z', BitFlags.F1);
       /// <summary> The I flag. </summary>
-      public static readonly StatusFlag InterruptDisable = new('I', BitFlags._3);
+      public static readonly StatusFlag InterruptDisable = new('I', BitFlags.F2);
       /// <summary> The D flag. </summary>
-      public static readonly StatusFlag Decimal = new('D', BitFlags._4);
+      public static readonly StatusFlag Decimal = new('D', BitFlags.F3);
       /// <summary> The B flag. </summary>
-      public static readonly StatusFlag BFlag = new('B', BitFlags._5);
+      public static readonly StatusFlag BFlag = new('B', BitFlags.F4);
       /// <summary> The 1 flag. </summary>
-      public static readonly StatusFlag _1 = new('1', BitFlags._6);
+      public static readonly StatusFlag _1 = new('1', BitFlags.F5);
       /// <summary> The V flag. </summary>
-      public static readonly StatusFlag Overflow = new('V', BitFlags._7);
+      public static readonly StatusFlag Overflow = new('V', BitFlags.F6);
       /// <summary> The N flag. </summary>
-      public static readonly StatusFlag Negative = new('N', BitFlags._8);
+      public static readonly StatusFlag Negative = new('N', BitFlags.F7);
 
       public static IReadOnlyList<StatusFlag> Values { get; } = sValues.ToImmutableList();
 

@@ -1,4 +1,6 @@
-﻿namespace Mnes.Core.Machine.PPU.Registers;
+﻿using Mnes.Core.Utility;
+
+namespace Mnes.Core.Machine.PPU.Registers;
 
 public sealed class PpuStatus : Register {
    public PpuStatus(MachineState m) : base(m) { }
@@ -13,9 +15,9 @@ public sealed class PpuStatus : Register {
 
    public override byte CpuRead() {
       var res = Machine.Ppu.Registers.OpenBus & 0b_0001_1111;
-      res |= SpriteOverflow ? 0b_0010_0000 : 0b_0000_0000;
-      res |= Sprite0Hit ? 0b_0100_0000 : 0b_0000_0000;
-      res |= VBlankHasStarted ? 0b_1000_0000 : 0b_0000_0000;
+      res |= SpriteOverflow ? BitFlags.F5 : 0;
+      res |= Sprite0Hit ? BitFlags.F6 : 0;
+      res |= VBlankHasStarted ? BitFlags.F7 : 0;
       Machine.Ppu.Registers.OpenBus = (byte)res;
       VBlankHasStarted = false;
       Machine.Ppu.W = false;

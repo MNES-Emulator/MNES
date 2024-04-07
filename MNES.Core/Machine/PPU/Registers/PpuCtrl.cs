@@ -1,4 +1,6 @@
-﻿namespace Mnes.Core.Machine.PPU.Registers;
+﻿using Mnes.Core.Utility;
+
+namespace Mnes.Core.Machine.PPU.Registers;
 
 public sealed class PpuCtrl : Register {
    public enum SpriteSizeType {
@@ -25,14 +27,14 @@ public sealed class PpuCtrl : Register {
          _ => throw new Exception()
       });
 
-      VramAddressIncrement = (byte)((value & 0b_0000_0100) == 0 ? 1 : 32);
-      SpritePatternTableAddress8x8 = (ushort)((value & 0b_0000_1000) == 0 ? 0x0000 : 0x1000);
-      BackgroundTableAddress = (ushort)((value & 0b_0001_0000) == 0 ? 0x0000 : 0x1000);
-      SpriteSize = (value & 0b_0010_0000) == 0 ? SpriteSizeType._8x8 : SpriteSizeType._8x16;
-      MasterSlaveSelect = (value & 0b_0100_0000) > 0;
-      Machine.Ppu.NMI_output = (value & 0b_1000_0000) > 0;
-      Machine.Ppu.Registers.PpuScroll.XHighBit = (value & 0b_0000_0001) > 0;
-      Machine.Ppu.Registers.PpuScroll.YHighBit = (value & 0b_0000_0010) > 0;
+      VramAddressIncrement = (byte)((value & BitFlags.F2) == 0 ? 1 : 32);
+      SpritePatternTableAddress8x8 = (ushort)((value & BitFlags.F3) == 0 ? 0x0000 : 0x1000);
+      BackgroundTableAddress = (ushort)((value & BitFlags.F4) == 0 ? 0x0000 : 0x1000);
+      SpriteSize = (value & BitFlags.F5) == 0 ? SpriteSizeType._8x8 : SpriteSizeType._8x16;
+      MasterSlaveSelect = (value & BitFlags.F6) > 0;
+      Machine.Ppu.NMI_output = (value & BitFlags.F7) > 0;
+      Machine.Ppu.Registers.PpuScroll.XHighBit = (value & BitFlags.F0) > 0;
+      Machine.Ppu.Registers.PpuScroll.YHighBit = (value & BitFlags.F1) > 0;
       Machine.Ppu.Registers.OpenBus = value;
    }
 
