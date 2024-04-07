@@ -384,3 +384,4 @@ mono_crash.*.json
 
 # Don't save Godot user settings
 Mnes.Ui.Godot/Properties/launchSettings.json
+local_config.ini

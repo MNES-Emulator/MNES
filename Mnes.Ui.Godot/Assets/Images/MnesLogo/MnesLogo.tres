@@ -1,0 +1,23 @@
+[gd_resource type="AnimatedTexture" load_steps=7 format=3 uid="uid://d08c7entjokeg"]
+
+[ext_resource type="Texture2D" uid="uid://dayr2asxqw7dc" path="res://Assets/Images/MnesLogo/sprite_0.png" id="1_suo4s"]
+[ext_resource type="Texture2D" uid="uid://cqnkdb5y06cea" path="res://Assets/Images/MnesLogo/sprite_1.png" id="2_cxyur"]
+[ext_resource type="Texture2D" uid="uid://db5e3qrq2kdsp" path="res://Assets/Images/MnesLogo/sprite_2.png" id="3_6mwga"]
+[ext_resource type="Texture2D" uid="uid://b3pt46oggl8lb" path="res://Assets/Images/MnesLogo/sprite_3.png" id="4_t5l4l"]
+[ext_resource type="Texture2D" uid="uid://bjiyq1vqwnxq3" path="res://Assets/Images/MnesLogo/sprite_4.png" id="5_f6wwd"]
+[ext_resource type="Texture2D" uid="uid://d0pjpjnwqdbk2" path="res://Assets/Images/MnesLogo/sprite_5.png" id="6_cqpre"]
+
+[resource]
+frames = 6
+speed_scale = 10.0
+frame_0/texture = ExtResource("1_suo4s")
+frame_1/texture = ExtResource("2_cxyur")
+frame_1/duration = 1.0
+frame_2/texture = ExtResource("3_6mwga")
+frame_2/duration = 1.0
+frame_3/texture = ExtResource("4_t5l4l")
+frame_3/duration = 1.0
+frame_4/texture = ExtResource("5_f6wwd")
+frame_4/duration = 1.0
+frame_5/texture = ExtResource("6_cqpre")
+frame_5/duration = 1.0

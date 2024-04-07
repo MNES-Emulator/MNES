@@ -1,4 +1,5 @@
 ﻿using IniParser;
+using Mnes.Ui.Shared;
 using Newtonsoft.Json;
 
 namespace Mnes.Core.Saves.Configuration;
@@ -18,7 +19,7 @@ public static class Config {
    static string _save_folder;
    static string SaveFile => Path.Combine(_save_folder, CONFIG_FILE);
 
-   public static ConfigSettings Settings { get; private set; }
+   public static UserSettings Settings { get; private set; }
 
    public static void InitializeFromDisk() {
       if (Initialized)
@@ -38,7 +39,7 @@ public static class Config {
       if (!Directory.Exists(_save_folder))
          Directory.CreateDirectory(_save_folder);
 
-      ConfigSettings settings;
+      UserSettings settings;
       if (!File.Exists(SaveFile)) {
          settings = new();
          File.WriteAllText(
@@ -47,7 +48,7 @@ public static class Config {
          );
       } else {
          var saveFileText = File.ReadAllText(SaveFile);
-         settings = JsonConvert.DeserializeObject<ConfigSettings>(saveFileText);
+         settings = JsonConvert.DeserializeObject<UserSettings>(saveFileText);
       }
 
       Settings = settings;

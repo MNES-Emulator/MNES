@@ -11,7 +11,7 @@ public sealed class MachineTests {
    [TestMethod]
    public async Task TestRun() {
       var input = new InputState();
-      var settings = new ConfigSettings();
+      var settings = new MnesConfig();
       settings.System.DebugMode = true;
       var rom_data = await File.ReadAllBytesAsync(rom_filename);
       var machine = new MachineState(rom_data, settings, input);

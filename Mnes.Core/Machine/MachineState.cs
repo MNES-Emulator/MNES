@@ -22,11 +22,11 @@ public sealed class MachineState {
    public Cpu Cpu { get; }
    public IoRegisters Io { get; }
    public MachineLogger Logger { get; }
-   public ConfigSettings Settings { get; }
+   public MnesConfig Settings { get; }
 
    public MachineState(
       byte[] nes_bytes,
-      ConfigSettings settings,
+      MnesConfig settings,
       InputState input
    ) {
       _header = new InesHeader(nes_bytes);

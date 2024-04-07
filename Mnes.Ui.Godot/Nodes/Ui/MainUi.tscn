@@ -1,0 +1,40 @@
+[gd_scene load_steps=3 format=3 uid="uid://dstd8m0afdo1w"]
+
+[ext_resource type="Script" path="res://Nodes/Ui/MainUI.cs" id="1_7w2pe"]
+[ext_resource type="Texture2D" uid="uid://d08c7entjokeg" path="res://Assets/Images/MnesLogo/MnesLogo.tres" id="2_dyror"]
+
+[node name="Main UI" type="Control"]
+texture_filter = 1
+layout_mode = 3
+anchors_preset = 0
+offset_right = 1151.0
+offset_bottom = 640.0
+script = ExtResource("1_7w2pe")
+
+[node name="MarginContainer" type="MarginContainer" parent="."]
+layout_mode = 0
+offset_right = 972.0
+offset_bottom = 424.0
+theme_override_constants/margin_left = 20
+theme_override_constants/margin_top = 20
+theme_override_constants/margin_right = 20
+theme_override_constants/margin_bottom = 20
+
+[node name="VFlowContainer" type="VFlowContainer" parent="MarginContainer"]
+layout_mode = 2
+
+[node name="MNES TextureRect" type="TextureRect" parent="MarginContainer/VFlowContainer"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(120, 60)
+layout_mode = 2
+texture = ExtResource("2_dyror")
+expand_mode = 2
+stretch_mode = 4
+
+[node name="HFlowContainer" type="HFlowContainer" parent="MarginContainer/VFlowContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="Control" type="Control" parent="MarginContainer/VFlowContainer/HFlowContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
