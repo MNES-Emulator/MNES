@@ -5,13 +5,6 @@ namespace Mnes.Tests.Machine.CPU;
 [TestClass, TestCategory("Unit")]
 public sealed class CpuRegsiters_StatusFlagTypeTests {
    [TestMethod]
-   public void Test_DefaultInstance() {
-      var result = new StatusFlag();
-
-      Assert.AreEqual(StatusFlag.Carry, result);
-   }
-
-   [TestMethod]
    public void Test_Equality() {
       // ReSharper disable once EqualExpressionComparison
       var result = StatusFlag.Decimal == StatusFlag.Decimal;

@@ -69,14 +69,12 @@ public sealed class NesTimer {
             reset_state();
             return;
          }
-         if (_is_paused){
-            do {
-               Thread.Sleep(1);
-               if (_is_stopping) {
-                  reset_state();
-                  return;
-               }
-            } while (_is_paused);
+         while (_is_paused) {
+            Thread.Sleep(1);
+            if (_is_stopping) {
+               reset_state();
+               return;
+            }
          }
          stop_watch.Restart();
 

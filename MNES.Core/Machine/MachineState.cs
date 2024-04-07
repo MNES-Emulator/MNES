@@ -9,7 +9,7 @@ using Mnes.Core.Machine.IO;
 namespace Mnes.Core.Machine;
 
 public sealed class MachineState {
-   public readonly InesHeader InesHeader;
+   readonly InesHeader _header;
    readonly Mapper _mapper;
    readonly NesTimer _timer;
    readonly InputState _input;
@@ -29,8 +29,8 @@ public sealed class MachineState {
       ConfigSettings settings,
       InputState input
    ) {
-      InesHeader = new InesHeader(nes_bytes);
-      _mapper = Mapper.GetMapperOrThrow(InesHeader, this);
+      _header = new InesHeader(nes_bytes);
+      _mapper = Mapper.GetMapperOrThrow(_header, this);
       _timer = new(settings.System.Region, settings.System.DebugMode ? DebugTick : Tick);
       _input = input;
 

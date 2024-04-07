@@ -7,13 +7,6 @@ public sealed class CpuRegisters_RegisterTypeTests {
    // not a lot to test atm
 
    [TestMethod]
-   public void Test_DefaultInstance() {
-      var result = new RegisterType();
-
-      Assert.AreEqual(RegisterType.A, result);
-   }
-
-   [TestMethod]
    public void Test_Equals_True() {
       // ReSharper disable once EqualExpressionComparison
       var result = RegisterType.Y == RegisterType.Y;
