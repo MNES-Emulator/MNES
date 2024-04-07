@@ -3,7 +3,7 @@
 namespace Mnes.Core.Machine.CPU;
 
 partial class CpuRegisters {
-   public readonly record struct RegisterType {
+   public sealed class RegisterType {
       static readonly List<RegisterType> sValues = new();
 
       public static readonly RegisterType A = new(0, setsFlags: true);
@@ -24,10 +24,6 @@ partial class CpuRegisters {
          4 => 'P',
          _ => throw new Exception()
       };
-
-      public RegisterType()
-      : this(A._index, A.SetsFlags) {
-      }
 
       RegisterType(
          int index,

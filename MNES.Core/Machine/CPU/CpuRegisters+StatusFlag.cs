@@ -3,7 +3,7 @@
 namespace Mnes.Core.Machine.CPU;
 
 partial class CpuRegisters {
-   public readonly record struct StatusFlag {
+   public sealed class StatusFlag {
       static readonly List<StatusFlag> sValues = new();
 
       /// <summary> The C flag. </summary>
@@ -40,10 +40,6 @@ partial class CpuRegisters {
          7 => 'N',
          _ => throw new Exception()
       };
-
-      public StatusFlag()
-      : this(Carry._index, Carry.Bits) {
-      }
 
       StatusFlag(
          int index,
