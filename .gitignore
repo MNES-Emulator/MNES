@@ -381,3 +381,6 @@ export_presets.cfg
 .mono/
 data_*/
 mono_crash.*.json
+
+# Don't save Godot user settings
+Mnes.Ui.Godot/Properties/launchSettings.json
