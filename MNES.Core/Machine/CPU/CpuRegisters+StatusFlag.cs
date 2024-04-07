@@ -1,4 +1,5 @@
 ﻿using System.Collections.Immutable;
+using Mnes.Core.Utility;
 
 namespace Mnes.Core.Machine.CPU;
 
@@ -7,21 +8,21 @@ partial class CpuRegisters {
       static readonly List<StatusFlag> sValues = new();
 
       /// <summary> The C flag. </summary>
-      public static readonly StatusFlag Carry = new('C', 0b_0000_0001);
+      public static readonly StatusFlag Carry = new('C', BitFlags._1);
       /// <summary> The Z flag. </summary>
-      public static readonly StatusFlag Zero = new('Z', 0b_0000_0010);
+      public static readonly StatusFlag Zero = new('Z', BitFlags._2);
       /// <summary> The I flag. </summary>
-      public static readonly StatusFlag InterruptDisable = new('I', 0b_0000_0100);
+      public static readonly StatusFlag InterruptDisable = new('I', BitFlags._3);
       /// <summary> The D flag. </summary>
-      public static readonly StatusFlag Decimal = new('D', 0b_0000_1000);
+      public static readonly StatusFlag Decimal = new('D', BitFlags._4);
       /// <summary> The B flag. </summary>
-      public static readonly StatusFlag BFlag = new('B', 0b_0001_0000);
+      public static readonly StatusFlag BFlag = new('B', BitFlags._5);
       /// <summary> The 1 flag. </summary>
-      public static readonly StatusFlag _1 = new('1', 0b_0010_0000);
+      public static readonly StatusFlag _1 = new('1', BitFlags._6);
       /// <summary> The V flag. </summary>
-      public static readonly StatusFlag Overflow = new('V', 0b_0100_0000);
+      public static readonly StatusFlag Overflow = new('V', BitFlags._7);
       /// <summary> The N flag. </summary>
-      public static readonly StatusFlag Negative = new('N', 0b_1000_0000);
+      public static readonly StatusFlag Negative = new('N', BitFlags._8);
 
       public static IReadOnlyList<StatusFlag> Values { get; } = sValues.ToImmutableList();
 
