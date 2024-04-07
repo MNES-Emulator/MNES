@@ -7,5 +7,6 @@
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\MNES.Core\MNES.Core.csproj" />
+    <ProjectReference Include="..\Mnes.Ui.Shared\Mnes.Ui.Shared.csproj" />
   </ItemGroup>
 </Project>
