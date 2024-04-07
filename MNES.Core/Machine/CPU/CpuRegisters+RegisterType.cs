@@ -6,30 +6,25 @@ partial class CpuRegisters {
    public sealed class RegisterType {
       static readonly List<RegisterType> sValues = new();
 
-      public static readonly RegisterType A = new(0, setsFlags: true);
-      public static readonly RegisterType X = new(1, setsFlags: true);
-      public static readonly RegisterType Y = new(2, setsFlags: true);
-      public static readonly RegisterType S = new(3, setsFlags: false);
-      public static readonly RegisterType P = new(4, setsFlags: false);
+      public static readonly RegisterType A = new('A', setsFlags: true);
+      public static readonly RegisterType X = new('X', setsFlags: true);
+      public static readonly RegisterType Y = new('Y', setsFlags: true);
+      public static readonly RegisterType S = new('S', setsFlags: false);
+      public static readonly RegisterType P = new('P', setsFlags: false);
 
       public static IReadOnlyList<RegisterType> Values { get; } = sValues.ToImmutableList();
 
       readonly int _index;
+
+      public char Name { get; }
       public bool SetsFlags { get; }
-      public char Name => _index switch {
-         0 => 'A',
-         1 => 'X',
-         2 => 'Y',
-         3 => 'S',
-         4 => 'P',
-         _ => throw new Exception()
-      };
 
       RegisterType(
-         int index,
+         char name,
          bool setsFlags
       ) {
-         _index = index;
+         _index = sValues.Count;
+         Name = name;
          SetsFlags = setsFlags;
 
          sValues.Add(this);
