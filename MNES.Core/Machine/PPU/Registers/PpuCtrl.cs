@@ -27,14 +27,14 @@ public sealed class PpuCtrl : Register {
          _ => throw new Exception()
       });
 
-      VramAddressIncrement = (byte)((value & BitFlags.F2) == 0 ? 1 : 32);
-      SpritePatternTableAddress8x8 = (ushort)((value & BitFlags.F3) == 0 ? 0x0000 : 0x1000);
-      BackgroundTableAddress = (ushort)((value & BitFlags.F4) == 0 ? 0x0000 : 0x1000);
-      SpriteSize = (value & BitFlags.F5) == 0 ? SpriteSizeType._8x8 : SpriteSizeType._8x16;
+      VramAddressIncrement = (byte)(value.HasBit(2) ? 1 : 32);
+      SpritePatternTableAddress8x8 = (ushort)(value.HasBit(3) ? 0x0000 : 0x1000);
+      BackgroundTableAddress = (ushort)(!value.HasBit(4) ? 0x0000 : 0x1000); // double check this
+      SpriteSize = !value.HasBit(5) ? SpriteSizeType._8x8 : SpriteSizeType._8x16;
       MasterSlaveSelect = (value & BitFlags.F6) > 0;
-      Machine.Ppu.NMI_output = (value & BitFlags.F7) > 0;
-      Machine.Ppu.Registers.PpuScroll.XHighBit = (value & BitFlags.F0) > 0;
-      Machine.Ppu.Registers.PpuScroll.YHighBit = (value & BitFlags.F1) > 0;
+      Machine.Ppu.NMI_output = value.HasBit(7);
+      Machine.Ppu.Registers.PpuScroll.XHighBit = value.HasBit(0);
+      Machine.Ppu.Registers.PpuScroll.YHighBit = value.HasBit(1);
       Machine.Ppu.Registers.OpenBus = value;
    }
 

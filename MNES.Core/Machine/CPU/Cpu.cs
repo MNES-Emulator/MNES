@@ -174,7 +174,7 @@ public sealed class Cpu {
 
    static void OpRollingLeftShiftMem(MachineState m, ushort target) {
       var prev_carry = m.Cpu.Registers.HasFlag(StatusFlag.Carry);
-      var c_flag = (m[target] & BitFlags.F7) > 0;
+      var c_flag = m[target].HasBit(7);
       m[target] <<= 1;
       if (prev_carry) m[target] |= BitFlags.F0;
       m.Cpu.Registers.UpdateFlags(m[target]);
@@ -183,7 +183,7 @@ public sealed class Cpu {
 
    static void OpRollingRightShiftMem(MachineState m, ushort target) {
       var prev_carry = m.Cpu.Registers.HasFlag(StatusFlag.Carry);
-      var c_flag = (m[target] & BitFlags.F0) > 0;
+      var c_flag = m[target].HasBit(0);
       m[target] >>= 1;
       if (prev_carry) m[target] |= BitFlags.F7;
       m.Cpu.Registers.UpdateFlags(m[target]);
@@ -202,8 +202,8 @@ public sealed class Cpu {
 
    static void OpBit(MachineState m, byte value) {
       m.Cpu.Registers.SetFlag(StatusFlag.Zero, (m.Cpu.Registers.A & value) == 0);
-      m.Cpu.Registers.SetFlag(StatusFlag.Negative, (value & BitFlags.F7) > 0);
-      m.Cpu.Registers.SetFlag(StatusFlag.Overflow, (value & BitFlags.F6) > 0);
+      m.Cpu.Registers.SetFlag(StatusFlag.Negative, value.HasBit(7));
+      m.Cpu.Registers.SetFlag(StatusFlag.Overflow, value.HasBit(6));
    }
    #endregion
 
@@ -595,9 +595,8 @@ public sealed class Cpu {
 
       new() { Name = "LSR", OpCode = 0x4A, Bytes = 1, Process = new ProcessDelegate[] {
          m => {
-            var c_flag = (m.Cpu.Registers.A & BitFlags.F0) > 0;
             m.Cpu.Registers.A >>= 1;
-            m.Cpu.Registers.SetFlag(StatusFlag.Carry, c_flag);
+            m.Cpu.Registers.SetFlag(StatusFlag.Carry, m.Cpu.Registers.A.HasBit(0));
             m.Cpu.Registers.PC += 1;
             if (m.Settings.System.DebugMode) m.Cpu._log_message = $"A";
          },
@@ -605,7 +604,7 @@ public sealed class Cpu {
 
       new() { Name = "ASL", OpCode = 0x0A, Bytes = 1, Process = new ProcessDelegate[] {
          m => {
-            var c_flag = (m.Cpu.Registers.A & BitFlags.F7) > 0;
+            var c_flag = m.Cpu.Registers.A.HasBit(7);
             m.Cpu.Registers.A <<= 1;
             m.Cpu.Registers.SetFlag(StatusFlag.Carry, c_flag);
             m.Cpu.Registers.PC += 1;
@@ -616,7 +615,7 @@ public sealed class Cpu {
       new() { Name = "ROR", OpCode = 0x6A, Bytes = 1, Process = new ProcessDelegate[] {
          m => {
             var prev_carry = m.Cpu.Registers.HasFlag(StatusFlag.Carry);
-            var c_flag = (m.Cpu.Registers.A & BitFlags.F0) > 0;
+            var c_flag = m.Cpu.Registers.A.HasBit(0);
             m.Cpu.Registers.A >>= 1;
             if (prev_carry) m.Cpu.Registers.A |= BitFlags.F7;
             m.Cpu.Registers.SetFlag(StatusFlag.Carry, c_flag);
@@ -628,7 +627,7 @@ public sealed class Cpu {
       new() { Name = "ROL", OpCode = 0x2A, Bytes = 1, Process = new ProcessDelegate[] {
          m => {
             var prev_carry = m.Cpu.Registers.HasFlag(StatusFlag.Carry);
-            var c_flag = (m.Cpu.Registers.A & BitFlags.F7) > 0;
+            var c_flag = m.Cpu.Registers.A.HasBit(7);
             m.Cpu.Registers.A <<= 1;
             if (prev_carry) m.Cpu.Registers.A |= BitFlags.F0;
             m.Cpu.Registers.SetFlag(StatusFlag.Carry, c_flag);
@@ -879,7 +878,7 @@ public sealed class Cpu {
             var arg = m[(ushort)(m.Cpu.Registers.PC + 1)];
             if (m.Settings.System.DebugMode) m.Cpu._log_message = $"${arg:X2} = {m[arg]:X2}";
 
-            var c_flag = (m[arg] & BitFlags.F0) > 0;
+            var c_flag = m[arg].HasBit(0);
             m[arg] >>= 1;
             m.Cpu.Registers.SetFlag(StatusFlag.Carry, c_flag);
 
@@ -893,7 +892,7 @@ public sealed class Cpu {
             var arg = m[(ushort)(m.Cpu.Registers.PC + 1)];
             if (m.Settings.System.DebugMode) m.Cpu._log_message = $"${arg:X2} = {m[arg]:X2}";
 
-            var c_flag = (m[arg] & BitFlags.F7) > 0;
+            var c_flag = m[arg].HasBit(7);
             m[arg] <<= 1;
             m.Cpu.Registers.SetFlag(StatusFlag.Carry, c_flag);
 
@@ -1105,7 +1104,7 @@ public sealed class Cpu {
          m => {
             var target = m.ReadUShort(m.Cpu.Registers.PC + 1);
             if (m.Settings.System.DebugMode) m.Cpu._log_message = $"${target:X4} = {m[target]:X2}";
-            var c_flag = (m[target] & BitFlags.F7) > 0;
+            var c_flag = m[target].HasBit(7);
             m[target] <<= 1;
             m.Cpu.Registers.SetFlag(StatusFlag.Carry, c_flag);
             m.Cpu.Registers.PC += 3;
@@ -1453,7 +1452,7 @@ public sealed class Cpu {
          m => { },
          m => {
             var address = GetIndexedZeroPageAddress(m, m[(ushort)(m.Cpu.Registers.PC + 1)], RegisterType.X);
-            var carry = (m[address] & BitFlags.F7) > 0;
+            var carry = m[address].HasBit(7);
             m[address] <<= 1;
             m.Cpu.Registers.SetFlag(StatusFlag.Carry, carry);
             m.Cpu.Registers.PC += 2;
@@ -1636,7 +1635,7 @@ public sealed class Cpu {
          m => { },
          m => {
             var address = GetIndexedAbsoluteAddress(m, m.ReadUShort(m.Cpu.Registers.PC + 1), RegisterType.X);
-            var carry = (m[address] & BitFlags.F7) > 0;
+            var carry = m[address].HasBit(7);
             m[address] <<= 1;
             m.Cpu.Registers.SetFlag(StatusFlag.Carry, carry);
             m.Cpu.Registers.PC += 3;

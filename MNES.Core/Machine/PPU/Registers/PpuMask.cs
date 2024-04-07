@@ -15,14 +15,14 @@ public sealed class PpuMask : Register {
    public bool EmphasizeBlue { get; private set; }
 
    public override void CpuWrite(byte value) {
-      Greyscale = (value & BitFlags.F0) > 0;
-      ShowBgInLeft8PixelsOfScreen = (value & BitFlags.F1) > 0;
-      ShowSpritesInLeft8PixelsOfScreen = (value & BitFlags.F2) > 0;
-      ShowBg = (value & BitFlags.F3) > 0;
-      ShowSprites = (value & BitFlags.F4) > 0;
-      EmphasizeRed = (value & BitFlags.F5) > 0;
-      EmphasizeGreen = (value & BitFlags.F6) > 0;
-      EmphasizeBlue = (value & BitFlags.F7) > 0;
+      Greyscale = value.HasBit(0);
+      ShowBgInLeft8PixelsOfScreen = value.HasBit(1);
+      ShowSpritesInLeft8PixelsOfScreen = value.HasBit(2);
+      ShowBg = value.HasBit(3);
+      ShowSprites = value.HasBit(4);
+      EmphasizeRed = value.HasBit(5);
+      EmphasizeGreen = value.HasBit(6);
+      EmphasizeBlue = value.HasBit(7);
 
       Machine.Ppu.Registers.OpenBus = value;
    }

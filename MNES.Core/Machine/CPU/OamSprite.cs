@@ -24,7 +24,7 @@ public struct OamSprite {
 
    // attributes
    public readonly byte Palette => (byte)(b2 & 0b_0000_0011);
-   public readonly bool Priority => (b2 & BitFlags.F5) > 1;
-   public readonly bool HorizontalFlip => (b2 & BitFlags.F6) > 1;
-   public readonly bool VerticalFlip => (b2 & BitFlags.F7) > 1;
+   public readonly bool Priority => b2.HasBit(5);
+   public readonly bool HorizontalFlip => b2.HasBit(6);
+   public readonly bool VerticalFlip => b2.HasBit(7);
 }

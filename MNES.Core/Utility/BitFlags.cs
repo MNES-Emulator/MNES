@@ -1,7 +1,7 @@
 ﻿namespace Mnes.Core.Utility;
 
 public static class BitFlags {
-   static readonly byte[] _flags = { F0, F1, F2, F3, F4, F5, F6, F7 };
+   // Todo; generate this in a static constructor with a length of 64... or just remove it
    static readonly byte[] _masks = { M0, M1, M2, M3, M4, M5, M6, M7 };
 
    public const byte F0 = 1 << 0;
@@ -22,12 +22,13 @@ public static class BitFlags {
    public const byte M6 = 0b1011_1111;
    public const byte M7 = 0b0111_1111;
 
-   public static bool HasFlag(byte b, int index) => (b & _flags[index]) > 0;
-   public static void SetFlag(ref byte b, int index) => b |= _flags[index];
-   public static void SetFlag(ref byte b, int index, bool value) {
-      if (value) SetFlag(ref b, index);
-      else RemoveFlag(ref b, index);
+   public static bool HasBit(this byte b, int index) => (b & (1 << index)) > 0;
+   public static bool HasBit(this int b, int index) => (b & (1 << index)) > 0;
+   public static void SetBit(ref byte b, int index) => b |= (byte)(1 << index);
+   public static void SetBit(ref byte b, int index, bool value) {
+      if (value) SetBit(ref b, index);
+      else RemoveBit(ref b, index);
    }
 
-   public static void RemoveFlag(ref byte b, int index) => b &= _masks[index];
+   public static void RemoveBit(ref byte b, int index) => b &= _masks[index];
 }
