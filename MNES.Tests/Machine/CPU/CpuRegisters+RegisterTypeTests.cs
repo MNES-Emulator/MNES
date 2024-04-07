@@ -9,7 +9,9 @@ public sealed class CpuRegisters_RegisterTypeTests {
    [TestMethod]
    public void Test_Equals_True() {
       // ReSharper disable once EqualExpressionComparison
+#pragma warning disable CS1718 // Comparison made to same variable
       var result = RegisterType.Y == RegisterType.Y;
+#pragma warning restore CS1718 // Comparison made to same variable
 
       Assert.IsTrue(result);
    }
@@ -31,7 +33,9 @@ public sealed class CpuRegisters_RegisterTypeTests {
    [TestMethod]
    public void Test_NotEquals_False() {
       // ReSharper disable once EqualExpressionComparison
+#pragma warning disable CS1718 // Comparison made to same variable
       var result = RegisterType.S != RegisterType.S;
+#pragma warning restore CS1718 // Comparison made to same variable
 
       Assert.IsFalse(result);
    }

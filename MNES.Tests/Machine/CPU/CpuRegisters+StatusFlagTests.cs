@@ -7,7 +7,9 @@ public sealed class CpuRegsiters_StatusFlagTypeTests {
    [TestMethod]
    public void Test_Equality() {
       // ReSharper disable once EqualExpressionComparison
+#pragma warning disable CS1718 // Comparison made to same variable
       var result = StatusFlag.Decimal == StatusFlag.Decimal;
+#pragma warning restore CS1718 // Comparison made to same variable
 
       Assert.IsTrue(result);
    }
