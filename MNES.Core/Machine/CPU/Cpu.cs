@@ -150,7 +150,7 @@ public sealed class Cpu {
          pc += offset;
          m.Cpu.Registers.PC = (ushort)pc;
       }
-      
+
       m.Cpu._add_cycles = 1; // Todo: Add another if branch is on another page
       m.Cpu.Registers.PC += 2;
    }

@@ -1,6 +1,4 @@
-﻿using System.Diagnostics;
-
-namespace Mnes.Core.Machine.PPU.Registers;
+﻿namespace Mnes.Core.Machine.PPU.Registers;
 
 public sealed class PpuAddr : Register {
    public PpuAddr(MachineState m) : base(m) { }
@@ -10,8 +8,8 @@ public sealed class PpuAddr : Register {
 
    // Valid addresses are $0000–$3FFF; higher addresses will be mirrored down.
    ushort _address_backing;
-   public ushort Address { 
-      get => _address_backing; 
+   public ushort Address {
+      get => _address_backing;
       set => _address_backing = (ushort)(value % 0x4000);
    }
 
