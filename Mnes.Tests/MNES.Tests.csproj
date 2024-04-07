@@ -19,7 +19,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Mnes.Core\Mnes.Core.csproj" />
+    <ProjectReference Include="..\MNES.Core\Mnes.Core.csproj" />
   </ItemGroup>
 
   <ItemGroup>

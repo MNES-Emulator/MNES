@@ -12,7 +12,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\MNES.Core\MNES.Core.csproj" />
+    <ProjectReference Include="..\MNES.Core\Mnes.Core.csproj" />
   </ItemGroup>
 
 </Project>
