@@ -13,6 +13,11 @@ public partial class MainScene : Node2D {
 	public override void _Ready() {
       Instance = this;
       Config.InitializeFromDisk();
-      Ui = GetNode<MainUI>("Main UI");
+      Ui = GetNode<MainUI>("CanvasLayer/Main UI");
 	}
+
+   public void AddGamesDirectory(string folder)
+   {
+
+   }
 }

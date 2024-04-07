@@ -10,10 +10,11 @@ config_version=5
 
 [application]
 
-config/name="Mnes.Ui.Godot"
+config/name="MNES"
+config/description="A NES emulator."
 run/main_scene="res://Nodes/MainScene.tscn"
 config/features=PackedStringArray("4.2", "C#", "Forward Plus")
-config/icon="res://icon.svg"
+config/icon="res://icon.png"
 
 [dotnet]
 

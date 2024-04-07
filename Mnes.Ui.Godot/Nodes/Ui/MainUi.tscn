@@ -9,12 +9,14 @@ layout_mode = 3
 anchors_preset = 0
 offset_right = 1151.0
 offset_bottom = 640.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
 script = ExtResource("1_7w2pe")
 
 [node name="MarginContainer" type="MarginContainer" parent="."]
 layout_mode = 0
-offset_right = 972.0
-offset_bottom = 424.0
+offset_right = 1150.0
+offset_bottom = 647.0
 theme_override_constants/margin_left = 20
 theme_override_constants/margin_top = 20
 theme_override_constants/margin_right = 20
@@ -23,7 +25,11 @@ theme_override_constants/margin_bottom = 20
 [node name="VFlowContainer" type="VFlowContainer" parent="MarginContainer"]
 layout_mode = 2
 
-[node name="MNES TextureRect" type="TextureRect" parent="MarginContainer/VFlowContainer"]
+[node name="Header" type="HFlowContainer" parent="MarginContainer/VFlowContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="MNES TextureRect" type="TextureRect" parent="MarginContainer/VFlowContainer/Header"]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(120, 60)
 layout_mode = 2
@@ -31,10 +37,19 @@ texture = ExtResource("2_dyror")
 expand_mode = 2
 stretch_mode = 4
 
-[node name="HFlowContainer" type="HFlowContainer" parent="MarginContainer/VFlowContainer"]
+[node name="Folder Select Button" type="Button" parent="MarginContainer/VFlowContainer/Header"]
 layout_mode = 2
-size_flags_vertical = 3
+text = "Open Folder"
 
-[node name="Control" type="Control" parent="MarginContainer/VFlowContainer/HFlowContainer"]
-layout_mode = 2
-size_flags_horizontal = 3
+[node name="Folder Select Dialog" type="FileDialog" parent="."]
+unique_name_in_owner = true
+mode = 4
+title = "Open a Directory"
+initial_position = 2
+size = Vector2i(800, 400)
+ok_button_text = "Select Current Folder"
+file_mode = 2
+access = 2
+
+[connection signal="pressed" from="MarginContainer/VFlowContainer/Header/Folder Select Button" to="." method="BtnFolderSelectDown"]
+[connection signal="dir_selected" from="Folder Select Dialog" to="." method="FldlDirectorySelected"]
