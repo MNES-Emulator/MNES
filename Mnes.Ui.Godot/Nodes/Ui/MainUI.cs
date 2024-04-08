@@ -10,7 +10,7 @@ public partial class MainUI : Control {
    TextureRect logo;
    FileDialog folder_select;
 
-	public override void _Ready() {
+   public override void _Ready() {
       logo = GetNode<TextureRect>(TEXTURE_RECT_ID);
       folder_select = GetNode<FileDialog>(FOLDER_SELECT_DIALOG_ID);
 
@@ -40,7 +40,7 @@ public partial class MainUI : Control {
       move_in.TweenProperty(logo, "global_position", new Vector2(0, 0), 1.5f).SetDelay(0.3f);
    }
 
-   public void BtnFolderSelectDown() => 
+   public void BtnFolderSelectDown() =>
       folder_select.Popup();
 
    public void FldlDirectorySelected(string folder) =>

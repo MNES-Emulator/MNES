@@ -14,12 +14,13 @@
     <PackageReference Include="MSTest.TestAdapter" Version="2.2.10" />
     <PackageReference Include="MSTest.TestFramework" Version="2.2.10" />
     <PackageReference Include="coverlet.collector" Version="3.2.0" />
-    
+
     <PackageReference Include="AutoFixture" Version="4.*" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\MNES.Core\Mnes.Core.csproj" />
+    <ProjectReference Include="..\Mnes.Core\Mnes.Core.csproj" />
+    <ProjectReference Include="..\Mnes.Ui.Shared\Mnes.Ui.Shared.csproj" />
   </ItemGroup>
 
   <ItemGroup>
