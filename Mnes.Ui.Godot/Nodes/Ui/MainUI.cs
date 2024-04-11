@@ -2,6 +2,7 @@ using Godot;
 using Mnes.Core;
 using Mnes.Core.Machine.Input;
 using Mnes.Core.Saves.Configuration;
+using System.IO;
 
 namespace Mnes.Ui.Godot.Nodes.Ui;
 
@@ -64,5 +65,6 @@ public partial class MainUI : Control {
       NesInputState input = new();
       emulation.Emulator = new MnesEmulator(rom, new MnesConfig(), input);
       emulation.Emulator.Run();
+      DisplayServer.WindowSetTitle("MNES - Playing " + Path.GetFileName(rom));
    }
 }

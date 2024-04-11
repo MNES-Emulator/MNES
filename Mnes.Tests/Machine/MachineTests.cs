@@ -6,7 +6,7 @@ namespace Mnes.Tests.Machine;
 
 [TestClass, TestCategory("Unit")]
 public sealed class MachineTests {
-   const string rom_filename = "Resources/Test Roms/other/nestest.nes";
+   const string rom_filename = "../Resources/Test Roms/other/nestest.nes";
 
    [TestMethod]
    public async Task TestRun() {
