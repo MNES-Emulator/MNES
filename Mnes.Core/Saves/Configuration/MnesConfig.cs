@@ -1,5 +1,7 @@
-﻿namespace Mnes.Core.Saves.Configuration;
+﻿using Emu.Core;
 
-public sealed class MnesConfig {
+namespace Mnes.Core.Saves.Configuration;
+
+public sealed class MnesConfig : EmulatorConfig {
    public SystemConfig System { get; set; } = new();
 }

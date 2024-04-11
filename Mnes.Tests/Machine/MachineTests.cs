@@ -10,7 +10,7 @@ public sealed class MachineTests {
 
    [TestMethod]
    public async Task TestRun() {
-      var input = new InputState();
+      var input = new NesInputState();
       var settings = new MnesConfig();
       settings.System.DebugMode = true;
       var rom_data = await File.ReadAllBytesAsync(rom_filename);

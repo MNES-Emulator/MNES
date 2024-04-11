@@ -11,6 +11,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Mnes.Tests", "..\MNES.Tests
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Mnes.Ui.Shared", "..\Mnes.Ui.Shared\Mnes.Ui.Shared.csproj", "{541374E9-09A8-4639-8B31-1008E79AD03C}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Emu.Core", "..\Emu.Core\Emu.Core.csproj", "{95E21D4B-7103-429E-B13B-974C5921C9C3}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -51,6 +53,14 @@ Global
 		{541374E9-09A8-4639-8B31-1008E79AD03C}.ExportRelease|Any CPU.Build.0 = Release|Any CPU
 		{541374E9-09A8-4639-8B31-1008E79AD03C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{541374E9-09A8-4639-8B31-1008E79AD03C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{95E21D4B-7103-429E-B13B-974C5921C9C3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{95E21D4B-7103-429E-B13B-974C5921C9C3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{95E21D4B-7103-429E-B13B-974C5921C9C3}.ExportDebug|Any CPU.ActiveCfg = Debug|Any CPU
+		{95E21D4B-7103-429E-B13B-974C5921C9C3}.ExportDebug|Any CPU.Build.0 = Debug|Any CPU
+		{95E21D4B-7103-429E-B13B-974C5921C9C3}.ExportRelease|Any CPU.ActiveCfg = Release|Any CPU
+		{95E21D4B-7103-429E-B13B-974C5921C9C3}.ExportRelease|Any CPU.Build.0 = Release|Any CPU
+		{95E21D4B-7103-429E-B13B-974C5921C9C3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{95E21D4B-7103-429E-B13B-974C5921C9C3}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

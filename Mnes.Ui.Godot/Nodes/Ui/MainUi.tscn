@@ -1,7 +1,8 @@
-[gd_scene load_steps=3 format=3 uid="uid://dstd8m0afdo1w"]
+[gd_scene load_steps=4 format=3 uid="uid://dstd8m0afdo1w"]
 
 [ext_resource type="Script" path="res://Nodes/Ui/MainUI.cs" id="1_7w2pe"]
 [ext_resource type="Texture2D" uid="uid://d08c7entjokeg" path="res://Assets/Images/MnesLogo/MnesLogo.tres" id="2_dyror"]
+[ext_resource type="Script" path="res://Nodes/Ui/Emulation.cs" id="3_ar17d"]
 
 [node name="Main UI" type="Control"]
 texture_filter = 1
@@ -27,7 +28,6 @@ layout_mode = 2
 
 [node name="Header" type="HFlowContainer" parent="MarginContainer/VFlowContainer"]
 layout_mode = 2
-size_flags_vertical = 3
 
 [node name="MNES TextureRect" type="TextureRect" parent="MarginContainer/VFlowContainer/Header"]
 unique_name_in_owner = true
@@ -41,6 +41,15 @@ stretch_mode = 4
 layout_mode = 2
 text = "Open Folder"
 
+[node name="Open Rom Button" type="Button" parent="MarginContainer/VFlowContainer/Header"]
+layout_mode = 2
+text = "Open Rom"
+
+[node name="Emulation" type="Node2D" parent="MarginContainer/VFlowContainer"]
+unique_name_in_owner = true
+position = Vector2(72, 169)
+script = ExtResource("3_ar17d")
+
 [node name="Folder Select Dialog" type="FileDialog" parent="."]
 unique_name_in_owner = true
 mode = 4
@@ -51,5 +60,17 @@ ok_button_text = "Select Current Folder"
 file_mode = 2
 access = 2
 
+[node name="Rom Select Dialog" type="FileDialog" parent="."]
+unique_name_in_owner = true
+title = "Open a File"
+initial_position = 1
+size = Vector2i(800, 400)
+ok_button_text = "Open"
+file_mode = 0
+access = 2
+filters = PackedStringArray("*nes ; NES Rom")
+
 [connection signal="pressed" from="MarginContainer/VFlowContainer/Header/Folder Select Button" to="." method="BtnFolderSelectDown"]
+[connection signal="pressed" from="MarginContainer/VFlowContainer/Header/Open Rom Button" to="." method="BtnOpenRom"]
 [connection signal="dir_selected" from="Folder Select Dialog" to="." method="FldlDirectorySelected"]
+[connection signal="file_selected" from="Rom Select Dialog" to="." method="FldlRomSelected"]

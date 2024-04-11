@@ -12,7 +12,7 @@ public sealed class MachineState {
    readonly InesHeader _header;
    readonly Mapper _mapper;
    readonly NesTimer _timer;
-   readonly InputState _input;
+   readonly NesInputState _input;
    byte _last_read_value; // returns in case of open bus reads
 
    public byte[] Ram { get; }
@@ -27,7 +27,7 @@ public sealed class MachineState {
    public MachineState(
       byte[] nes_bytes,
       MnesConfig settings,
-      InputState input
+      NesInputState input
    ) {
       _header = new InesHeader(nes_bytes);
       _mapper = Mapper.GetMapperOrThrow(_header, this);
