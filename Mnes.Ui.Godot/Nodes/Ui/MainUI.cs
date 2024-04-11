@@ -17,7 +17,7 @@ public partial class MainUI : Control {
    FileDialog rom_select;
    Emulation emulation;
 
-	public override void _Ready() {
+   public override void _Ready() {
       logo = GetNode<TextureRect>(TEXTURE_RECT_ID);
       folder_select = GetNode<FileDialog>(FOLDER_SELECT_DIALOG_ID);
       rom_select = GetNode<FileDialog>(ROM_SELECT_DIALOG_ID);
