@@ -12,7 +12,7 @@ public sealed class MnesEmulator : Emulator {
       _machine = new(File.ReadAllBytes(rom_path), config, input);
    }
 
-   public override EmulatorScreen Screen { get; } = new MnesScreen();
+   public override EmulatorScreen Screen => _machine.Ppu.Screen;
 
    public override void Run() {
       _ = _machine.Run();

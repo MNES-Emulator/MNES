@@ -1,4 +1,5 @@
-﻿using Mnes.Core.Utility;
+﻿using Emu.Core;
+using Mnes.Core.Utility;
 
 namespace Mnes.Core.Machine.PPU;
 
@@ -8,7 +9,7 @@ public sealed class Ppu {
    public readonly PpuRegisters Registers;
    public readonly byte[] Vram = new byte[0x2000];
    public readonly byte[] Oam = new byte[0x100];
-   readonly PpuMapper mapper;
+   public readonly PpuMapper Mapper;
 
    // NMI interrupt https://www.nesdev.org/wiki/NMI
    public bool NMI_occurred;
@@ -20,10 +21,12 @@ public sealed class Ppu {
    public Byte3 X;
    public bool W;
 
+   public long Cycle;
+
+   public MnesScreen Screen { get; } = new MnesScreen();
+
    public const int SCREEN_WIDTH = 256;
    public const int SCREEN_HEIGHT = 240;
-
-   public readonly uint[] RawBitmap = new uint[SCREEN_WIDTH * SCREEN_HEIGHT];
 
    const int SCANLINE_WIDTH = 341;
    const int SCANLINE_HEIGHT = 261;
@@ -34,7 +37,7 @@ public sealed class Ppu {
    public Ppu(MachineState m) {
       machine = m;
       Registers = new(m);
-      mapper = new(m, this);
+      Mapper = new(m, this);
    }
 
    public void SetPowerUpState() {
@@ -45,6 +48,13 @@ public sealed class Ppu {
 
    // https://www.nesdev.org/wiki/PPU_rendering
    public void Tick() {
+      bool visible = x_pos < SCREEN_WIDTH && y_pos < SCREEN_HEIGHT;
+
+      if (visible)
+      {
+         Screen.WriteRgb(x_pos, y_pos, (int)Cycle);
+      }
+
       if (x_pos == 1)
       {
          if (y_pos == 241)
@@ -54,6 +64,8 @@ public sealed class Ppu {
          }
          // leave here
       }
+      
+      Cycle++;
       IncrementDot();
    }
 
