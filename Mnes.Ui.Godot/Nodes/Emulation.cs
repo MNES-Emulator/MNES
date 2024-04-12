@@ -1,6 +1,8 @@
 using Emu.Core;
 using Godot;
 
+namespace Mnes.Ui.Godot.Nodes;
+
 public partial class Emulation : Node2D
 {
    ImageTexture _texture;

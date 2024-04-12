@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" path="res://Nodes/Ui/MainUI.cs" id="1_7w2pe"]
 [ext_resource type="Texture2D" uid="uid://d08c7entjokeg" path="res://Assets/Images/MnesLogo/MnesLogo.tres" id="2_dyror"]
-[ext_resource type="Script" path="res://Nodes/Ui/Emulation.cs" id="3_ar17d"]
+[ext_resource type="Script" path="res://Nodes/Emulation.cs" id="3_ar17d"]
 
 [node name="Main UI" type="Control"]
 texture_filter = 1
