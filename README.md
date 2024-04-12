@@ -10,4 +10,4 @@ All support/development/community posts take place in our [GitHub Discussions](h
 
 ## Development
 
-See [CONTRIBUTING.md](CONTRIBUTING.md)
+See [CONTRIBUTING.md](CONTRIBUTING.md), or take a look at some open [issues](https://github.com/MNES-Emulator/MNES/issues).
