@@ -7,6 +7,6 @@ To debug the Godot GUI from your IDE, add the following settings to a launch pro
  - Command line arguments: `--path . --verbose "../Resources/Test Roms/other/nestest.nes"`
  - Working directory: `.`
 
-You can launch without launching a ROM by removing the path to the .nes file in the command line arguments. You can also launch and build directly from Godot after opening the project. It's also recommended that you tell Godot to use your IDE of choice when opening scripts.
+You can launch without launching a ROM by removing the path to the .nes file in the command line arguments. You can also launch and build directly from Godot after opening the project. It's also recommended that you tell Godot to use your IDE of choice when opening scripts in your Godot editor settings. (Editor Settings => Dotnet => Editor => External Editor)
 
 ![Settings](Resources/Images/Setup%20MNES%20Godot.png)
