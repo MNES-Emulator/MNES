@@ -3,7 +3,7 @@
 /// <summary> General use register that will trigger additional behavior defined by the inheriting class. </summary>
 public abstract class Register {
    protected readonly MachineState Machine;
-   protected byte Value;
+   protected byte Value; // may not be used
 
    public Register(MachineState m) =>
       Machine = m;

@@ -11,9 +11,9 @@ public sealed class PpuScroll : Register {
 
    public override void CpuWrite(byte value) {
       Machine.Ppu.Registers.OpenBus = value;
-      if (Machine.Ppu.W) ScrollY = value;
+      if (Machine.Ppu.Registers.Internal.W) ScrollY = value;
       else ScrollX = value;
-      Machine.Ppu.W = !Machine.Ppu.W;
+      Machine.Ppu.Registers.Internal.W = !Machine.Ppu.Registers.Internal.W;
    }
 
    public override byte CpuRead() =>

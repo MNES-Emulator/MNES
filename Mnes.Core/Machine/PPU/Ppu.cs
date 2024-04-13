@@ -7,7 +7,8 @@ namespace Mnes.Core.Machine.PPU;
 public sealed class Ppu {
    readonly MachineState machine;
    public readonly PpuRegisters Registers;
-   public readonly byte[] Vram = new byte[0x2000];
+   public readonly PpuPalette Palette;
+   public readonly byte[] Vram = new byte[0x2000]; // Is this supposed to be 0x1000? 0x800? Does anyone know what a kilobyte is????
    public readonly byte[] Oam = new byte[0x100];
    public readonly PpuMapper Mapper;
 
@@ -15,15 +16,10 @@ public sealed class Ppu {
    public bool NMI_occurred;
    public bool NMI_output;
 
-   // Internal registers
-   public Ushort15 V;
-   public Ushort15 T;
-   public Byte3 X;
-   public bool W;
-
-   public long Cycle;
+   public long TickCount;
 
    public MnesScreen Screen { get; } = new MnesScreen();
+   public int screen_pos;
 
    public const int SCREEN_WIDTH = 256;
    public const int SCREEN_HEIGHT = 240;
@@ -31,13 +27,27 @@ public sealed class Ppu {
    const int SCANLINE_WIDTH = 341;
    const int SCANLINE_HEIGHT = 261;
 
-   int x_pos;
-   int y_pos;
+   public byte this[ushort i] {
+      get => Mapper[i];
+      set => Mapper[i] = value;
+   }
+
+   int cycle;
+   int scanline = -1;
+
+   int skip_cycles;
+
+   ulong attribute_shift_register;
+   ulong pattern_shift_register;
+
+   byte pattern_data;
+   byte attribute_data;
 
    public Ppu(MachineState m) {
       machine = m;
       Registers = new(m);
       Mapper = new(m, this);
+      Palette = new();
    }
 
    public void SetPowerUpState() {
@@ -48,30 +58,32 @@ public sealed class Ppu {
 
    // https://www.nesdev.org/wiki/PPU_rendering
    public void Tick() {
-      bool visible = x_pos < SCREEN_WIDTH && y_pos < SCREEN_HEIGHT;
+      bool visible_cycle = cycle < SCREEN_WIDTH && scanline < SCREEN_HEIGHT;
+      bool prefetch_cycle = cycle >= 321 && cycle <= 336;
+      bool fetch_cycle = visible_cycle || prefetch_cycle;
 
-      if (visible)
+      //if (Registers.PpuStatus.VBlankHasStarted) ClocksSinceVBlank++;
+
+      if (scanline < 240)
       {
-         Screen.WriteRgb(x_pos, y_pos, (int)Cycle);
+         if (visible_cycle)
+            ProcessPixel();
       }
 
-      if (x_pos == 1)
-      {
-         if (y_pos == 241)
-         {
-            Registers.PpuStatus.VBlankHasStarted = true;
-            NMI_output = true;
-         }
-         // leave here
-      }
-      
-      Cycle++;
-      IncrementDot();
+      // the PPU performs memory fetches on dots 321-336 and 1-256 of scanlines 0-239 and 261
+
+
+      TickCount++;
    }
 
-   void IncrementDot() {
-      x_pos++;
-      if (x_pos == SCANLINE_WIDTH) { x_pos = 0; y_pos++; }
-      if (y_pos == SCANLINE_HEIGHT) { y_pos = 0; }
+   void ProcessPixel()
+   {
+
+   }
+
+   void IncrementBuffer() {
+      cycle++;
+      if (cycle == SCANLINE_WIDTH) { cycle = 0; scanline++; }
+      if (scanline == SCANLINE_HEIGHT) { scanline = 0; }
    }
 }

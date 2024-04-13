@@ -1,8 +1,11 @@
 ﻿namespace Mnes.Core.Machine.PPU;
 
 // https://www.nesdev.org/wiki/PPU_palettes
-public static class PpuPalette {
-   public static readonly IReadOnlyCollection<int> Palette =  new int[] {
+public class PpuPalette {
+   public byte[] BgPaletteIndexes { get; } = new byte[0xF];
+   public byte[] SpritePaletteIndexes { get; } = new byte[0xF];
+
+   public static readonly IReadOnlyCollection<int> Palette = new int[] {
       0x7C7C7C, 0x0000FC, 0x0000BC, 0x4428BC, 0x940084, 0xA80020, 0xA81000, 0x881400,
       0x503000, 0x007800, 0x006800, 0x005800, 0x004058, 0x000000, 0x000000, 0x000000,
       0xBCBCBC, 0x0078F8, 0x0058F8, 0x6844FC, 0xD800CC, 0xE40058, 0xF83800, 0xE45C10,

@@ -17,7 +17,7 @@ public sealed class PpuRegisters {
    public PpuScroll PpuScroll => (PpuScroll)registers[5];
    public PpuAddr PpuAddr => (PpuAddr)registers[6];
    public PpuData PpuData => (PpuData)registers[7];
-
+   public PpuInternalRegisters Internal { get; } = new();
    public byte this[int index] {
       get => registers[index].CpuRead();
       set => registers[index].CpuWrite(value);
