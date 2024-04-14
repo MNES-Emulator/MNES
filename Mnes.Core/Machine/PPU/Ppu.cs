@@ -8,7 +8,7 @@ public sealed class Ppu {
    readonly MachineState machine;
    public readonly PpuRegisters Registers;
    public readonly PpuPalette Palette;
-   public readonly byte[] Vram = new byte[0x2000]; // Is this supposed to be 0x1000? 0x800? Does anyone know what a kilobyte is????
+   public readonly byte[] Vram = new byte[0x1000]; // Is this supposed to be 0x1000? 0x800? Does anyone know what a kilobyte is????
    public readonly byte[] Oam = new byte[0x100];
    public readonly PpuMapper Mapper;
 
@@ -33,15 +33,12 @@ public sealed class Ppu {
    }
 
    int cycle;
-   int scanline = -1;
+   int scanline;
 
    int skip_cycles;
 
-   ulong attribute_shift_register;
-   ulong pattern_shift_register;
-
-   byte pattern_data;
-   byte attribute_data;
+   byte nt;
+   byte at;
 
    public Ppu(MachineState m) {
       machine = m;
@@ -71,6 +68,13 @@ public sealed class Ppu {
       }
 
       // the PPU performs memory fetches on dots 321-336 and 1-256 of scanlines 0-239 and 261
+      // https://www.nesdev.org/w/images/default/4/4f/Ppu.svg
+      if ((scanline < 240 && scanline > 0) || scanline == 261)
+      {
+         var cycle4 = cycle & 0b_1111;
+
+         //if (cycle4 == 0) nt = 
+      }
 
 
       TickCount++;
