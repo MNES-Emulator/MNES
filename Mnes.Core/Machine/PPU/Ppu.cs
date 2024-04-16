@@ -1,5 +1,4 @@
-﻿using Emu.Core;
-using Mnes.Core.Utility;
+﻿using Mnes.Core.Utility;
 
 namespace Mnes.Core.Machine.PPU;
 
@@ -37,8 +36,8 @@ public sealed class Ppu {
 
    int skip_cycles;
 
-   byte nt;
-   byte at;
+   byte _current_nt;
+   Byte2 _current_color;
 
    public Ppu(MachineState m) {
       machine = m;
@@ -73,11 +72,26 @@ public sealed class Ppu {
       {
          var cycle4 = cycle & 0b_1111;
 
-         //if (cycle4 == 0) nt = 
+         if (cycle4 == 1) _current_nt = this[(ushort)(0x2000 + Registers.Internal.V % 0x1000)];
+         if (cycle4 == 3) _current_color = ReadAttribute();
       }
 
+      if (cycle == 1 && scanline == 241)
+      {
+         Registers.PpuStatus.VBlankHasStarted = true;
+         NMI_output = true;
+      }
 
+      IncrementDot();
       TickCount++;
+   }
+
+   // https://www.nesdev.org/wiki/PPU_scrolling#Tile_and_attribute_fetching
+   Byte2 ReadAttribute() {
+      var v = Registers.Internal.V;
+      var attribute_address = 0x23C0 | (v & 0x0C00) | ((v >> 4) & 0x38) | ((v >> 2) & 0x07);
+      var current_color = (Byte2)(this[(ushort)attribute_address] >> ((Registers.Internal.CoarseX & 2) | ((Registers.Internal.CoarseY & 2) << 1)));
+      return current_color;
    }
 
    void ProcessPixel()
@@ -85,7 +99,7 @@ public sealed class Ppu {
 
    }
 
-   void IncrementBuffer() {
+   void IncrementDot() {
       cycle++;
       if (cycle == SCANLINE_WIDTH) { cycle = 0; scanline++; }
       if (scanline == SCANLINE_HEIGHT) { scanline = 0; }
