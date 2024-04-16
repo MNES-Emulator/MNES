@@ -20,4 +20,6 @@ public class PpuInternalRegisters {
    /// on reads of PPUSTATUS. Sometimes called the 'write latch' or 
    /// 'write toggle'. </summary>
    public bool W;
+   public Byte5 CoarseX => (Byte5)(int)V;
+   public Byte5 CoarseY => (Byte5)(V >> 5);
 }
