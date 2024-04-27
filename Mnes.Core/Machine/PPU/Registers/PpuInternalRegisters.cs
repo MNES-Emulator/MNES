@@ -3,7 +3,7 @@
 namespace Mnes.Core.Machine.PPU.Registers;
 
 // https://www.nesdev.org/wiki/PPU_registers
-public class PpuInternalRegisters {
+public sealed class PpuInternalRegisters {
    /// <summary> During rendering, used for the scroll position.
    /// Outside of rendering, used as the current VRAM address. </summary>
    public Ushort15 V;

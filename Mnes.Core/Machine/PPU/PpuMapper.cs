@@ -5,8 +5,8 @@ public sealed class PpuMapper {
    readonly Ppu _ppu;
    readonly MachineState _machine;
 
-   public ushort PatternTable0MachineAddress = 0x0000;
-   public ushort PatternTable1MachineAddress = 0x1000;
+   public const ushort PatternTable0MachineAddress = 0x0000;
+   public const ushort PatternTable1MachineAddress = 0x1000;
 
    public PpuMapper(MachineState machine, Ppu ppu) {
        _ppu = ppu;

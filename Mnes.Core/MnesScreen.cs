@@ -2,8 +2,7 @@
 
 namespace Mnes.Core;
 
-public sealed class MnesScreen : EmulatorScreen
-{
+public sealed class MnesScreen : EmulatorScreen {
    public override int Width { get; } = 256;
    public override int Height { get; } = 240;
    public override byte[] Buffer { get; } = GetBuffer();

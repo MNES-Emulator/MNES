@@ -16,9 +16,9 @@ public sealed class NesTimer {
    }
 
    public Task RunningThread { get; private set; }
-   Action tick_callback;
+   readonly Action tick_callback;
    int _hertz;
-   RegionType _region_backing = RegionType.NTSC;
+   const RegionType _region_backing = RegionType.NTSC;
    bool _is_running;
    bool _is_paused;
    bool _is_stopping;
@@ -43,7 +43,7 @@ public sealed class NesTimer {
          _is_paused = false;
          return;
       }
-      if (_is_running) throw new Exception($"{nameof(NesTimer)} is already running.");
+      if (_is_running) throw new InvalidOperationException($"{nameof(NesTimer)} is already running.");
       RunningThread = Task.Run(Run);
    }
 
@@ -85,20 +85,23 @@ public sealed class NesTimer {
    }
 
    public void Pause() {
-      if (_is_paused) throw new Exception($"{nameof(NesTimer)} is already paused.");
-      if (!_is_running) throw new Exception($"Cannot pause {nameof(NesTimer)} when it's not running.");
+      if (_is_paused) throw new InvalidOperationException($"{nameof(NesTimer)} is already paused.");
+      if (!_is_running) throw new InvalidOperationException($"Cannot pause {nameof(NesTimer)} when it's not running.");
+
       _is_paused = true;
    }
 
    public void Reset() {
-      if (!_is_running) throw new Exception($"Cannot reset {nameof(NesTimer)} when it's not running.");
+      if (!_is_running) throw new InvalidOperationException($"Cannot reset {nameof(NesTimer)} when it's not running.");
+
       _is_stopping = true;
       RunningThread.Wait();
       Start();
    }
 
    public void Stop() {
-      if (!_is_running) throw new Exception($"Cannot stop {nameof(NesTimer)} when it's not running.");
+      if (!_is_running) throw new InvalidOperationException($"Cannot stop {nameof(NesTimer)} when it's not running.");
+
       _is_stopping = true;
       RunningThread.Wait();
    }

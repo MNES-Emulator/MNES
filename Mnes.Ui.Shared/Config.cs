@@ -22,7 +22,7 @@ public static class Config {
 
    public static void InitializeFromDisk() {
       if (Initialized)
-         throw new Exception("Config already initialized.");
+         throw new InvalidOperationException("Config already initialized.");
 
       if (!File.Exists(LOCAL_CONFIG_FILE))
          File.WriteAllText(LOCAL_CONFIG_FILE, DEFAULT_INI_TEXT);
@@ -57,7 +57,7 @@ public static class Config {
 
    public static void Save() {
       if (!Initialized)
-         throw new Exception($"Cannot save config before {nameof(InitializeFromDisk)} has been called.");
+         throw new InvalidOperationException($"Cannot save config before {nameof(InitializeFromDisk)} has been called.");
 
       File.WriteAllText(SaveFile, JsonConvert.SerializeObject(Settings));
    }

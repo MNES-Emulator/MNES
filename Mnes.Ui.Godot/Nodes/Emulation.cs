@@ -3,8 +3,7 @@ using Godot;
 
 namespace Mnes.Ui.Godot.Nodes;
 
-public partial class Emulation : Node2D
-{
+public sealed partial class Emulation : Node2D {
    ImageTexture _texture;
    Emulator _emulator;
    Image image;
@@ -25,20 +24,18 @@ public partial class Emulation : Node2D
             useMipmaps: false,
             format: Image.Format.Rgba8,
             data: _emulator.Screen.Buffer
-            );
+         );
 
          _texture.SetImage(image);
       }
    }
 
-   public override void _Process(double delta)
-   {
+   public override void _Process(double delta) {
       QueueRedraw();
       base._Process(delta);
    }
 
-   public override void _Draw()
-   {
+   public override void _Draw() {
       if (_emulator == null || _texture == null) return;
       // This is probably absolutely horrible, but it works
       image?.Dispose();
@@ -48,7 +45,7 @@ public partial class Emulation : Node2D
          useMipmaps: false,
          format: Image.Format.Rgba8,
          data: _emulator.Screen.Buffer
-         );
+      );
 
       _texture.Update(image);
       DrawTexture(_texture, new Vector2());

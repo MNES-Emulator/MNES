@@ -1,7 +1,7 @@
 ﻿namespace Mnes.Core.Machine.PPU;
 
 // https://www.nesdev.org/wiki/PPU_palettes
-public class PpuPalette {
+public sealed class PpuPalette {
    public byte[] BgPaletteIndexes { get; } = new byte[0xF];
    public byte[] SpritePaletteIndexes { get; } = new byte[0xF];
 

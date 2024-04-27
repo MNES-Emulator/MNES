@@ -19,13 +19,13 @@ public sealed class PpuCtrl : Register {
    public PpuCtrl(MachineState m) : base(m) { }
 
    public override void CpuWrite(byte value) {
-      BaseNameTableAddress = (ushort)(Value & 0b_0000_0011 switch {
+      BaseNameTableAddress = (Value & 0b_0000_0011) switch {
          0 => 0x2000,
          1 => 0x2400,
          2 => 0x2800,
          3 => 0x2C00,
-         _ => throw new Exception("unexpected value"),
-      });
+         _ => throw new Exception($"impossible value ({Value})"),
+      };
 
       VramAddressIncrement = (byte)(value.HasBit(2) ? 1 : 32);
       SpritePatternTableAddress8x8 = (ushort)(value.HasBit(3) ? 0x0000 : 0x1000);

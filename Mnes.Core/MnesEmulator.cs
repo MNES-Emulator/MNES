@@ -8,17 +8,18 @@ namespace Mnes.Core;
 public sealed class MnesEmulator : Emulator {
    readonly MachineState _machine;
 
-   public MnesEmulator(string rom_path, MnesConfig config, NesInputState input) : base(rom_path, config, input) {
+   public MnesEmulator(
+      string rom_path,
+      MnesConfig config,
+      NesInputState input
+   ) : base(rom_path, config, input) =>
       _machine = new(File.ReadAllBytes(rom_path), config, input);
-   }
 
    public override EmulatorScreen Screen => _machine.Ppu.Screen;
 
-   public override void Run() {
+   public override void Run() =>
       _ = _machine.Run();
-   }
 
-   public override void Stop()
-   {
+   public override void Stop() {
    }
 }
