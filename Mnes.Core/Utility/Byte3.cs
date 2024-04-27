@@ -19,6 +19,6 @@ public readonly struct Byte3 {
    public static Byte3 operator *(Byte3 v1, Byte3 v2) => new(v1._value * v2._value);
    public static Byte3 operator /(Byte3 v1, Byte3 v2) => new(v1._value / v2._value);
 
-   public override string ToString() => 
+   public override string ToString() =>
       _value.ToString();
 }

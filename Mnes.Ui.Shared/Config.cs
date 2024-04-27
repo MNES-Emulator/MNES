@@ -1,8 +1,7 @@
 ﻿using IniParser;
-using Mnes.Ui.Shared;
 using Newtonsoft.Json;
 
-namespace Mnes.Core.Saves.Configuration;
+namespace Mnes.Ui.Shared;
 
 public static class Config {
    const string DEFAULT_SAVE_FOLDER = "%AppData%/MNES";

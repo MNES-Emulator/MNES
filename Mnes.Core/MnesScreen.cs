@@ -19,7 +19,7 @@ public sealed class MnesScreen : EmulatorScreen
       return buffer;
    }
 
-   public void WriteRgb(int x, int y, int rgb) => 
+   public void WriteRgb(int x, int y, int rgb) =>
       WriteRgb(x + y * Height, rgb);
 
    public void WriteRgb(int i, int rgb) {

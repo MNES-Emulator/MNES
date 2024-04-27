@@ -16,7 +16,7 @@ public sealed class PpuMapper {
    public byte this[ushort i] {
       get {
          i %= 0x4000;
-         var result =          
+         var result =
             // Pattern tables
             // CHR maps at 0x0000 .. 0x1FFF (8k) in /PPU/ address space.
             i < 0x1000 ? _machine[(ushort)(PatternTable0MachineAddress + i)] :

@@ -54,7 +54,7 @@ public partial class MainUI : Control {
    public void BtnOpenRom() =>
       rom_select.Popup();
 
-   public void BtnFolderSelectDown() => 
+   public void BtnFolderSelectDown() =>
       folder_select.Popup();
 
    public void FldlDirectorySelected(string folder) =>

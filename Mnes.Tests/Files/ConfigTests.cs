@@ -1,4 +1,5 @@
 ﻿using Mnes.Core.Saves.Configuration;
+using Mnes.Ui.Shared;
 
 namespace Mnes.Tests.Files;
 

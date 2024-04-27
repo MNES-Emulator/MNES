@@ -9,8 +9,8 @@ public partial class Emulation : Node2D
    Emulator _emulator;
    Image image;
 
-   public Emulator Emulator { 
-      get => _emulator; 
+   public Emulator Emulator {
+      get => _emulator;
       set {
          if (_emulator == value) return;
          _emulator?.Dispose();
