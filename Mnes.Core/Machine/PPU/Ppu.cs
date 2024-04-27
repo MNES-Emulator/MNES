@@ -17,7 +17,7 @@ public sealed class Ppu {
 
    public long TickCount;
 
-   public MnesScreen Screen { get; } = new MnesScreen();
+   public MnesScreen Screen { get; } = new();
    public int screen_pos;
 
    public const int SCREEN_WIDTH = 256;
@@ -34,7 +34,7 @@ public sealed class Ppu {
    int cycle;
    int scanline;
 
-   int skip_cycles;
+   //int skip_cycles;
 
    byte _current_nt;
    Byte2 _current_color;
@@ -54,30 +54,25 @@ public sealed class Ppu {
 
    // https://www.nesdev.org/wiki/PPU_rendering
    public void Tick() {
-      bool visible_cycle = cycle < SCREEN_WIDTH && scanline < SCREEN_HEIGHT;
-      bool prefetch_cycle = cycle >= 321 && cycle <= 336;
-      bool fetch_cycle = visible_cycle || prefetch_cycle;
+      var visible_cycle = cycle < SCREEN_WIDTH && scanline < SCREEN_HEIGHT;
+      //var prefetch_cycle = cycle >= 321 && cycle <= 336;
+      //var fetch_cycle = visible_cycle || prefetch_cycle;
 
       //if (Registers.PpuStatus.VBlankHasStarted) ClocksSinceVBlank++;
 
-      if (scanline < 240)
-      {
-         if (visible_cycle)
-            ProcessPixel();
-      }
+      if (scanline < 240 && visible_cycle)
+         ProcessPixel();
 
       // the PPU performs memory fetches on dots 321-336 and 1-256 of scanlines 0-239 and 261
       // https://www.nesdev.org/w/images/default/4/4f/Ppu.svg
-      if ((scanline < 240 && scanline > 0) || scanline == 261)
-      {
+      if (scanline < 240 && scanline > 0 || scanline == 261) {
          var cycle4 = cycle & 0b_1111;
 
          if (cycle4 == 1) _current_nt = this[(ushort)(0x2000 + Registers.Internal.V % 0x1000)];
          if (cycle4 == 3) _current_color = ReadAttribute();
       }
 
-      if (cycle == 1 && scanline == 241)
-      {
+      if (cycle == 1 && scanline == 241) {
          Registers.PpuStatus.VBlankHasStarted = true;
          NMI_output = true;
       }

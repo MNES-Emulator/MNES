@@ -24,7 +24,7 @@ public sealed class PpuCtrl : Register {
          1 => 0x2400,
          2 => 0x2800,
          3 => 0x2C00,
-         _ => throw new Exception()
+         _ => throw new Exception("unexpected value"),
       });
 
       VramAddressIncrement = (byte)(value.HasBit(2) ? 1 : 32);

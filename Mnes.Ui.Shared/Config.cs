@@ -15,10 +15,10 @@ public static class Config {
 
    public static bool Initialized => Settings != null;
 
-   static string _save_folder;
+   static string _save_folder = "";
    static string SaveFile => Path.Combine(_save_folder, CONFIG_FILE);
 
-   public static UserSettings Settings { get; private set; }
+   public static UserSettings Settings { get; private set; } = new();
 
    public static void InitializeFromDisk() {
       if (Initialized)
@@ -47,7 +47,9 @@ public static class Config {
          );
       } else {
          var saveFileText = File.ReadAllText(SaveFile);
-         settings = JsonConvert.DeserializeObject<UserSettings>(saveFileText);
+         settings =
+            JsonConvert.DeserializeObject<UserSettings>(saveFileText)
+            ?? throw new InvalidOperationException("Deserializing JSON resulted in null.");
       }
 
       Settings = settings;

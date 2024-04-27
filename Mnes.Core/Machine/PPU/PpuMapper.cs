@@ -13,6 +13,7 @@ public sealed class PpuMapper {
       _machine = machine;
    }
 
+   // ReSharper disable ConditionIsAlwaysTrueOrFalse
    public byte this[ushort i] {
       get {
          i %= 0x4000;
@@ -58,4 +59,5 @@ public sealed class PpuMapper {
          else if (i >= 0x3F10 && i <= 0x3F1F) _ppu.Palette.SpritePaletteIndexes[i - 0x3F10] = value;
       }
    }
+   // ReSharper restore ConditionIsAlwaysTrueOrFalse
 }

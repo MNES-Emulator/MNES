@@ -52,7 +52,7 @@ public sealed class NesTimer {
 
       var stop_watch = new Stopwatch();
 
-      int ticks_per_ms = _hertz / 1000;
+      var ticks_per_ms = _hertz / 1000;
 
       void reset_state() {
          TotalTickCount = 0;
@@ -79,7 +79,7 @@ public sealed class NesTimer {
          stop_watch.Restart();
 
          var tick_count = (int)(ticks_per_ms * elapsed.TotalMilliseconds);
-         for (int i = 0; i < tick_count; i++) tick_callback();
+         for (var i = 0; i < tick_count; i++) tick_callback();
          TotalTickCount += tick_count;
       }
    }

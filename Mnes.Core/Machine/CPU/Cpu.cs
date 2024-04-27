@@ -87,8 +87,8 @@ public sealed class Cpu {
    }
 
    static ushort GetZeroPageIndirectIndexedAddress(MachineState m, byte arg, RegisterType r) {
-      byte z_p_address_1 = arg;
-      byte z_p_address_2 = (byte)((arg + 1) % 256);
+      var z_p_address_1 = arg;
+      var z_p_address_2 = (byte)((arg + 1) % 256);
       var sum = m[z_p_address_1] + m.Cpu.Registers[r];
       var carry = (sum & 0b_1_0000_0000) > 0 ? 1 : 0;
       var l_byte = (byte)sum;
@@ -109,7 +109,7 @@ public sealed class Cpu {
    }
 
    static ushort GetIndexedZeroPageAddress(MachineState m, byte arg, RegisterType r) {
-      byte address = (byte)(arg + m.Cpu.Registers[r]);
+      var address = (byte)(arg + m.Cpu.Registers[r]);
       if (m.Settings.System.DebugMode) m.Cpu._log_message = $"${arg:X2},{r.Name} @ {arg:X2} = {m[address]:X2}";
       return address;
    }
@@ -258,7 +258,7 @@ public sealed class Cpu {
          m => { },
          m => {
             ushort target = PULL(m);
-            target |= (ushort)((ushort)PULL(m) << 8);
+            target |= (ushort)(PULL(m) << 8);
             m.Cpu.Registers.PC = target;
             m.Cpu.Registers.PC += 1;
          },

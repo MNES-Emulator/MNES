@@ -10,7 +10,7 @@ public sealed class MnesScreen : EmulatorScreen
 
    static byte[] GetBuffer() {
       var buffer = new byte[256 * 240 * 4];
-      for (int i = 0; i < buffer.Length; i += 4) {
+      for (var i = 0; i < buffer.Length; i += 4) {
          buffer[i + 0] = 255;
          buffer[i + 1] = 0;
          buffer[i + 2] = 0;
