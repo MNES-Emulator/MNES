@@ -18,7 +18,7 @@ public static class Config {
    static string _save_folder = "";
    static string SaveFile => Path.Combine(_save_folder, CONFIG_FILE);
 
-   public static UserSettings Settings { get; private set; } = new();
+   public static UserSettings? Settings { get; private set; }
 
    public static void InitializeFromDisk() {
       if (Initialized)

@@ -17,7 +17,11 @@ public sealed class CpuRegistersTests {
 
       cregs[reg] = value;
 
-      Assert.AreEqual(value, cregs[reg]);
+      var expected = reg == RegisterType.P
+         ? value | StatusFlag._1
+         : value;
+
+      Assert.AreEqual(expected, cregs[reg]);
    }
 
    [TestMethod]
