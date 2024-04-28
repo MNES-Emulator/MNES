@@ -9,7 +9,7 @@ public abstract class Emulator : IDisposable {
 
    public abstract bool IsRunning { get; }
 
-   public Emulator(string rom_path, EmulatorConfig config, InputState input) { 
+   public Emulator(string rom_path, EmulatorConfig config, InputState input) {
       RomPath = rom_path;
       Config = config;
       InputState = input;
