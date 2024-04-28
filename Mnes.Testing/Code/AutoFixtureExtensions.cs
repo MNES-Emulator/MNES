@@ -1,7 +1,7 @@
 ﻿using AutoFixture;
 using static Mnes.Core.Machine.CPU.CpuRegisters;
 
-namespace Mnes.Tests.Testing;
+namespace Mnes.Testing;
 
 public static class AutoFixtureExtensions {
    public static IFixture RegisterList<T>(

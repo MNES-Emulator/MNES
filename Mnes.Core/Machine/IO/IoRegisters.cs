@@ -32,7 +32,7 @@ public sealed class IoRegisters {
    // $4000-$4014 are write only
    public byte? this[int index] {
       get => index < 0x15 ? null : _registers[index];
-      set => _registers[index] = value.Value; // TODO: throws on null
+      set => _registers[index] = value ?? 0; // TODO: added null-coallesce but should be fixed
    }
 
    public IoRegisters(MachineState m) =>

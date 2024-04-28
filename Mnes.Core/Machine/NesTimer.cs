@@ -15,7 +15,7 @@ public sealed class NesTimer {
       DUAL_COMPATIBLE,
    }
 
-   public Task RunningThread { get; private set; }
+   public Task RunningThread { get; private set; } = Task.CompletedTask;
    readonly Action tick_callback;
    int _hertz;
    const RegionType _region_backing = RegionType.NTSC;

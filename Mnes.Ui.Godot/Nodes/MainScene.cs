@@ -1,32 +1,32 @@
 using Godot;
 using Mnes.Ui.Godot.Nodes.Ui;
 using Mnes.Ui.Shared;
-using System.IO;
-using System.Linq;
 
 namespace Mnes.Ui.Godot.Nodes;
 
-public partial class MainScene : Node2D {
+public sealed partial class MainScene : Node2D {
    // Idk if I like the Singleton model, I picked it up from Unity devs. Unity produces bad developers.
-   public static MainScene Instance { get; private set; }
+   static MainScene? _instance;
+   public static MainScene Instance => _instance ??= new();
 
-   public MainUI Ui { get; private set; }
+   MainUI? _ui;
+   public MainUI Ui => _ui ?? throw new InvalidOperationException($"{nameof(_ui)} was null");
 
-   string arg_game;
+   string? arg_game;
+
+   MainScene() {
+   }
 
    public override void _Ready() {
-      Instance = this;
       Config.InitializeFromDisk();
-      Ui = GetNode<MainUI>("CanvasLayer/Main UI");
+      _ui = GetNode<MainUI>("CanvasLayer/Main UI");
       var arg = OS.GetCmdlineArgs().FirstOrDefault();
 
       if (File.Exists(arg) && Path.GetExtension(arg).ToLower() == ".nes")
          arg_game = arg;
    }
 
-   public override void _Process(
-      double delta
-   ) {
+   public override void _Process(double delta) {
       if (arg_game != null)
          Ui.FldlRomSelected(arg_game);
 
@@ -34,8 +34,6 @@ public partial class MainScene : Node2D {
       base._Process(delta);
    }
 
-   public void AddGamesDirectory(
-      string folder
-   ) {
+   public void AddGamesDirectory(string folder) {
    }
 }

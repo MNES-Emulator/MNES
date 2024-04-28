@@ -1,4 +1,6 @@
-﻿namespace Mnes.Tests;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+
+namespace Jamie.Core.Tests;
 
 [TestClass, TestCategory("Demonstrative")]
 public sealed class TestLab {

@@ -10,7 +10,7 @@ public sealed class Cpu {
    readonly MachineState _machine;
    readonly CpuInstruction[] _instructions = new CpuInstruction[256];
 
-   CpuInstruction _currentInstruction;
+   CpuInstruction? _currentInstruction;
    int _current_instruction_cycle;
    long _cycle_counter = 6;
 
@@ -28,7 +28,7 @@ public sealed class Cpu {
    byte? _log_d1;
    byte? _log_d2;
    long _log_cyc;
-   string _log_message;
+   string? _log_message;
    CpuRegisterLog _log_cpu;
    long _log_inst_count;
 
@@ -1766,8 +1766,10 @@ public sealed class Cpu {
                return;
             }
             if (_machine.Settings.System.DebugMode) {
-               _machine.Logger.Log(new(_currentInstruction, _log_pc, _log_d1, _log_d2, _log_cpu, _log_cyc, _log_message));
-               _log_message = null;
+               if (_log_message is { } message) {
+                  _machine.Logger.Log(new(_currentInstruction, _log_pc, _log_d1, _log_d2, _log_cpu, _log_cyc, message));
+                  _log_message = null;
+               }
             }
             _currentInstruction = null;
             _current_instruction_cycle = 0;

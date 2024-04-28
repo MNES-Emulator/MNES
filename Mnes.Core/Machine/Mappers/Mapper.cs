@@ -18,7 +18,7 @@ public abstract class Mapper {
    ) =>
       Machine = machine;
 
-   public static Mapper MaybeGetMapper(
+   public static Mapper? MaybeGetMapper(
       InesHeader header,
       MachineState machine
    ) =>
