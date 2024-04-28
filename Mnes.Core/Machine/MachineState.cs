@@ -58,7 +58,6 @@ public sealed class MachineState {
       Ppu.Tick();
    }
 
-
    void Tick() {
       Cpu.Tick();
       Ppu.Tick();
