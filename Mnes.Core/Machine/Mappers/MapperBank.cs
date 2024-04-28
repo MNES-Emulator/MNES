@@ -1,5 +1,6 @@
 ﻿namespace Mnes.Core.Machine.Mappers;
 
+// ReSharper disable once ClassNeverInstantiated.Global
 public sealed class MapperBank {
    public enum AccessorType {
       CPU,

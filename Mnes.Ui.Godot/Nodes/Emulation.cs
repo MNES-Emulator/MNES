@@ -3,16 +3,13 @@ using Godot;
 
 namespace Mnes.Ui.Godot.Nodes;
 
-public partial class Emulation : Node2D
-{
-   ImageTexture _texture;
-   public Emulator Instance { get; private set; }
-   Image image;
+public sealed partial class Emulation : Node2D {
+   ImageTexture? _texture;
+   Emulator? _emulator;
+   Image? image;
 
-   public bool IsRunning => Instance?.IsRunning ?? false;
-
-   public Emulator Emulator { 
-      get => Instance; 
+   public Emulator Emulator {
+      get => _emulator ?? throw new InvalidOperationException($"{nameof(_emulator)} was null");
       set {
          if (Instance == value) return;
          Instance?.Dispose();
@@ -26,22 +23,20 @@ public partial class Emulation : Node2D
             height: Instance.Screen.Height,
             useMipmaps: false,
             format: Image.Format.Rgba8,
-            data: Instance.Screen.Buffer
-            );
+            data: _emulator.Screen.Buffer
+         );
 
          _texture.SetImage(image);
       }
    }
 
-   public override void _Process(double delta)
-   {
+   public override void _Process(double delta) {
       QueueRedraw();
       base._Process(delta);
    }
 
-   public override void _Draw()
-   {
-      if (Instance == null || _texture == null) return;
+   public override void _Draw() {
+      if (_emulator == null || _texture == null) return;
       // This is probably absolutely horrible, but it works
       image?.Dispose();
       image = Image.CreateFromData(
@@ -49,8 +44,8 @@ public partial class Emulation : Node2D
          height: Instance.Screen.Height,
          useMipmaps: false,
          format: Image.Format.Rgba8,
-         data: Instance.Screen.Buffer
-         );
+         data: _emulator.Screen.Buffer
+      );
 
       _texture.Update(image);
       DrawTexture(_texture, new Vector2());

@@ -1,8 +1,7 @@
 ﻿using IniParser;
-using Mnes.Ui.Shared;
 using Newtonsoft.Json;
 
-namespace Mnes.Core.Saves.Configuration;
+namespace Mnes.Ui.Shared;
 
 public static class Config {
    const string DEFAULT_SAVE_FOLDER = "%AppData%/MNES";
@@ -16,14 +15,14 @@ public static class Config {
 
    public static bool Initialized => Settings != null;
 
-   static string _save_folder;
+   static string _save_folder = "";
    static string SaveFile => Path.Combine(_save_folder, CONFIG_FILE);
 
-   public static UserSettings Settings { get; private set; }
+   public static UserSettings? Settings { get; private set; }
 
    public static void InitializeFromDisk() {
       if (Initialized)
-         throw new Exception("Config already initialized.");
+         throw new InvalidOperationException("Config already initialized.");
 
       if (!File.Exists(LOCAL_CONFIG_FILE))
          File.WriteAllText(LOCAL_CONFIG_FILE, DEFAULT_INI_TEXT);
@@ -48,7 +47,9 @@ public static class Config {
          );
       } else {
          var saveFileText = File.ReadAllText(SaveFile);
-         settings = JsonConvert.DeserializeObject<UserSettings>(saveFileText);
+         settings =
+            JsonConvert.DeserializeObject<UserSettings>(saveFileText)
+            ?? throw new InvalidOperationException("Deserializing JSON resulted in null.");
       }
 
       Settings = settings;
@@ -56,7 +57,7 @@ public static class Config {
 
    public static void Save() {
       if (!Initialized)
-         throw new Exception($"Cannot save config before {nameof(InitializeFromDisk)} has been called.");
+         throw new InvalidOperationException($"Cannot save config before {nameof(InitializeFromDisk)} has been called.");
 
       File.WriteAllText(SaveFile, JsonConvert.SerializeObject(Settings));
    }

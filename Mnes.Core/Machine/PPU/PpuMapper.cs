@@ -5,18 +5,19 @@ public sealed class PpuMapper {
    readonly Ppu _ppu;
    readonly MachineState _machine;
 
-   public ushort PatternTable0MachineAddress = 0x0000;
-   public ushort PatternTable1MachineAddress = 0x1000;
+   public const ushort PatternTable0MachineAddress = 0x0000;
+   public const ushort PatternTable1MachineAddress = 0x1000;
 
    public PpuMapper(MachineState machine, Ppu ppu) {
        _ppu = ppu;
       _machine = machine;
    }
 
+   // ReSharper disable ConditionIsAlwaysTrueOrFalse
    public byte this[ushort i] {
       get {
          i %= 0x4000;
-         var result =          
+         var result =
             // Pattern tables
             // CHR maps at 0x0000 .. 0x1FFF (8k) in /PPU/ address space.
             i < 0x1000 ? _machine[(ushort)(PatternTable0MachineAddress + i)] :
@@ -58,4 +59,5 @@ public sealed class PpuMapper {
          else if (i >= 0x3F10 && i <= 0x3F1F) _ppu.Palette.SpritePaletteIndexes[i - 0x3F10] = value;
       }
    }
+   // ReSharper restore ConditionIsAlwaysTrueOrFalse
 }

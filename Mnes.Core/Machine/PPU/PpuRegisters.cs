@@ -39,6 +39,7 @@ public sealed class PpuRegisters {
    }
 
    public void SetPowerUpState() {
-      foreach (var r in registers) r.SetPowerUpState();
+      foreach (var r in registers)
+         r.SetPowerUpState();
    }
 }

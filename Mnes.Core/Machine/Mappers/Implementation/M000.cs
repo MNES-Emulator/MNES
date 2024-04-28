@@ -1,7 +1,7 @@
 ﻿namespace Mnes.Core.Machine.Mappers.Implementation;
 
 sealed class M000 : Mapper {
-   readonly byte[] prg_ram;
+   readonly byte[]? prg_ram;
    readonly bool mirror_rom_8000_BFFF;
 
    public override int MapperNumber => 0;
@@ -23,7 +23,7 @@ sealed class M000 : Mapper {
       return null;
    } set {
       if (prg_ram != null && i - 0x6000 < prg_ram.Length)
-         prg_ram[i - 0x6000] = value.Value; // TODO: value is nullable this will throw when you set null
+         prg_ram[i - 0x6000] = value ?? 0; // TODO: used null-coalesce to avoid NRE but should this property really be nullable?
    } }
 
    public M000(

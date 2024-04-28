@@ -1,6 +1,6 @@
 ﻿using AutoFixture;
 using Mnes.Core.Machine.CPU;
-using Mnes.Tests.Testing;
+using Mnes.Testing;
 using static Mnes.Core.Machine.CPU.CpuRegisters;
 
 namespace Mnes.Tests.Machine.CPU;
@@ -17,7 +17,11 @@ public sealed class CpuRegistersTests {
 
       cregs[reg] = value;
 
-      Assert.AreEqual(value, cregs[reg]);
+      var expected = reg == RegisterType.P
+         ? value | StatusFlag._1
+         : value;
+
+      Assert.AreEqual(expected, cregs[reg]);
    }
 
    [TestMethod]

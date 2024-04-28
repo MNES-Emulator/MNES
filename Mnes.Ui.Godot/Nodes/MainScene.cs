@@ -1,32 +1,35 @@
 using Godot;
-using Mnes.Core.Saves.Configuration;
 using Mnes.Ui.Godot.Nodes.Ui;
-using System.IO;
-using System.Linq;
+using Mnes.Ui.Shared;
 
 namespace Mnes.Ui.Godot.Nodes;
 
-public partial class MainScene : Node2D {
+public sealed partial class MainScene : Node2D {
    // Idk if I like the Singleton model, I picked it up from Unity devs. Unity produces bad developers.
-   public static MainScene Instance { get; private set; }
+   static MainScene? _instance;
+   public static MainScene Instance => _instance ??= new();
 
-   public MainUI Ui { get; private set; }
+   MainUI? _ui;
+   public MainUI Ui => _ui ?? throw new InvalidOperationException($"{nameof(_ui)} was null");
 
-   string arg_game;
+   string? arg_game;
+
+   MainScene() {
+   }
 
    public override void _Ready() {
-      Instance = this;
       Config.InitializeFromDisk();
-      if (OS.IsStdOutVerbose()) Config.Settings.Mnes.System.DebugMode = true;
-      Ui = GetNode<MainUI>("CanvasLayer/Main UI");
+      _ui = GetNode<MainUI>("CanvasLayer/Main UI");
       var arg = OS.GetCmdlineArgs().FirstOrDefault();
-      if (!string.IsNullOrWhiteSpace(arg) && File.Exists(arg) && Path.GetExtension(arg).ToLower() == ".nes")
+
+      if (File.Exists(arg) && Path.GetExtension(arg).ToLower() == ".nes")
          arg_game = arg;
    }
 
-   public override void _Process(double delta)
-   {
-      if (arg_game != null) Ui.FldlRomSelected(arg_game);
+   public override void _Process(double delta) {
+      if (arg_game != null)
+         Ui.FldlRomSelected(arg_game);
+
       arg_game = null;
       base._Process(delta);
    }

@@ -7,7 +7,7 @@ public readonly struct Ushort15 {
    public const ushort MinValue = 0;
    public const ushort MaxValue = 0b_0111_1111_1111_1111;
 
-   public Ushort15(int value) => 
+   public Ushort15(int value) =>
       _value = (ushort)(value & MaxValue);
 
    public static implicit operator int(Ushort15 d) => d._value;

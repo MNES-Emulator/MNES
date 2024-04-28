@@ -10,7 +10,7 @@ public sealed class Cpu {
    readonly MachineState _machine;
    readonly CpuInstruction[] _instructions = new CpuInstruction[256];
 
-   CpuInstruction _currentInstruction;
+   CpuInstruction? _currentInstruction;
    int _current_instruction_cycle;
    long _cycle_counter = 6;
 
@@ -28,7 +28,7 @@ public sealed class Cpu {
    byte? _log_d1;
    byte? _log_d2;
    long _log_cyc;
-   string _log_message;
+   string? _log_message;
    CpuRegisterLog _log_cpu;
    long _log_inst_count;
 
@@ -87,8 +87,8 @@ public sealed class Cpu {
    }
 
    static ushort GetZeroPageIndirectIndexedAddress(MachineState m, byte arg, RegisterType r) {
-      byte z_p_address_1 = arg;
-      byte z_p_address_2 = (byte)((arg + 1) % 256);
+      var z_p_address_1 = arg;
+      var z_p_address_2 = (byte)((arg + 1) % 256);
       var sum = m[z_p_address_1] + m.Cpu.Registers[r];
       var carry = (sum & 0b_1_0000_0000) > 0 ? 1 : 0;
       var l_byte = (byte)sum;
@@ -109,7 +109,7 @@ public sealed class Cpu {
    }
 
    static ushort GetIndexedZeroPageAddress(MachineState m, byte arg, RegisterType r) {
-      byte address = (byte)(arg + m.Cpu.Registers[r]);
+      var address = (byte)(arg + m.Cpu.Registers[r]);
       if (m.Settings.System.DebugMode) m.Cpu._log_message = $"${arg:X2},{r.Name} @ {arg:X2} = {m[address]:X2}";
       return address;
    }
@@ -258,7 +258,7 @@ public sealed class Cpu {
          m => { },
          m => {
             ushort target = PULL(m);
-            target |= (ushort)((ushort)PULL(m) << 8);
+            target |= (ushort)(PULL(m) << 8);
             m.Cpu.Registers.PC = target;
             m.Cpu.Registers.PC += 1;
          },
@@ -1766,8 +1766,10 @@ public sealed class Cpu {
                return;
             }
             if (_machine.Settings.System.DebugMode) {
-               _machine.Logger.Log(new(_currentInstruction, _log_pc, _log_d1, _log_d2, _log_cpu, _log_cyc, _log_message));
-               _log_message = null;
+               if (_log_message is { } message) {
+                  _machine.Logger.Log(new(_currentInstruction, _log_pc, _log_d1, _log_d2, _log_cpu, _log_cyc, message));
+                  _log_message = null;
+               }
             }
             _currentInstruction = null;
             _current_instruction_cycle = 0;

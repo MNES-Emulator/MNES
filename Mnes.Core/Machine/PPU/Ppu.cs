@@ -18,7 +18,7 @@ public sealed class Ppu {
 
    public long TickCount;
 
-   public MnesScreen Screen { get; } = new MnesScreen();
+   public MnesScreen Screen { get; } = new();
    public int screen_pos;
 
    public const int SCREEN_WIDTH = 256;
@@ -35,7 +35,7 @@ public sealed class Ppu {
    int cycle;
    int scanline;
 
-   int skip_cycles;
+   //int skip_cycles;
 
    long _tile_shift_register;
    byte _current_nt;
@@ -60,9 +60,9 @@ public sealed class Ppu {
 
    // https://www.nesdev.org/wiki/PPU_rendering
    public void Tick() {
-      bool visible_cycle = cycle < SCREEN_WIDTH && scanline < SCREEN_HEIGHT;
-      bool prefetch_cycle = cycle >= 321 && cycle <= 336;
-      bool fetch_cycle = visible_cycle || prefetch_cycle;
+      var visible_cycle = cycle < SCREEN_WIDTH && scanline < SCREEN_HEIGHT;
+      //var prefetch_cycle = cycle >= 321 && cycle <= 336;
+      //var fetch_cycle = visible_cycle || prefetch_cycle;
 
       if (Registers.PpuStatus.VBlankHasStarted) _ticks_since_vblank++;
       if (cycle == 0 && scanline == 0) screen_pos = 0;

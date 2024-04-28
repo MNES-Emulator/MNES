@@ -15,10 +15,10 @@ public sealed class NesTimer {
       DUAL_COMPATIBLE,
    }
 
-   public Task RunningThread { get; private set; }
-   Action tick_callback;
+   public Task RunningThread { get; private set; } = Task.CompletedTask;
+   readonly Action tick_callback;
    int _hertz;
-   RegionType _region_backing = RegionType.NTSC;
+   const RegionType _region_backing = RegionType.NTSC;
    bool _is_running;
    bool _is_paused;
    bool _is_stopping;
@@ -43,7 +43,7 @@ public sealed class NesTimer {
          _is_paused = false;
          return;
       }
-      if (_is_running) throw new Exception($"{nameof(NesTimer)} is already running.");
+      if (_is_running) throw new InvalidOperationException($"{nameof(NesTimer)} is already running.");
       RunningThread = Task.Run(Run);
    }
 
@@ -52,7 +52,7 @@ public sealed class NesTimer {
 
       var stop_watch = new Stopwatch();
 
-      int ticks_per_ms = _hertz / 1000;
+      var ticks_per_ms = _hertz / 1000;
 
       void reset_state() {
          TotalTickCount = 0;
@@ -79,26 +79,29 @@ public sealed class NesTimer {
          stop_watch.Restart();
 
          var tick_count = (int)(ticks_per_ms * elapsed.TotalMilliseconds);
-         for (int i = 0; i < tick_count; i++) tick_callback();
+         for (var i = 0; i < tick_count; i++) tick_callback();
          TotalTickCount += tick_count;
       }
    }
 
    public void Pause() {
-      if (_is_paused) throw new Exception($"{nameof(NesTimer)} is already paused.");
-      if (!_is_running) throw new Exception($"Cannot pause {nameof(NesTimer)} when it's not running.");
+      if (_is_paused) throw new InvalidOperationException($"{nameof(NesTimer)} is already paused.");
+      if (!_is_running) throw new InvalidOperationException($"Cannot pause {nameof(NesTimer)} when it's not running.");
+
       _is_paused = true;
    }
 
    public void Reset() {
-      if (!_is_running) throw new Exception($"Cannot reset {nameof(NesTimer)} when it's not running.");
+      if (!_is_running) throw new InvalidOperationException($"Cannot reset {nameof(NesTimer)} when it's not running.");
+
       _is_stopping = true;
       RunningThread.Wait();
       Start();
    }
 
    public void Stop() {
-      if (!_is_running) throw new Exception($"Cannot stop {nameof(NesTimer)} when it's not running.");
+      if (!_is_running) throw new InvalidOperationException($"Cannot stop {nameof(NesTimer)} when it's not running.");
+
       _is_stopping = true;
       RunningThread.Wait();
    }

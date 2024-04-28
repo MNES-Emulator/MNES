@@ -21,7 +21,7 @@ public sealed class InesHeader {
    /// 512-byte trainer at $7000-$71FF (stored before PRG data)
    /// </summary>
    public readonly bool HasTrainer;
-   public readonly bool AlternativeNametableLayout;
+   //public readonly bool AlternativeNametableLayout;
    public readonly byte MapperNumber;
    public readonly bool VsUnisystem;
    public readonly bool PlayChoice10;
@@ -29,9 +29,9 @@ public sealed class InesHeader {
 
    public readonly int PrgRamSize;
 
-   public readonly NesTimer.RegionType TvSystem;
+   //public readonly NesTimer.RegionType TvSystem;
    public readonly bool PrgRam_6000_7FFF_Present;
-   public readonly bool HasBusConflicts;
+   //public readonly bool HasBusConflicts;
 
    public InesHeader(
       byte[] nes_file
@@ -62,6 +62,7 @@ public sealed class InesHeader {
 
       // 8: Flags 8 – PRG-RAM size (rarely used extension)
       PrgRamSize = nes_file[8] * _8K;
+      PrgRam_6000_7FFF_Present = false; // TODO: actually determine correct value
 
       // 9: Flags 9 – TV system (rarely used extension)
       // 10: Flags 10 – TV system, PRG-RAM presence (unofficial, rarely used extension)
