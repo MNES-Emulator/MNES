@@ -95,7 +95,7 @@ public sealed class Ppu {
             if (cycle4 == 7) _current_bg_tile_high = ReadTileByte(true);
          }
       }
-      
+
 
       if (cycle == 1) {
          if (scanline == 241) {
@@ -159,7 +159,7 @@ public sealed class Ppu {
    }
 
    void IncrementDot() {
-      if (++cycle == SCANLINE_WIDTH) { 
+      if (++cycle == SCANLINE_WIDTH) {
          cycle = 0;
          if (++scanline == SCANLINE_HEIGHT) { scanline = -1; }
       }

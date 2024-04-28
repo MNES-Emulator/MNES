@@ -62,20 +62,20 @@ public sealed class PpuInternalRegisters {
       }
    }
 
-   void SwitchHorizontalNameTable() => 
+   void SwitchHorizontalNameTable() =>
       V ^= (Ushort15)0b_000_0100_0000_0000;
 
-   void SwitchVerticalNameTable() => 
+   void SwitchVerticalNameTable() =>
       V ^= (Ushort15)0b_000_1000_0000_0000;
 
-   public void ReloadScrollX() => 
+   public void ReloadScrollX() =>
       V = (Ushort15)((V & 0b_111_1011_1110_0000) | (T & 0b_000_0100_0001_1111));
 
-   public void ReloadScrollY() => 
+   public void ReloadScrollY() =>
       V = (Ushort15)((V & 0b_000_0100_0001_1111) | (T & 0b_111_1011_1110_0000));
 
    public void IncrementScrollX() {
-      if (++CoarseX == 0) 
+      if (++CoarseX == 0)
          SwitchHorizontalNameTable();
    }
 
