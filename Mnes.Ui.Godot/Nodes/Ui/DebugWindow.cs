@@ -18,6 +18,6 @@ public partial class DebugWindow : Window
       if (!emulation.IsRunning) return;
 
       var sb = new StringBuilder();
-      foreach (var log in emulation.)
+      //foreach (var log in emulation.)
 	}
 }

@@ -10,7 +10,7 @@ public sealed class MnesEmulator : Emulator {
 
    public override bool IsRunning => throw new NotImplementedException();
 
-   public MnesEmulator(string rom_path, MnesConfig config, NesInputState input) : base(rom_path, config, input) {
+   public MnesEmulator(string rom_path, MnesConfig config, NesInputState input) : base(rom_path, config, input) =>
       _machine = new(File.ReadAllBytes(rom_path), config, input);
 
    public override EmulatorScreen Screen => _machine.Ppu.Screen;

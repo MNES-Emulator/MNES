@@ -41,7 +41,7 @@ public sealed class MachineState {
       Cpu = new(this);
       Io = new(this);
       Ppu = new(this);
-      Logger = new(this);
+      Logger = new();
       Settings = settings;
    }
 

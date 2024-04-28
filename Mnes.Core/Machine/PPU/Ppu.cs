@@ -61,8 +61,8 @@ public sealed class Ppu {
    // https://www.nesdev.org/wiki/PPU_rendering
    public void Tick() {
       var visible_cycle = cycle < SCREEN_WIDTH && scanline < SCREEN_HEIGHT;
-      //var prefetch_cycle = cycle >= 321 && cycle <= 336;
-      //var fetch_cycle = visible_cycle || prefetch_cycle;
+      var prefetch_cycle = cycle >= 321 && cycle <= 336;
+      var fetch_cycle = visible_cycle || prefetch_cycle;
 
       if (Registers.PpuStatus.VBlankHasStarted) _ticks_since_vblank++;
       if (cycle == 0 && scanline == 0) screen_pos = 0;
