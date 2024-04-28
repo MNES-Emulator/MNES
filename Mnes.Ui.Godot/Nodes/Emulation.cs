@@ -4,12 +4,12 @@ using Godot;
 namespace Mnes.Ui.Godot.Nodes;
 
 public sealed partial class Emulation : Node2D {
-   ImageTexture _texture;
-   Emulator _emulator;
-   Image image;
+   ImageTexture? _texture;
+   Emulator? _emulator;
+   Image? image;
 
    public Emulator Emulator {
-      get => _emulator;
+      get => _emulator ?? throw new InvalidOperationException($"{nameof(_emulator)} was null");
       set {
          if (_emulator == value) return;
          _emulator?.Dispose();

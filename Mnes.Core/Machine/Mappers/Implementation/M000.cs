@@ -1,7 +1,7 @@
 ﻿namespace Mnes.Core.Machine.Mappers.Implementation;
 
 sealed class M000 : Mapper {
-   readonly byte[] prg_ram;
+   readonly byte[]? prg_ram;
    readonly bool mirror_rom_8000_BFFF;
 
    public override int MapperNumber => 0;

@@ -1,9 +1,7 @@
-﻿using System.IO;
-using Mnes.Ui.MonoGame;
+﻿using Mnes.Ui.MonoGame;
 
-using var game = new Game1();
+var maybeFilename = File.Exists(args.FirstOrDefault()) ? args[0] : null;
 
-if (args.Length > 0)
-   if (File.Exists(args[0])) game.StartupRom = args[0];
+using var game = new Game1(maybeFilename);
 
 game.Run();

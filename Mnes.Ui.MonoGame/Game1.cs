@@ -5,12 +5,16 @@ using Microsoft.Xna.Framework.Input;
 namespace Mnes.Ui.MonoGame;
 
 public sealed class Game1 : Game {
-   public string StartupRom;
+   public string StartupRom { get; }
 
    GraphicsDeviceManager _graphics;
-   SpriteBatch _spriteBatch;
+   SpriteBatch? _spriteBatch;
 
-   public Game1() {
+   public Game1(
+      string? maybeStartupRom
+   ) {
+      StartupRom = maybeStartupRom ?? "";
+
       _graphics = new GraphicsDeviceManager(this);
       Content.RootDirectory = "Content";
       IsMouseVisible = true;
