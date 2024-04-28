@@ -7,7 +7,7 @@ namespace Mnes.Ui.Godot.Nodes.Ui;
 
 // This spaghetti code is a WIP
 // "It just works"
-public partial class MainUI : Control {
+public sealed partial class MainUI : Control {
    const string TEXTURE_RECT_ID = "%MNES TextureRect";
    const string FOLDER_SELECT_DIALOG_ID = "%Folder Select Dialog";
    const string ROM_SELECT_DIALOG_ID = "%Rom Select Dialog";
@@ -21,7 +21,7 @@ public partial class MainUI : Control {
    TextureRect Logo => _logo ?? throw new InvalidOperationException($"{nameof(_logo)} was null; this probably means that {nameof(_Ready)} was not called");
    FileDialog FolderSelect => _folder_select ?? throw new InvalidOperationException($"{nameof(_folder_select)} was null; this probably means that {nameof(_Ready)} was not called");
    FileDialog RomSelect => _rom_select ?? throw new InvalidOperationException($"{nameof(_rom_select)} was null; this probably means that {nameof(_Ready)} was not called");
-   Emulation Emulation => _emulation ?? throw new InvalidOperationException($"{nameof(_emulation)} was null; this probably means that {nameof(_Ready)} was not called");
+   public Emulation Emulation => _emulation ?? throw new InvalidOperationException($"{nameof(_emulation)} was null; this probably means that {nameof(_Ready)} was not called");
 
    public override void _Ready() {
       _logo = GetNode<TextureRect>(TEXTURE_RECT_ID);

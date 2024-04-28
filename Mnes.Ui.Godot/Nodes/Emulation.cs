@@ -11,16 +11,16 @@ public sealed partial class Emulation : Node2D {
    public Emulator Emulator {
       get => _emulator ?? throw new InvalidOperationException($"{nameof(_emulator)} was null");
       set {
-         if (Instance == value) return;
-         Instance?.Dispose();
+         if (_emulator == value) return;
+         _emulator?.Dispose();
          _texture?.Dispose();
-         Instance = value;
+         _emulator = value;
          _texture = new();
 
          image?.Dispose();
          image = Image.CreateFromData(
-            width: Instance.Screen.Width,
-            height: Instance.Screen.Height,
+            width: _emulator.Screen.Width,
+            height: _emulator.Screen.Height,
             useMipmaps: false,
             format: Image.Format.Rgba8,
             data: _emulator.Screen.Buffer
@@ -40,8 +40,8 @@ public sealed partial class Emulation : Node2D {
       // This is probably absolutely horrible, but it works
       image?.Dispose();
       image = Image.CreateFromData(
-         width: Instance.Screen.Width,
-         height: Instance.Screen.Height,
+         width: _emulator.Screen.Width,
+         height: _emulator.Screen.Height,
          useMipmaps: false,
          format: Image.Format.Rgba8,
          data: _emulator.Screen.Buffer
@@ -53,7 +53,7 @@ public sealed partial class Emulation : Node2D {
    }
 
    protected override void Dispose(bool disposing) {
-      Instance?.Dispose();
+      _emulator?.Dispose();
       _texture?.Dispose();
       base.Dispose(disposing);
    }
