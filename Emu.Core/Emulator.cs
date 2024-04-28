@@ -7,6 +7,8 @@ public abstract class Emulator {
 
    public abstract EmulatorScreen Screen { get; }
 
+   public abstract bool IsRunning { get; }
+
    public Emulator(string rom_path, EmulatorConfig config, InputState input) { 
       RomPath = rom_path;
       Config = config;

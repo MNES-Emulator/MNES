@@ -1,0 +1,39 @@
+[gd_scene load_steps=2 format=3 uid="uid://cv4jl8jfwpn6e"]
+
+[ext_resource type="Script" path="res://Nodes/Ui/DebugWindow.cs" id="1_ctq2e"]
+
+[node name="Debug Window" type="Window"]
+title = "Debug View"
+position = Vector2i(400, 100)
+size = Vector2i(300, 200)
+script = ExtResource("1_ctq2e")
+
+[node name="MarginContainer" type="MarginContainer" parent="."]
+offset_right = 339.0
+offset_bottom = 239.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="VFlowContainer" type="VFlowContainer" parent="MarginContainer"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="MarginContainer/VFlowContainer"]
+layout_mode = 2
+text = "Debug Output;"
+
+[node name="Debug Output" type="TextEdit" parent="MarginContainer/VFlowContainer"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(200, 170)
+layout_mode = 2
+text = "gfdsg
+fdsaf
+fdsaf
+dsaf
+dsaf
+dsa
+fd
+sgf
+ds
+g
+fds
+gfdsgfd"

@@ -14,6 +14,7 @@ public sealed class MachineState {
    readonly NesTimer _timer;
    readonly NesInputState _input;
    byte _last_read_value; // returns in case of open bus reads
+   public bool IsRunning => !_timer?.RunningThread?.IsCompleted ?? false;
 
    public byte[] Ram { get; }
    public byte[] Rom { get; }
@@ -21,7 +22,7 @@ public sealed class MachineState {
    public Apu Apu { get; }
    public Cpu Cpu { get; }
    public IoRegisters Io { get; }
-   public MachineLogger Logger { get; }
+   public MnesLogger Logger { get; }
    public MnesConfig Settings { get; }
 
    public MachineState(

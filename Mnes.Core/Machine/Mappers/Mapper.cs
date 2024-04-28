@@ -12,6 +12,8 @@ public abstract class Mapper {
    /// <summary> If reads null, then open bus read. Don't write null. </summary>
    public abstract byte? this[ushort index] { get; set; }
 
+   public virtual void ProcessCycle(int cycle, int scanline) { }
+
    public Mapper(
       InesHeader header,
       MachineState machine

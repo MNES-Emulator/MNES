@@ -2,6 +2,7 @@
 
 namespace Mnes.Core.Machine.PPU;
 
+// Credit to https://github.com/jeb495/C-Sharp-NES-Emulator/blob/master/dotNES/PPU.Core.cs for partial use as a reference here.
 // https://www.nesdev.org/wiki/PPU_registers
 public sealed class Ppu {
    readonly MachineState machine;
@@ -36,8 +37,13 @@ public sealed class Ppu {
 
    int skip_cycles;
 
+   long _tile_shift_register;
    byte _current_nt;
    Byte2 _current_color;
+   byte _current_bg_tile_high;
+   byte _current_bg_tile_low;
+
+   int _ticks_since_vblank;
 
    public Ppu(MachineState m) {
       machine = m;
@@ -58,28 +64,51 @@ public sealed class Ppu {
       bool prefetch_cycle = cycle >= 321 && cycle <= 336;
       bool fetch_cycle = visible_cycle || prefetch_cycle;
 
-      //if (Registers.PpuStatus.VBlankHasStarted) ClocksSinceVBlank++;
-
-      if (scanline < 240)
-      {
-         if (visible_cycle)
-            ProcessPixel();
-      }
+      if (Registers.PpuStatus.VBlankHasStarted) _ticks_since_vblank++;
+      if (cycle == 0 && scanline == 0) screen_pos = 0;
 
       // the PPU performs memory fetches on dots 321-336 and 1-256 of scanlines 0-239 and 261
       // https://www.nesdev.org/w/images/default/4/4f/Ppu.svg
       if ((scanline < 240 && scanline > 0) || scanline == 261)
       {
-         var cycle4 = cycle & 0b_1111;
+         if (visible_cycle)
+            ProcessPixel(cycle - 1, scanline);
 
-         if (cycle4 == 1) _current_nt = this[(ushort)(0x2000 + Registers.Internal.V % 0x1000)];
-         if (cycle4 == 3) _current_color = ReadAttribute();
+         // During pixels 280 through 304 of this scanline, the vertical scroll bits are reloaded
+         if (scanline == -1 && 280 <= cycle && cycle <= 304)
+            Registers.Internal.ReloadScrollY();
+
+         if (fetch_cycle)
+         {
+            _tile_shift_register <<= 4;
+            var cycle4 = cycle & 0b_1111;
+
+            if (cycle4 == 0)
+            {
+               if (cycle == 256) Registers.Internal.IncrementScrollY();
+               else Registers.Internal.IncrementScrollX();
+               ShiftTileRegister();
+            }
+            if (cycle4 == 1) _current_nt = this[(ushort)(0x2000 + Registers.Internal.V % 0x1000)];
+            if (cycle4 == 3) _current_color = ReadAttribute();
+            if (cycle4 == 5) _current_bg_tile_low = ReadTileByte(false);
+            if (cycle4 == 7) _current_bg_tile_high = ReadTileByte(true);
+         }
       }
+      
 
-      if (cycle == 1 && scanline == 241)
-      {
-         Registers.PpuStatus.VBlankHasStarted = true;
-         NMI_output = true;
+      if (cycle == 1) {
+         if (scanline == 241) {
+            Registers.PpuStatus.VBlankHasStarted = true;
+            if (Registers.PPUCTRL.NMIEnabled) NMI_output = true;
+         }
+
+         if (scanline == -1) {
+            _ticks_since_vblank = 0;
+            Registers.PpuStatus.VBlankHasStarted = true;
+            Registers.PpuStatus.Sprite0Hit = false;
+            Registers.PpuStatus.SpriteOverflow = false;
+         }
       }
 
       IncrementDot();
@@ -94,14 +123,45 @@ public sealed class Ppu {
       return current_color;
    }
 
-   void ProcessPixel()
-   {
+   private byte ReadTileByte(bool high) {
+      var address = Registers.PPUCTRL.BackgroundTableAddress + _current_nt * 16 + Registers.Internal.FineY;
+      return high ? this[(ushort)(address + 8)] : this[(ushort)address];
+   }
 
+   public void ProcessPixel(int x, int y)
+   {
+      //if (Registers.PpuMask.ShowBg)
+      ProcessBackgroundForPixel(x, y);
+      //if (Registers.PpuMask.ShowSprites)
+      //   ProcessSpritesForPixel(x, y);
+
+      if (y != -1) screen_pos++;
+   }
+
+   private void ProcessBackgroundForPixel(int cycle, int scanline)
+   {
+      uint paletteEntry = (uint)(_tile_shift_register >> 32 >> (int)((7 - Registers.Internal.X) * 4)) & 0x0F;
+      if (paletteEntry % 4 == 0) paletteEntry = 0;
+
+      if (scanline != -1)
+      {
+         Screen.WriteRgb(screen_pos, Palette.SpritePaletteIndexes[this[(ushort)(0x3F00u + paletteEntry)] & 0x3F]);
+      }
+   }
+
+   private void ShiftTileRegister() {
+      for (int x = 0; x < 8; x++) {
+         var palette = ((_current_bg_tile_high & 0x80) >> 6) | ((_current_bg_tile_low & 0x80) >> 7);
+         _tile_shift_register |= (uint)((palette + _current_color * 4) << ((7 - x) * 4));
+         _current_bg_tile_low <<= 1;
+         _current_bg_tile_high <<= 1;
+      }
    }
 
    void IncrementDot() {
-      cycle++;
-      if (cycle == SCANLINE_WIDTH) { cycle = 0; scanline++; }
-      if (scanline == SCANLINE_HEIGHT) { scanline = 0; }
+      if (++cycle == SCANLINE_WIDTH) { 
+         cycle = 0;
+         if (++scanline == SCANLINE_HEIGHT) { scanline = -1; }
+      }
    }
 }

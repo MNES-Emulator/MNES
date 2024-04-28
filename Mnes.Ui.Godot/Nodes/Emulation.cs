@@ -6,25 +6,27 @@ namespace Mnes.Ui.Godot.Nodes;
 public partial class Emulation : Node2D
 {
    ImageTexture _texture;
-   Emulator _emulator;
+   public Emulator Instance { get; private set; }
    Image image;
 
+   public bool IsRunning => Instance?.IsRunning ?? false;
+
    public Emulator Emulator { 
-      get => _emulator; 
+      get => Instance; 
       set {
-         if (_emulator == value) return;
-         _emulator?.Dispose();
+         if (Instance == value) return;
+         Instance?.Dispose();
          _texture?.Dispose();
-         _emulator = value;
+         Instance = value;
          _texture = new();
 
          image?.Dispose();
          image = Image.CreateFromData(
-            width: _emulator.Screen.Width,
-            height: _emulator.Screen.Height,
+            width: Instance.Screen.Width,
+            height: Instance.Screen.Height,
             useMipmaps: false,
             format: Image.Format.Rgba8,
-            data: _emulator.Screen.Buffer
+            data: Instance.Screen.Buffer
             );
 
          _texture.SetImage(image);
@@ -39,15 +41,15 @@ public partial class Emulation : Node2D
 
    public override void _Draw()
    {
-      if (_emulator == null || _texture == null) return;
+      if (Instance == null || _texture == null) return;
       // This is probably absolutely horrible, but it works
       image?.Dispose();
       image = Image.CreateFromData(
-         width: _emulator.Screen.Width,
-         height: _emulator.Screen.Height,
+         width: Instance.Screen.Width,
+         height: Instance.Screen.Height,
          useMipmaps: false,
          format: Image.Format.Rgba8,
-         data: _emulator.Screen.Buffer
+         data: Instance.Screen.Buffer
          );
 
       _texture.Update(image);
@@ -56,7 +58,7 @@ public partial class Emulation : Node2D
    }
 
    protected override void Dispose(bool disposing) {
-      _emulator?.Dispose();
+      Instance?.Dispose();
       _texture?.Dispose();
       base.Dispose(disposing);
    }

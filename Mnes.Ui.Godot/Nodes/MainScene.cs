@@ -17,6 +17,7 @@ public partial class MainScene : Node2D {
    public override void _Ready() {
       Instance = this;
       Config.InitializeFromDisk();
+      if (OS.IsStdOutVerbose()) Config.Settings.Mnes.System.DebugMode = true;
       Ui = GetNode<MainUI>("CanvasLayer/Main UI");
       var arg = OS.GetCmdlineArgs().FirstOrDefault();
       if (!string.IsNullOrWhiteSpace(arg) && File.Exists(arg) && Path.GetExtension(arg).ToLower() == ".nes")

@@ -16,7 +16,7 @@ public partial class MainUI : Control {
    TextureRect logo;
    FileDialog folder_select;
    FileDialog rom_select;
-   Emulation emulation;
+   public Emulation emulation;
 
    public override void _Ready() {
       logo = GetNode<TextureRect>(TEXTURE_RECT_ID);
