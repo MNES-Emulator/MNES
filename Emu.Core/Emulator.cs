@@ -1,9 +1,9 @@
 ﻿namespace Emu.Core;
 
-public abstract class Emulator {
-   public readonly string RomPath;
-   public readonly EmulatorConfig Config;
-   public readonly InputState InputState;
+public abstract class Emulator : IDisposable {
+   public string RomPath { get; }
+   public EmulatorConfig Config { get; }
+   public InputState InputState { get; }
 
    public abstract EmulatorScreen Screen { get; }
 
@@ -14,8 +14,6 @@ public abstract class Emulator {
    }
 
    public abstract void Run();
-
    public abstract void Stop();
-
    public virtual void Dispose() { }
 }
