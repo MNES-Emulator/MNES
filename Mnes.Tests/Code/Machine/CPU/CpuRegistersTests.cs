@@ -1,6 +1,6 @@
 ﻿using AutoFixture;
 using Mnes.Core.Machine.CPU;
-using Mnes.Tests.Testing;
+using Mnes.Testing;
 using static Mnes.Core.Machine.CPU.CpuRegisters;
 
 namespace Mnes.Tests.Machine.CPU;
