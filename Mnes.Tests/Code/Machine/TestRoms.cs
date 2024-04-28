@@ -1,4 +1,5 @@
-﻿using Mnes.Core.Machine;
+﻿using Jamie.Core.Testing;
+using Mnes.Core.Machine;
 using Mnes.Core.Machine.Input;
 using Mnes.Core.Saves.Configuration;
 
@@ -10,7 +11,7 @@ public sealed class TestRoms {
 
    [TestMethod]
    public void Test_RomPathExists() =>
-      Assert.IsTrue(File.Exists(nestest_path));
+      JamieAssert.FileExists(nestest_path);
 
    // TODO: misbehaved test? out of memory exception in StringBuilder.ToString()?
    [TestMethod, Ignore]

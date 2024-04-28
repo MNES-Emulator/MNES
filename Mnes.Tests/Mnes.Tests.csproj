@@ -12,6 +12,8 @@
     <PackageReference Include="AutoFixture" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Jamie.Core.Testing\Jamie.Core.Testing.csproj" />
+    <ProjectReference Include="..\Mnes.Testing\Mnes.Testing.csproj" />
     <ProjectReference Include="..\Mnes.Core\Mnes.Core.csproj" />
     <ProjectReference Include="..\Mnes.Ui.Shared\Mnes.Ui.Shared.csproj" />
   </ItemGroup>

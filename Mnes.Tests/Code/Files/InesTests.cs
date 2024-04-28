@@ -1,4 +1,5 @@
-﻿using Mnes.Core.Machine;
+﻿using Jamie.Core.Testing;
+using Mnes.Core.Machine;
 
 namespace Mnes.Tests.Files;
 
@@ -8,10 +9,7 @@ public sealed class InesTests {
 
    [TestMethod]
    public void Test_NesFileExists() =>
-      Assert.IsTrue(
-         File.Exists(rom_file),
-         $"File '{rom_file}' does not exist; absolute path: '{Path.GetFullPath(rom_file)}'"
-      );
+      JamieAssert.FileExists(rom_file);
 
    [TestMethod]
    public void Test_CanReadHeaderOfRealRomFile() {
