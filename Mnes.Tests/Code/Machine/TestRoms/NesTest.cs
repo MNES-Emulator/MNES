@@ -4,6 +4,7 @@ using Mnes.Core.Machine.CPU;
 using Mnes.Core.Machine.Input;
 using Mnes.Core.Machine.Logging;
 using Mnes.Core.Saves.Configuration;
+using System.Diagnostics;
 
 namespace Mnes.Tests.Code.Machine.TestRoms;
 
@@ -25,6 +26,10 @@ public sealed class NesTest {
    // Answer: This test currently has no way of passing and will never end. The memory leak is
    // unrelated. Idk if that calls for an Ignore attribute or a test that is correctly
    // identified as "failed". Leaving it in because it takes forever.
+   //
+   // nestest writes to certain areas of memory the results of how accurately it was run,
+   // so evaluating those addresses at the end, as well as making sure our log is identical
+   // to the Nintendulator one will determine whether this test passes or not.
    [TestMethod/*, Ignore*/]
    public async Task RunNestest() {
       var input = new NesInputState();
@@ -43,10 +48,11 @@ public sealed class NesTest {
       void cpu_callback(CpuInstruction instruction) {
          var valid_log = valid_logs[i++];
          var current_log = machine.Logger.GetLast();
+         Debug.WriteLine($"     {valid_log} (control)");
 
          Assert.AreEqual(
-            valid_log.Instruction.OpCode, 
-            current_log.Instruction.OpCode, 
+            valid_log.Instruction.OpCode,
+            current_log.Instruction.OpCode,
             $"Opcode mismatch at instruction {i}");
       }
 

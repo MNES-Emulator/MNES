@@ -9,7 +9,7 @@ public sealed class Cpu {
 
    CpuInstruction? _currentInstruction;
    int _current_instruction_cycle;
-   long _cycle_counter = 6;
+   long _cycle_counter;
 
    // temp values used to store data across clock cycles within a single instruction
    internal ushort _tmp_u;
@@ -43,7 +43,7 @@ public sealed class Cpu {
       Registers.Y = 0;
       Registers.A = 0;
 
-      // I just put InterruptDisable/0xFD here because these seem to be set in the nestest.log file by the time it gets here but I haven't found anything in documentation to say why
+      _cycle_counter = 6;
       Registers.P = StatusFlag._1 | StatusFlag.InterruptDisable;
       Registers.S = 0xFD;
    }
