@@ -3,10 +3,11 @@ using Mnes.Core.Machine;
 using Mnes.Core.Machine.Input;
 using Mnes.Core.Saves.Configuration;
 
-namespace Mnes.Tests.Machine;
+namespace Mnes.Tests.Code.Machine.TestRoms;
 
 [TestClass, TestCategory("Integration")]
-public sealed class TestRoms {
+public sealed class NesTest
+{
    const string nestest_path = "../../../../Resources/Test Roms/other/nestest.nes";
 
    [TestMethod]
@@ -15,7 +16,8 @@ public sealed class TestRoms {
 
    // TODO: misbehaved test? out of memory exception in StringBuilder.ToString()?
    [TestMethod, Ignore]
-   public async Task Nestest() {
+   public async Task RunNestest()
+   {
       var input = new NesInputState();
       var settings = new MnesConfig();
       settings.System.DebugMode = true;

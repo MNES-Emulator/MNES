@@ -10,8 +10,8 @@ public sealed class MnesLogger {
       return CpuLog.GetRange(CpuLog.Count - count, count);
    }
 
-   public void Log(InstructionLog log) {
+   public void Log(InstructionLog log, bool show_status_flags) {
       CpuLog.Add(log);
-      Debug.WriteLine(CpuLog.Count.ToString().PadLeft(4) + " " + log);
+      Debug.WriteLine(CpuLog.Count.ToString().PadLeft(4) + " " + log.GetDebugString(show_status_flags));
    }
 }

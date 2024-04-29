@@ -10,6 +10,8 @@ public readonly struct InstructionLog {
    public readonly CpuRegisterLog CpuRegisters;
    public readonly long ClockCycle;
    public readonly string Message;
+   public readonly int PpuCycle;
+   public readonly int PpuScanline;
 
    public InstructionLog(
       CpuInstruction instruction,
@@ -18,7 +20,9 @@ public readonly struct InstructionLog {
       byte? d2,
       CpuRegisterLog log,
       long clock_cycle,
-      string message
+      string message,
+      int ppu_cycle,
+      int ppu_scanline
    ) {
       Instruction = instruction;
       Address = address;
@@ -27,11 +31,21 @@ public readonly struct InstructionLog {
       CpuRegisters = log;
       ClockCycle = clock_cycle;
       Message = message;
+      PpuCycle = ppu_cycle;
+      PpuScanline = ppu_scanline;
    }
 
    public override string ToString() =>
+      GetDebugString(false);
+
+   public string GetDebugString(bool show_status_flags) =>
       $"{Address:X4}  " +
       $"{Instruction.OpCode:X2} {D1?.ToString("X2") ?? ""} {D2?.ToString("X2") ?? ""}".PadRight(10) +
       $"{Instruction.Name} {Message ?? ""}".PadRight(34) +
-      $"{CpuRegisters} CYC:{ClockCycle}";
+      $"{CpuRegisters.GetDebugString(show_status_flags)} PPU: {PpuScanline,3},{PpuCycle,3} CYC:{ClockCycle}";
+
+   public static InstructionLog FromString(string s)
+   {
+      throw new NotImplementedException();
+   }
 }

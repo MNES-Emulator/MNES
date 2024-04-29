@@ -31,6 +31,8 @@ public sealed class Cpu {
    string? _log_message;
    CpuRegisterLog _log_cpu;
    long _log_inst_count;
+   int _log_ppu_cycle;
+   int _log_ppu_scanline;
 
    public CpuRegisters Registers { get; } = new();
 
@@ -1757,6 +1759,8 @@ public sealed class Cpu {
             _log_cyc = _cycle_counter;
             _log_cpu = Registers.GetLog();
             _log_inst_count++;
+            _log_ppu_cycle = _machine.Ppu.Cycle;
+            _log_ppu_scanline = _machine.Ppu.Scanline;
          }
       } else {
          if (_current_instruction_cycle < _currentInstruction.Process.Length) _currentInstruction.Process[_current_instruction_cycle++](_machine);
@@ -1767,7 +1771,18 @@ public sealed class Cpu {
             }
             if (_machine.Settings.System.DebugMode) {
                if (_log_message is { } message) {
-                  _machine.Logger.Log(new(_currentInstruction, _log_pc, _log_d1, _log_d2, _log_cpu, _log_cyc, message));
+                  _machine.Logger.Log(
+                     new(
+                        _currentInstruction, 
+                        _log_pc, 
+                        _log_d1, 
+                        _log_d2, 
+                        _log_cpu, 
+                        _log_cyc,
+                        message, 
+                        _log_ppu_cycle, 
+                        _log_ppu_scanline), 
+                     _machine.Settings.System.DebugShowStatusFlags);
                   _log_message = null;
                }
             }

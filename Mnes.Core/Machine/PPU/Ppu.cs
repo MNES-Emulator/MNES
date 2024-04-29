@@ -32,8 +32,8 @@ public sealed class Ppu {
       set => Mapper[i] = value;
    }
 
-   int _cycle;
-   int _scanline;
+   public int Cycle { get; private set; }
+   public int Scanline { get; private set; }
 
    //int skip_cycles;
 
@@ -60,31 +60,31 @@ public sealed class Ppu {
 
    // https://www.nesdev.org/wiki/PPU_rendering
    public void Tick() {
-      var visible_cycle = _cycle < SCREEN_WIDTH && _scanline < SCREEN_HEIGHT;
-      var prefetch_cycle = _cycle >= 321 && _cycle <= 336;
+      var visible_cycle = Cycle < SCREEN_WIDTH && Scanline < SCREEN_HEIGHT;
+      var prefetch_cycle = Cycle >= 321 && Cycle <= 336;
       var fetch_cycle = visible_cycle || prefetch_cycle;
 
       if (Registers.PpuStatus.VBlankHasStarted) _ticks_since_vblank++;
-      if (_cycle == 0 && _scanline == 0) screen_pos = 0;
+      if (Cycle == 0 && Scanline == 0) screen_pos = 0;
 
       // the PPU performs memory fetches on dots 321-336 and 1-256 of scanlines 0-239 and 261
       // https://www.nesdev.org/w/images/default/4/4f/Ppu.svg
-      if (_scanline < 240 && _scanline > 0 || _scanline == 261) {
+      if (Scanline < 240 && Scanline > 0 || Scanline == 261) {
          if (visible_cycle)
-            ProcessPixel(_cycle - 1, _scanline);
+            ProcessPixel(Cycle - 1, Scanline);
 
          // During pixels 280 through 304 of this scanline, the vertical scroll bits are reloaded
-         if (_scanline == -1 && 280 <= _cycle && _cycle <= 304)
+         if (Scanline == -1 && 280 <= Cycle && Cycle <= 304)
             Registers.Internal.ReloadScrollY();
 
          if (fetch_cycle)
          {
             _tile_shift_register <<= 4;
-            var cycle4 = _cycle & 0b_1111;
+            var cycle4 = Cycle & 0b_1111;
 
             if (cycle4 == 0)
             {
-               if (_cycle == 256) Registers.Internal.IncrementScrollY();
+               if (Cycle == 256) Registers.Internal.IncrementScrollY();
                else Registers.Internal.IncrementScrollX();
                ShiftTileRegister();
             }
@@ -96,13 +96,13 @@ public sealed class Ppu {
       }
 
 
-      if (_cycle == 1) {
-         if (_scanline == 241) {
+      if (Cycle == 1) {
+         if (Scanline == 241) {
             Registers.PpuStatus.VBlankHasStarted = true;
             if (Registers.PPUCTRL.NMIEnabled) NMI_output = true;
          }
 
-         if (_scanline == -1) {
+         if (Scanline == -1) {
             _ticks_since_vblank = 0;
             Registers.PpuStatus.VBlankHasStarted = true;
             Registers.PpuStatus.Sprite0Hit = false;
@@ -154,11 +154,11 @@ public sealed class Ppu {
    }
 
    void IncrementDot() {
-      if (++_cycle != SCANLINE_WIDTH)
+      if (++Cycle != SCANLINE_WIDTH)
          return;
 
-      _cycle = 0;
-      if (++_scanline == SCANLINE_HEIGHT)
-         _scanline = -1;
+      Cycle = 0;
+      if (++Scanline == SCANLINE_HEIGHT)
+         Scanline = -1;
    }
 }
