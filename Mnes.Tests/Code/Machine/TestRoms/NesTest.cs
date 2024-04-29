@@ -96,6 +96,8 @@ public sealed class NesTest {
             valid_log.CpuRegisters.S,
             current_log.CpuRegisters.S,
             $"CPU register SP mismatch at instruction {i}");
+
+         // ppu cycle, ppu scanline, and cycle total are all out of wack so there's no point in throwing for them atm.
       }
 
       machine.Callbacks.OnNesInstructionExecute += cpu_callback;
