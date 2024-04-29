@@ -4,7 +4,7 @@
 
 [node name="Debug Window" type="Window"]
 title = "Debug View"
-position = Vector2i(400, 100)
+position = Vector2i(353, 63)
 size = Vector2i(300, 200)
 script = ExtResource("1_ctq2e")
 

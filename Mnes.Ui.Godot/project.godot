@@ -18,4 +18,5 @@ config/icon="res://icon.png"
 
 [dotnet]
 
-project/assembly_name="Mnes.Ui.Godot"
+project/assembly_name="Mnes"
+project/solution_directory=".."
