@@ -1,4 +1,4 @@
-﻿using IniParser;
+﻿using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 
 namespace Mnes.Ui.Shared;
@@ -10,7 +10,7 @@ public static class Config {
       $"; The location of the save folder. If it doesn't exist, it will be created. You can set this to a local path to make this portable.\n" +
       $"SaveFolder = {DEFAULT_SAVE_FOLDER}";
 
-   const string LOCAL_CONFIG_FILE = "local_config.ini";
+   const string LOCAL_INI_FILE = "local_config.ini";
    const string CONFIG_FILE = "config.json";
 
    public static bool Initialized => Settings != null;
@@ -24,13 +24,15 @@ public static class Config {
       if (Initialized)
          throw new InvalidOperationException("Config already initialized.");
 
-      if (!File.Exists(LOCAL_CONFIG_FILE))
-         File.WriteAllText(LOCAL_CONFIG_FILE, DEFAULT_INI_TEXT);
+      if (!File.Exists(LOCAL_INI_FILE))
+         File.WriteAllText(LOCAL_INI_FILE, DEFAULT_INI_TEXT);
 
-      var parser = new FileIniDataParser();
-      var data = parser.ReadFile(LOCAL_CONFIG_FILE);
+      // Build a configuration object from INI file
+      IConfiguration config = new ConfigurationBuilder()
+          .AddIniFile(LOCAL_INI_FILE)
+          .Build();
 
-      data.TryGetKey("SaveFolder", out _save_folder);
+      _save_folder = config["SaveFolder"] ?? "";
       if (string.IsNullOrEmpty(_save_folder))
          _save_folder = DEFAULT_SAVE_FOLDER;
 
