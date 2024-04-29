@@ -30,6 +30,9 @@ public sealed class NesTest {
    // nestest writes to certain areas of memory the results of how accurately it was run,
    // so evaluating those addresses at the end, as well as making sure our log is identical
    // to the Nintendulator one will determine whether this test passes or not.
+   //
+   // The test "ends" after reaching a specific address. After that it will start checking
+   // to see if illegal opcodes are working, and none of those are implemented atm.
    [TestMethod, Ignore]
    public async Task RunNestest() {
       var input = new NesInputState();
