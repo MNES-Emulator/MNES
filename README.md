@@ -1,5 +1,5 @@
 <p align="center">
-  <img width="460" height="300" src="/Resources/Images/MNES%20Logo.gif">
+  <img width="460" src="/Resources/Images/MNES%20Logo.gif">
 </p>
 
 A WIP NES emulator written in C#. Currently boots some test roms and displays glitched graphics.
