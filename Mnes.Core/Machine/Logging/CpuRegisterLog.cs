@@ -26,7 +26,7 @@ public readonly struct CpuRegisterLog {
       GetDebugString(false);
 
    public string GetDebugString(bool show_status_flags) =>
-      $"A:{A:X2} X:{X:X2} Y:{Y:X2} P:{P:X2} {(show_status_flags ? $"({GetStatusString()}) " : "")}S:{S:X2}";
+      $"A:{A:X2} X:{X:X2} Y:{Y:X2} P:{P:X2} {(show_status_flags ? $"({GetStatusString()}) " : "")}SP:{S:X2}";
 
    string GetStatusString() {
       var p = P;

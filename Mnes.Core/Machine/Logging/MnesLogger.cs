@@ -5,6 +5,9 @@ namespace Mnes.Core.Machine.Logging;
 public sealed class MnesLogger {
    public List<InstructionLog> CpuLog { get; init; } = new();
 
+   public InstructionLog GetLast() =>
+      CpuLog[^1];
+
    public IEnumerable<InstructionLog> GetLast(int count) {
       if (count > CpuLog.Count) count = CpuLog.Count;
       return CpuLog.GetRange(CpuLog.Count - count, count);

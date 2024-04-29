@@ -1786,6 +1786,8 @@ public sealed class Cpu {
                   _log_message = null;
                }
             }
+            _machine.Callbacks.OnNesInstructionExecute?.Invoke(_currentInstruction);
+            _machine.Callbacks.OnCpuExecute?.Invoke();
             _currentInstruction = null;
             _current_instruction_cycle = 0;
             if (_machine.Ppu.NMI_output) {

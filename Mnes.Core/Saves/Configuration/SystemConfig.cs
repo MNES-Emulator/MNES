@@ -13,4 +13,11 @@ public sealed class SystemConfig {
    /// as well as the hex value.
    /// </summary>
    public bool DebugShowStatusFlags { get; set; }
+
+   /// <summary>
+   /// Overrides the default behavior to set the PC flag
+   /// to the specified address and start execution from
+   /// there.
+   /// </summary>
+   public ushort? StartExecutionAtAddress { get; set; }
 }

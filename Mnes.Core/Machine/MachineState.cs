@@ -24,6 +24,7 @@ public sealed class MachineState {
    public IoRegisters Io { get; }
    public MnesLogger Logger { get; }
    public MnesConfig Settings { get; }
+   public MnesCallbacks Callbacks { get; }
 
    public MachineState(
       byte[] nes_bytes,
@@ -43,11 +44,15 @@ public sealed class MachineState {
       Ppu = new(this);
       Logger = new();
       Settings = settings;
+      Callbacks = new();
    }
 
    public async Task Run() {
       SetPowerUpState();
-      Cpu.Registers.PC = ReadUShort(0xFFFC);
+      if (Settings.System.StartExecutionAtAddress.HasValue)
+         Cpu.Registers.PC = Settings.System.StartExecutionAtAddress.Value;
+      else
+         Cpu.Registers.PC = ReadUShort(0xFFFC);
       _timer.Start();
       await _timer.RunningThread;
    }
