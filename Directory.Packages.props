@@ -12,5 +12,9 @@
     <PackageVersion Include="Newtonsoft.Json" Version="13.0.3" />
 
     <PackageVersion Include="AutoFixture" Version="4.18.1" />
+
+    <PackageVersion Include="Godot.SourceGenerators" Version="$(PackageVersion_Godot_SourceGenerators)" />
+    <PackageVersion Include="GodotSharp" Version="$(PackageVersion_GodotSharp)" />
+    <PackageVersion Include="GodotSharpEditor" Version="$(PackageVersion_GodotSharp)" />
   </ItemGroup>
 </Project>
