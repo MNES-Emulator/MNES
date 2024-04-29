@@ -4,6 +4,7 @@ using Mnes.Core.Machine.CPU;
 using Mnes.Core.Machine.Input;
 using Mnes.Core.Machine.Logging;
 using Mnes.Core.Saves.Configuration;
+using System.Diagnostics;
 
 namespace Mnes.Tests.Code.Machine.TestRoms;
 
@@ -43,6 +44,7 @@ public sealed class NesTest {
       void cpu_callback(CpuInstruction instruction) {
          var valid_log = valid_logs[i++];
          var current_log = machine.Logger.GetLast();
+         Debug.WriteLine($"     {valid_log} (control)");
 
          Assert.AreEqual(
             valid_log.Instruction.OpCode, 

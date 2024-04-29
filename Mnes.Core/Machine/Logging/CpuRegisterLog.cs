@@ -5,22 +5,22 @@ namespace Mnes.Core.Machine.Logging;
 
 public readonly struct CpuRegisterLog {
    /// <summary> The accumulator. </summary>
-   public readonly byte A;
+   public byte A { get; init; }
 
    /// <summary> The X register. </summary>
-   public readonly byte X;
+   public byte X { get; init; }
 
    /// <summary> The Y register. </summary>
-   public readonly byte Y;
+   public byte Y { get; init; }
 
    /// <summary> The program counter. </summary>
-   public readonly ushort PC;
+   public ushort PC { get; init; }
 
    /// <summary> The stack pointer. </summary>
-   public readonly byte S;
+   public byte S { get; init; }
 
    /// <summary> The status register. </summary>
-   public readonly byte P;
+   public byte P { get; init; }
 
    public override string ToString() =>
       GetDebugString(false);
