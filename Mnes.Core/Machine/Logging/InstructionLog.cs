@@ -2,16 +2,16 @@
 
 namespace Mnes.Core.Machine.Logging;
 
-public readonly struct InstructionLog {
-   public readonly CpuInstruction Instruction;
-   public readonly ushort Address;
-   public readonly byte? Param1;
-   public readonly byte? Param2;
-   public readonly CpuRegisterLog CpuRegisters;
-   public readonly long ClockCycle;
-   public readonly string Message;
-   public readonly int PpuCycle;
-   public readonly int PpuScanline;
+public struct InstructionLog {
+   public CpuInstruction Instruction { get; set; }
+   public ushort Address { get; set; }
+   public byte? Param1 { get; set; }
+   public byte? Param2 { get; set; }
+   public CpuRegisterLog CpuRegisters { get; set; }
+   public long ClockCycle { get; set; }
+   public string? Message { get; set; }
+   public int PpuCycle { get; set; }
+   public int PpuScanline { get; set; }
 
    public InstructionLog(
       CpuInstruction instruction,
@@ -20,7 +20,7 @@ public readonly struct InstructionLog {
       byte? param2,
       CpuRegisterLog log,
       long clock_cycle,
-      string message,
+      string? message,
       int ppu_cycle,
       int ppu_scanline
    ) {

@@ -78,7 +78,7 @@ public sealed class CpuInstruction {
       b_h |= b_l;
       var target = b_h;
 
-      if (m.Settings.System.DebugMode) m.Cpu._log_message =
+      if (m.Settings.System.DebugMode) m.Cpu._log.Message =
          $"(${arg:X2},{r.Name}) = @ {x_target:X2} = {target:X4} = {m[target]:X2}";
 
       return target;
@@ -95,7 +95,7 @@ public sealed class CpuInstruction {
       var target = (ushort)((h_byte << 8) | l_byte);
 
       // This output is wrong but it doesn't actually effect anything
-      if (m.Settings.System.DebugMode) m.Cpu._log_message =
+      if (m.Settings.System.DebugMode) m.Cpu._log.Message =
         $"(${arg:X2}),{r.Name} = {target:X4} @ {target:X4} = {m[target]:X2}";
 
       return target;
@@ -104,14 +104,14 @@ public sealed class CpuInstruction {
    static ushort GetIndexedAbsoluteAddress(MachineState m, ushort arg, RegisterType r)
    {
       var address = (ushort)(arg + m.Cpu.Registers[r]);
-      if (m.Settings.System.DebugMode) m.Cpu._log_message = $"${arg:X4},{r.Name} @ {address:X4} = {m[address]:X2}";
+      if (m.Settings.System.DebugMode) m.Cpu._log.Message = $"${arg:X4},{r.Name} @ {address:X4} = {m[address]:X2}";
       return address;
    }
 
    static ushort GetIndexedZeroPageAddress(MachineState m, byte arg, RegisterType r)
    {
       var address = (byte)(arg + m.Cpu.Registers[r]);
-      if (m.Settings.System.DebugMode) m.Cpu._log_message = $"${arg:X2},{r.Name} @ {arg:X2} = {m[address]:X2}";
+      if (m.Settings.System.DebugMode) m.Cpu._log.Message = $"${arg:X2},{r.Name} @ {arg:X2} = {m[address]:X2}";
       return address;
    }
 
@@ -134,7 +134,7 @@ public sealed class CpuInstruction {
    static void OpBranchOnFlagRelative(MachineState m, StatusFlag flag)
    {
       var offset = Convert.ToInt32((sbyte)m[(ushort)(m.Cpu.Registers.PC + 1)]);
-      if (m.Settings.System.DebugMode) m.Cpu._log_message = $"${m.Cpu.Registers.PC + offset + 2:X4}";
+      if (m.Settings.System.DebugMode) m.Cpu._log.Message = $"${m.Cpu.Registers.PC + offset + 2:X4}";
 
       if (m.Cpu.Registers.HasFlag(flag))
       {
@@ -150,7 +150,7 @@ public sealed class CpuInstruction {
    static void OpBranchOnClearFlagRelative(MachineState m, StatusFlag flag)
    {
       var offset = Convert.ToInt32((sbyte)m[(ushort)(m.Cpu.Registers.PC + 1)]);
-      if (m.Settings.System.DebugMode) m.Cpu._log_message = $"${m.Cpu.Registers.PC + offset + 2:X4}";
+      if (m.Settings.System.DebugMode) m.Cpu._log.Message = $"${m.Cpu.Registers.PC + offset + 2:X4}";
 
       if (!m.Cpu.Registers.HasFlag(flag))
       {
@@ -229,7 +229,7 @@ public sealed class CpuInstruction {
          },
          m => {
             PCH(m, m[(ushort)(m.Cpu._tmp_u + 2)]);
-            if (m.Settings.System.DebugMode) m.Cpu._log_message = $"${m.Cpu.Registers.PC:X4}";
+            if (m.Settings.System.DebugMode) m.Cpu._log.Message = $"${m.Cpu.Registers.PC:X4}";
          },
       } },
 
@@ -237,7 +237,7 @@ public sealed class CpuInstruction {
          m => {
             m.Cpu.Registers.X = m[(ushort)(m.Cpu.Registers.PC + 1)];
             m.Cpu.Registers.PC += 2;
-            if (m.Settings.System.DebugMode) m.Cpu._log_message = $"#${m.Cpu.Registers.X:X2}";
+            if (m.Settings.System.DebugMode) m.Cpu._log.Message = $"#${m.Cpu.Registers.X:X2}";
          },
       } },
 
@@ -245,7 +245,7 @@ public sealed class CpuInstruction {
          m => { },
          m => {
             var target = m[(ushort)(m.Cpu.Registers.PC + 1)];
-            if (m.Settings.System.DebugMode) m.Cpu._log_message = $"${target:X2} = {m[target]:X2}";
+            if (m.Settings.System.DebugMode) m.Cpu._log.Message = $"${target:X2} = {m[target]:X2}";
             m[target] = m.Cpu.Registers.X;
             m.Cpu.Registers.PC += 2;
          },
@@ -260,7 +260,7 @@ public sealed class CpuInstruction {
          m => {
             PUSH_ushort(m, (ushort)(m.Cpu.Registers.PC + 2));
             m.Cpu.Registers.PC = m.ReadUShort(m.Cpu.Registers.PC + 1);
-            if (m.Settings.System.DebugMode) m.Cpu._log_message = $"${m.Cpu.Registers.PC:X4}";
+            if (m.Settings.System.DebugMode) m.Cpu._log.Message = $"${m.Cpu.Registers.PC:X4}";
          },
       } },
 
@@ -302,7 +302,7 @@ public sealed class CpuInstruction {
          m => {
             m.Cpu.Registers.A = m[(ushort)(m.Cpu.Registers.PC + 1)];
             m.Cpu.Registers.PC += 2;
-            if (m.Settings.System.DebugMode) m.Cpu._log_message = $"#${m.Cpu.Registers.A:X2}";
+            if (m.Settings.System.DebugMode) m.Cpu._log.Message = $"#${m.Cpu.Registers.A:X2}";
          },
       } },
 
@@ -318,7 +318,7 @@ public sealed class CpuInstruction {
          m => { },
          m => {
             var target = m[(ushort)(m.Cpu.Registers.PC + 1)];
-            if (m.Settings.System.DebugMode) m.Cpu._log_message = $"${target:X2} = {m[target]:X2}";
+            if (m.Settings.System.DebugMode) m.Cpu._log.Message = $"${target:X2} = {m[target]:X2}";
             m[target] = m.Cpu.Registers.A;
             m.Cpu.Registers.PC += 2;
          },
@@ -329,7 +329,7 @@ public sealed class CpuInstruction {
          m => {
             var z_p_address = m[(ushort)(m.Cpu.Registers.PC + 1)];
             var value = m[z_p_address];
-            if (m.Settings.System.DebugMode) m.Cpu._log_message = $"${z_p_address:X2} = {value:X2}";
+            if (m.Settings.System.DebugMode) m.Cpu._log.Message = $"${z_p_address:X2} = {value:X2}";
             OpBit(m, value);
             m.Cpu.Registers.PC += 2;
          },
@@ -384,7 +384,7 @@ public sealed class CpuInstruction {
 
       new() { Name = "CMP", OpCode = 0xC9, Bytes = 2, Process = new ProcessDelegate[] {
          m => {
-            if (m.Settings.System.DebugMode) m.Cpu._log_message = $"#${m[(ushort)(m.Cpu.Registers.PC + 1)]:X2}";
+            if (m.Settings.System.DebugMode) m.Cpu._log.Message = $"#${m[(ushort)(m.Cpu.Registers.PC + 1)]:X2}";
             OpCompare(m, m.Cpu.Registers.A, m[(ushort)(m.Cpu.Registers.PC + 1)]);
             m.Cpu.Registers.PC += 2;
          },
@@ -440,7 +440,7 @@ public sealed class CpuInstruction {
       new() { Name = "ADC", OpCode = 0x69, Bytes = 2, Process = new ProcessDelegate[] {
          m => {
             var target = m[(ushort)(m.Cpu.Registers.PC + 1)];
-            if (m.Settings.System.DebugMode) m.Cpu._log_message = $"#${target:X2}";
+            if (m.Settings.System.DebugMode) m.Cpu._log.Message = $"#${target:X2}";
             OpAddCarry(m, target);
             m.Cpu.Registers.PC += 2;
          },
@@ -450,13 +450,13 @@ public sealed class CpuInstruction {
          m => {
             m.Cpu.Registers.Y = m[(ushort)(m.Cpu.Registers.PC + 1)];
             m.Cpu.Registers.PC += 2;
-            if (m.Settings.System.DebugMode) m.Cpu._log_message = $"#${m.Cpu.Registers.Y:X2}";
+            if (m.Settings.System.DebugMode) m.Cpu._log.Message = $"#${m.Cpu.Registers.Y:X2}";
          },
       } },
 
       new() { Name = "CPY", OpCode = 0xC0, Bytes = 2, Process = new ProcessDelegate[] {
          m => {
-            if (m.Settings.System.DebugMode) m.Cpu._log_message = $"#${m[(ushort)(m.Cpu.Registers.PC + 1)]:X2}";
+            if (m.Settings.System.DebugMode) m.Cpu._log.Message = $"#${m[(ushort)(m.Cpu.Registers.PC + 1)]:X2}";
             OpCompare(m, m.Cpu.Registers.Y, m[(ushort)(m.Cpu.Registers.PC + 1)]);
             m.Cpu.Registers.PC += 2;
          },
@@ -464,7 +464,7 @@ public sealed class CpuInstruction {
 
       new() { Name = "CPX", OpCode = 0xE0, Bytes = 2, Process = new ProcessDelegate[] {
          m => {
-            if (m.Settings.System.DebugMode) m.Cpu._log_message = $"#${m[(ushort)(m.Cpu.Registers.PC + 1)]:X2}";
+            if (m.Settings.System.DebugMode) m.Cpu._log.Message = $"#${m[(ushort)(m.Cpu.Registers.PC + 1)]:X2}";
             OpCompare(m, m.Cpu.Registers.X, m[(ushort)(m.Cpu.Registers.PC + 1)]);
             m.Cpu.Registers.PC += 2;
          },
@@ -473,7 +473,7 @@ public sealed class CpuInstruction {
       new() { Name = "SBC", OpCode = 0xE9, Bytes = 2, Process = new ProcessDelegate[] {
          m => {
             var target = m[(ushort)(m.Cpu.Registers.PC + 1)];
-            if (m.Settings.System.DebugMode) m.Cpu._log_message = $"#${target:X2}";
+            if (m.Settings.System.DebugMode) m.Cpu._log.Message = $"#${target:X2}";
             OpAddCarry(m, (byte)~target);
             m.Cpu.Registers.PC += 2;
          },
@@ -550,7 +550,7 @@ public sealed class CpuInstruction {
             var target = m.ReadUShort(m.Cpu.Registers.PC + 1);
             m[target] = m.Cpu.Registers.X;
             m.Cpu.Registers.PC += 3;
-            if (m.Settings.System.DebugMode) m.Cpu._log_message = $"${target:X2} = {m.Cpu.Registers.X:X2}";
+            if (m.Settings.System.DebugMode) m.Cpu._log.Message = $"${target:X2} = {m.Cpu.Registers.X:X2}";
          },
       } },
 
@@ -568,7 +568,7 @@ public sealed class CpuInstruction {
             var target = m.ReadUShort(m.Cpu.Registers.PC + 1);
             m.Cpu.Registers.X = m[target];
             m.Cpu.Registers.PC += 3;
-            if (m.Settings.System.DebugMode) m.Cpu._log_message = $"${target:X4} = {m.Cpu.Registers.X:X2}";
+            if (m.Settings.System.DebugMode) m.Cpu._log.Message = $"${target:X4} = {m.Cpu.Registers.X:X2}";
          },
       } },
 
@@ -579,7 +579,7 @@ public sealed class CpuInstruction {
             var target = m.ReadUShort(m.Cpu.Registers.PC + 1);
             m.Cpu.Registers.A = m[target];
             m.Cpu.Registers.PC += 3;
-            if (m.Settings.System.DebugMode) m.Cpu._log_message = $"${target:X4} = {m.Cpu.Registers.A:X2}";
+            if (m.Settings.System.DebugMode) m.Cpu._log.Message = $"${target:X4} = {m.Cpu.Registers.A:X2}";
          },
       } },
 
@@ -592,7 +592,7 @@ public sealed class CpuInstruction {
             var target = m.ReadUShort(m.Cpu.Registers.PC + 1);
             OpDecMem(m, target);
             m.Cpu.Registers.PC += 3;
-            if (m.Settings.System.DebugMode) m.Cpu._log_message = $"${target:X2} = {m.Cpu.Registers.A:X2}";
+            if (m.Settings.System.DebugMode) m.Cpu._log.Message = $"${target:X2} = {m.Cpu.Registers.A:X2}";
          },
       } },
 
@@ -612,7 +612,7 @@ public sealed class CpuInstruction {
             m.Cpu.Registers.A >>= 1;
             m.Cpu.Registers.SetFlag(StatusFlag.Carry, m.Cpu.Registers.A.HasBit(0));
             m.Cpu.Registers.PC += 1;
-            if (m.Settings.System.DebugMode) m.Cpu._log_message = $"A";
+            if (m.Settings.System.DebugMode) m.Cpu._log.Message = $"A";
          },
       } },
 
@@ -622,7 +622,7 @@ public sealed class CpuInstruction {
             m.Cpu.Registers.A <<= 1;
             m.Cpu.Registers.SetFlag(StatusFlag.Carry, c_flag);
             m.Cpu.Registers.PC += 1;
-            if (m.Settings.System.DebugMode) m.Cpu._log_message = $"A";
+            if (m.Settings.System.DebugMode) m.Cpu._log.Message = $"A";
          },
       } },
 
@@ -634,7 +634,7 @@ public sealed class CpuInstruction {
             if (prev_carry) m.Cpu.Registers.A |= BitFlags.F7;
             m.Cpu.Registers.SetFlag(StatusFlag.Carry, c_flag);
             m.Cpu.Registers.PC += 1;
-            if (m.Settings.System.DebugMode) m.Cpu._log_message = $"A";
+            if (m.Settings.System.DebugMode) m.Cpu._log.Message = $"A";
          },
       } },
 
@@ -646,7 +646,7 @@ public sealed class CpuInstruction {
             if (prev_carry) m.Cpu.Registers.A |= BitFlags.F0;
             m.Cpu.Registers.SetFlag(StatusFlag.Carry, c_flag);
             m.Cpu.Registers.PC += 1;
-            if (m.Settings.System.DebugMode) m.Cpu._log_message = $"A";
+            if (m.Settings.System.DebugMode) m.Cpu._log.Message = $"A";
          },
       } },
 
@@ -656,7 +656,7 @@ public sealed class CpuInstruction {
             var target = m[(ushort)(m.Cpu.Registers.PC + 1)];
             m.Cpu.Registers.A = m[target];
             m.Cpu.Registers.PC += 2;
-            if (m.Settings.System.DebugMode) m.Cpu._log_message = $"${target:X2} = {m.Cpu.Registers.A:X2}";
+            if (m.Settings.System.DebugMode) m.Cpu._log.Message = $"${target:X2} = {m.Cpu.Registers.A:X2}";
          },
       } },
 
@@ -666,7 +666,7 @@ public sealed class CpuInstruction {
          m => { },
          m => {
             var target = m.ReadUShort(m.Cpu.Registers.PC + 1);
-            if (m.Settings.System.DebugMode) m.Cpu._log_message = $"${target:X4} = {m[target]:X2}";
+            if (m.Settings.System.DebugMode) m.Cpu._log.Message = $"${target:X4} = {m[target]:X2}";
             m[target] = m.Cpu.Registers.A;
             m.Cpu.Registers.PC += 3;
          },
@@ -782,7 +782,7 @@ public sealed class CpuInstruction {
             var target = m[(ushort)(m.Cpu.Registers.PC + 1)];
             m.Cpu.Registers.Y = m[target];
             m.Cpu.Registers.PC += 2;
-            if (m.Settings.System.DebugMode) m.Cpu._log_message = $"${target:X2} = {m.Cpu.Registers.Y:X2}";
+            if (m.Settings.System.DebugMode) m.Cpu._log.Message = $"${target:X2} = {m.Cpu.Registers.Y:X2}";
          },
       } },
 
@@ -792,7 +792,7 @@ public sealed class CpuInstruction {
             var target = m[(ushort)(m.Cpu.Registers.PC + 1)];
             m[target] = m.Cpu.Registers.Y;
             m.Cpu.Registers.PC += 2;
-            if (m.Settings.System.DebugMode) m.Cpu._log_message = $"${target:X2} = {m.Cpu.Registers.Y:X2}";
+            if (m.Settings.System.DebugMode) m.Cpu._log.Message = $"${target:X2} = {m.Cpu.Registers.Y:X2}";
          },
       } },
 
@@ -802,7 +802,7 @@ public sealed class CpuInstruction {
             var target = m[(ushort)(m.Cpu.Registers.PC + 1)];
             m.Cpu.Registers.X = m[target];
             m.Cpu.Registers.PC += 2;
-            if (m.Settings.System.DebugMode) m.Cpu._log_message = $"${target:X2} = {m.Cpu.Registers.X:X2}";
+            if (m.Settings.System.DebugMode) m.Cpu._log.Message = $"${target:X2} = {m.Cpu.Registers.X:X2}";
          },
       } },
 
@@ -812,7 +812,7 @@ public sealed class CpuInstruction {
             var target = m[(ushort)(m.Cpu.Registers.PC + 1)];
             m.Cpu.Registers.A |= m[target];
             m.Cpu.Registers.PC += 2;
-            if (m.Settings.System.DebugMode) m.Cpu._log_message = $"${target:X2} = {m[target]:X2}";
+            if (m.Settings.System.DebugMode) m.Cpu._log.Message = $"${target:X2} = {m[target]:X2}";
          },
       } },
 
@@ -822,7 +822,7 @@ public sealed class CpuInstruction {
             var target = m[(ushort)(m.Cpu.Registers.PC + 1)];
             m.Cpu.Registers.A &= m[target];
             m.Cpu.Registers.PC += 2;
-            if (m.Settings.System.DebugMode) m.Cpu._log_message = $"${target:X2} = {m[target]:X2}";
+            if (m.Settings.System.DebugMode) m.Cpu._log.Message = $"${target:X2} = {m[target]:X2}";
          },
       } },
 
@@ -832,7 +832,7 @@ public sealed class CpuInstruction {
             var target = m[(ushort)(m.Cpu.Registers.PC + 1)];
             m.Cpu.Registers.A ^= m[target];
             m.Cpu.Registers.PC += 2;
-            if (m.Settings.System.DebugMode) m.Cpu._log_message = $"${target:X2} = {m[target]:X2}";
+            if (m.Settings.System.DebugMode) m.Cpu._log.Message = $"${target:X2} = {m[target]:X2}";
          },
       } },
 
@@ -842,7 +842,7 @@ public sealed class CpuInstruction {
             var target = m[(ushort)(m.Cpu.Registers.PC + 1)];
             OpAddCarry(m, m[target]);
             m.Cpu.Registers.PC += 2;
-            if (m.Settings.System.DebugMode) m.Cpu._log_message = $"${target:X2} = {m[target]:X2}";
+            if (m.Settings.System.DebugMode) m.Cpu._log.Message = $"${target:X2} = {m[target]:X2}";
          },
       } },
 
@@ -852,7 +852,7 @@ public sealed class CpuInstruction {
             var target = m[(ushort)(m.Cpu.Registers.PC + 1)];
             OpCompare(m, m.Cpu.Registers.A, m[target]);
             m.Cpu.Registers.PC += 2;
-            if (m.Settings.System.DebugMode) m.Cpu._log_message = $"${target:X2} = {m[target]:X2}";
+            if (m.Settings.System.DebugMode) m.Cpu._log.Message = $"${target:X2} = {m[target]:X2}";
          },
       } },
 
@@ -860,7 +860,7 @@ public sealed class CpuInstruction {
          m => { },
          m => {
             var target = m[(ushort)(m.Cpu.Registers.PC + 1)];
-            if (m.Settings.System.DebugMode) m.Cpu._log_message = $"${target:X2} = {m[target]:X2}";
+            if (m.Settings.System.DebugMode) m.Cpu._log.Message = $"${target:X2} = {m[target]:X2}";
             OpAddCarry(m, (byte)~m[target]);
             m.Cpu.Registers.PC += 2;
          },
@@ -872,7 +872,7 @@ public sealed class CpuInstruction {
             var target = m[(ushort)(m.Cpu.Registers.PC + 1)];
             OpCompare(m, m.Cpu.Registers.X, m[target]);
             m.Cpu.Registers.PC += 2;
-            if (m.Settings.System.DebugMode) m.Cpu._log_message = $"${target:X2} = {m[target]:X2}";
+            if (m.Settings.System.DebugMode) m.Cpu._log.Message = $"${target:X2} = {m[target]:X2}";
          },
       } },
 
@@ -882,7 +882,7 @@ public sealed class CpuInstruction {
             var target = m[(ushort)(m.Cpu.Registers.PC + 1)];
             OpCompare(m, m.Cpu.Registers.Y, m[target]);
             m.Cpu.Registers.PC += 2;
-            if (m.Settings.System.DebugMode) m.Cpu._log_message = $"${target:X2} = {m[target]:X2}";
+            if (m.Settings.System.DebugMode) m.Cpu._log.Message = $"${target:X2} = {m[target]:X2}";
          },
       } },
 
@@ -890,7 +890,7 @@ public sealed class CpuInstruction {
          m => { },
          m => {
             var arg = m[(ushort)(m.Cpu.Registers.PC + 1)];
-            if (m.Settings.System.DebugMode) m.Cpu._log_message = $"${arg:X2} = {m[arg]:X2}";
+            if (m.Settings.System.DebugMode) m.Cpu._log.Message = $"${arg:X2} = {m[arg]:X2}";
 
             var c_flag = m[arg].HasBit(0);
             m[arg] >>= 1;
@@ -904,7 +904,7 @@ public sealed class CpuInstruction {
          m => { },
          m => {
             var arg = m[(ushort)(m.Cpu.Registers.PC + 1)];
-            if (m.Settings.System.DebugMode) m.Cpu._log_message = $"${arg:X2} = {m[arg]:X2}";
+            if (m.Settings.System.DebugMode) m.Cpu._log.Message = $"${arg:X2} = {m[arg]:X2}";
 
             var c_flag = m[arg].HasBit(7);
             m[arg] <<= 1;
@@ -921,7 +921,7 @@ public sealed class CpuInstruction {
          m => { },
          m => {
             var arg = m[(ushort)(m.Cpu.Registers.PC + 1)];
-            if (m.Settings.System.DebugMode) m.Cpu._log_message = $"${arg:X2} = {m[arg]:X2}";
+            if (m.Settings.System.DebugMode) m.Cpu._log.Message = $"${arg:X2} = {m[arg]:X2}";
 
             OpRollingRightShiftMem(m, arg);
 
@@ -936,7 +936,7 @@ public sealed class CpuInstruction {
          m => { },
          m => {
             var arg = m[(ushort)(m.Cpu.Registers.PC + 1)];
-            if (m.Settings.System.DebugMode) m.Cpu._log_message = $"${arg:X2} = {m[arg]:X2}";
+            if (m.Settings.System.DebugMode) m.Cpu._log.Message = $"${arg:X2} = {m[arg]:X2}";
 
             OpRollingLeftShiftMem(m, arg);
 
@@ -951,7 +951,7 @@ public sealed class CpuInstruction {
          m => { },
          m => {
             var arg = m[(ushort)(m.Cpu.Registers.PC + 1)];
-            if (m.Settings.System.DebugMode) m.Cpu._log_message = $"${arg:X2} = {m[arg]:X2}";
+            if (m.Settings.System.DebugMode) m.Cpu._log.Message = $"${arg:X2} = {m[arg]:X2}";
 
             OpIncMem(m, arg);
 
@@ -966,7 +966,7 @@ public sealed class CpuInstruction {
          m => { },
          m => {
             var arg = m[(ushort)(m.Cpu.Registers.PC + 1)];
-            if (m.Settings.System.DebugMode) m.Cpu._log_message = $"${arg:X2} = {m[arg]:X2}";
+            if (m.Settings.System.DebugMode) m.Cpu._log.Message = $"${arg:X2} = {m[arg]:X2}";
 
             OpDecMem(m, arg);
 
@@ -981,7 +981,7 @@ public sealed class CpuInstruction {
             var target = m.ReadUShort(m.Cpu.Registers.PC + 1);
             m.Cpu.Registers.Y = m[target];
             m.Cpu.Registers.PC += 3;
-            if (m.Settings.System.DebugMode) m.Cpu._log_message = $"${target:X4} = {m.Cpu.Registers.Y:X2}";
+            if (m.Settings.System.DebugMode) m.Cpu._log.Message = $"${target:X4} = {m.Cpu.Registers.Y:X2}";
          },
       } },
 
@@ -990,7 +990,7 @@ public sealed class CpuInstruction {
          m => { },
          m => {
             var target = m.ReadUShort(m.Cpu.Registers.PC + 1);
-            if (m.Settings.System.DebugMode) m.Cpu._log_message = $"${target:X4} = {m[target]:X2}";
+            if (m.Settings.System.DebugMode) m.Cpu._log.Message = $"${target:X4} = {m[target]:X2}";
             m[target] = m.Cpu.Registers.Y;
             m.Cpu.Registers.PC += 3;
          },
@@ -1001,7 +1001,7 @@ public sealed class CpuInstruction {
          m => { },
          m => {
             var target = m.ReadUShort(m.Cpu.Registers.PC + 1);
-            if (m.Settings.System.DebugMode) m.Cpu._log_message = $"${target:X4} = {m[target]:X2}";
+            if (m.Settings.System.DebugMode) m.Cpu._log.Message = $"${target:X4} = {m[target]:X2}";
             OpBit(m, m[target]);
             m.Cpu.Registers.PC += 3;
          },
@@ -1012,7 +1012,7 @@ public sealed class CpuInstruction {
          m => { },
          m => {
             var target = m.ReadUShort(m.Cpu.Registers.PC + 1);
-            if (m.Settings.System.DebugMode) m.Cpu._log_message = $"${target:X4} = {m[target]:X2}";
+            if (m.Settings.System.DebugMode) m.Cpu._log.Message = $"${target:X4} = {m[target]:X2}";
             m.Cpu.Registers.A |= m[target];
             m.Cpu.Registers.PC += 3;
          },
@@ -1023,7 +1023,7 @@ public sealed class CpuInstruction {
          m => { },
          m => {
             var target = m.ReadUShort(m.Cpu.Registers.PC + 1);
-            if (m.Settings.System.DebugMode) m.Cpu._log_message = $"${target:X4} = {m[target]:X2}";
+            if (m.Settings.System.DebugMode) m.Cpu._log.Message = $"${target:X4} = {m[target]:X2}";
             m.Cpu.Registers.A &= m[target];
             m.Cpu.Registers.PC += 3;
          },
@@ -1034,7 +1034,7 @@ public sealed class CpuInstruction {
          m => { },
          m => {
             var target = m.ReadUShort(m.Cpu.Registers.PC + 1);
-            if (m.Settings.System.DebugMode) m.Cpu._log_message = $"${target:X4} = {m[target]:X2}";
+            if (m.Settings.System.DebugMode) m.Cpu._log.Message = $"${target:X4} = {m[target]:X2}";
             m.Cpu.Registers.A ^= m[target];
             m.Cpu.Registers.PC += 3;
          },
@@ -1045,7 +1045,7 @@ public sealed class CpuInstruction {
          m => { },
          m => {
             var target = m.ReadUShort(m.Cpu.Registers.PC + 1);
-            if (m.Settings.System.DebugMode) m.Cpu._log_message = $"${target:X4} = {m[target]:X2}";
+            if (m.Settings.System.DebugMode) m.Cpu._log.Message = $"${target:X4} = {m[target]:X2}";
             OpAddCarry(m, m[target]);
             m.Cpu.Registers.PC += 3;
          },
@@ -1056,7 +1056,7 @@ public sealed class CpuInstruction {
          m => { },
          m => {
             var target = m.ReadUShort(m.Cpu.Registers.PC + 1);
-            if (m.Settings.System.DebugMode) m.Cpu._log_message = $"${target:X4} = {m[target]:X2}";
+            if (m.Settings.System.DebugMode) m.Cpu._log.Message = $"${target:X4} = {m[target]:X2}";
             OpCompare(m, m.Cpu.Registers.A, m[target]);
             m.Cpu.Registers.PC += 3;
          },
@@ -1067,7 +1067,7 @@ public sealed class CpuInstruction {
          m => { },
          m => {
             var target = m.ReadUShort(m.Cpu.Registers.PC + 1);
-            if (m.Settings.System.DebugMode) m.Cpu._log_message = $"${target:X4} = {m[target]:X2}";
+            if (m.Settings.System.DebugMode) m.Cpu._log.Message = $"${target:X4} = {m[target]:X2}";
             OpAddCarry(m, (byte)~m[target]);
             m.Cpu.Registers.PC += 3;
          },
@@ -1078,7 +1078,7 @@ public sealed class CpuInstruction {
          m => { },
          m => {
             var target = m.ReadUShort(m.Cpu.Registers.PC + 1);
-            if (m.Settings.System.DebugMode) m.Cpu._log_message = $"${target:X4} = {m[target]:X2}";
+            if (m.Settings.System.DebugMode) m.Cpu._log.Message = $"${target:X4} = {m[target]:X2}";
             OpCompare(m, m.Cpu.Registers.X, m[target]);
             m.Cpu.Registers.PC += 3;
          },
@@ -1089,7 +1089,7 @@ public sealed class CpuInstruction {
          m => { },
          m => {
             var target = m.ReadUShort(m.Cpu.Registers.PC + 1);
-            if (m.Settings.System.DebugMode) m.Cpu._log_message = $"${target:X4} = {m[target]:X2}";
+            if (m.Settings.System.DebugMode) m.Cpu._log.Message = $"${target:X4} = {m[target]:X2}";
             OpCompare(m, m.Cpu.Registers.Y, m[target]);
             m.Cpu.Registers.PC += 3;
          },
@@ -1102,7 +1102,7 @@ public sealed class CpuInstruction {
          m => { },
          m => {
             var target = m.ReadUShort(m.Cpu.Registers.PC + 1);
-            if (m.Settings.System.DebugMode) m.Cpu._log_message = $"${target:X4} = {m[target]:X2}";
+            if (m.Settings.System.DebugMode) m.Cpu._log.Message = $"${target:X4} = {m[target]:X2}";
             var carry = (m[target] & 1) > 0;
             m[target] >>= 1;
             m.Cpu.Registers.SetFlag(StatusFlag.Carry, carry);
@@ -1117,7 +1117,7 @@ public sealed class CpuInstruction {
          m => { },
          m => {
             var target = m.ReadUShort(m.Cpu.Registers.PC + 1);
-            if (m.Settings.System.DebugMode) m.Cpu._log_message = $"${target:X4} = {m[target]:X2}";
+            if (m.Settings.System.DebugMode) m.Cpu._log.Message = $"${target:X4} = {m[target]:X2}";
             var c_flag = m[target].HasBit(7);
             m[target] <<= 1;
             m.Cpu.Registers.SetFlag(StatusFlag.Carry, c_flag);
@@ -1132,7 +1132,7 @@ public sealed class CpuInstruction {
          m => { },
          m => {
             var target = m.ReadUShort(m.Cpu.Registers.PC + 1);
-            if (m.Settings.System.DebugMode) m.Cpu._log_message = $"${target:X4} = {m[target]:X2}";
+            if (m.Settings.System.DebugMode) m.Cpu._log.Message = $"${target:X4} = {m[target]:X2}";
             OpRollingRightShiftMem(m, target);
             m.Cpu.Registers.PC += 3;
          },
@@ -1145,7 +1145,7 @@ public sealed class CpuInstruction {
          m => { },
          m => {
             var target = m.ReadUShort(m.Cpu.Registers.PC + 1);
-            if (m.Settings.System.DebugMode) m.Cpu._log_message = $"${target:X4} = {m[target]:X2}";
+            if (m.Settings.System.DebugMode) m.Cpu._log.Message = $"${target:X4} = {m[target]:X2}";
             OpRollingLeftShiftMem(m, target);
             m.Cpu.Registers.PC += 3;
          },
@@ -1170,7 +1170,7 @@ public sealed class CpuInstruction {
       m => { },
       m => {
          var target = m.ReadUShort(m.Cpu.Registers.PC + 1);
-         if (m.Settings.System.DebugMode) m.Cpu._log_message = $"${target:X4} = {m[target]:X2}";
+         if (m.Settings.System.DebugMode) m.Cpu._log.Message = $"${target:X4} = {m[target]:X2}";
          OpIncMem(m, target);
          m.Cpu.Registers.PC += 3;
          },
@@ -1269,7 +1269,7 @@ public sealed class CpuInstruction {
             var address = m.ReadUShort(m.Cpu.Registers.PC + 1);
             var target = m.ReadUShortSamePage(address);
             m.Cpu.Registers.PC = target;
-            if (m.Settings.System.DebugMode) m.Cpu._log_message = $"(${address:X4}) = {target:X4}";
+            if (m.Settings.System.DebugMode) m.Cpu._log.Message = $"(${address:X4}) = {target:X4}";
          },
       } },
 
@@ -1629,11 +1629,6 @@ public sealed class CpuInstruction {
          m => { },
          m => { },
          m => {
-            if (m.Cpu._log_inst_count == 4784)
-            {
-
-            }
-
             var address = GetIndexedAbsoluteAddress(m, m.ReadUShort(m.Cpu.Registers.PC + 1), RegisterType.X);
             var carry = (m[address] & 1) > 0;
             m[address] >>= 1;

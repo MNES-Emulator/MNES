@@ -33,7 +33,7 @@ public sealed class NesTest {
    //
    // The test "ends" after reaching a specific address. After that it will start checking
    // to see if illegal opcodes are working, and none of those are implemented atm.
-   [TestMethod, Ignore]
+   [TestMethod/*, Ignore*/]
    public async Task RunNestest() {
       var input = new NesInputState();
       var settings = new MnesConfig();
