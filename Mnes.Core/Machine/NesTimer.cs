@@ -99,10 +99,10 @@ public sealed class NesTimer {
       Start();
    }
 
-   public void Stop() {
+   public async Task Stop() {
       if (!_is_running) throw new InvalidOperationException($"Cannot stop {nameof(NesTimer)} when it's not running.");
 
       _is_stopping = true;
-      RunningThread.Wait();
+      await RunningThread;
    }
 }

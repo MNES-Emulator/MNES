@@ -15,6 +15,7 @@ public sealed class MachineState {
    readonly NesInputState _input;
    byte _last_read_value; // returns in case of open bus reads
    public bool IsRunning => !_timer.RunningThread.IsCompleted;
+   bool _stop;
 
    public byte[] Ram { get; }
    public byte[] Rom { get; }
@@ -57,7 +58,13 @@ public sealed class MachineState {
       await _timer.RunningThread;
    }
 
+   public async Task Stop() {
+      _stop = true;
+      await _timer.Stop();
+   }
+
    void DebugTick() {
+      if (_stop) return;
       Cpu.Tick();
       Ppu.Tick();
       Ppu.Tick();
@@ -65,6 +72,7 @@ public sealed class MachineState {
    }
 
    void Tick() {
+      if (_stop) return;
       Cpu.Tick();
       Ppu.Tick();
       Ppu.Tick();

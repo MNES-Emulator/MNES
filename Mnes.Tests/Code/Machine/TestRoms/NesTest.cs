@@ -21,19 +21,13 @@ public sealed class NesTest {
    public void Test_LogPathExists() =>
    JamieAssert.FileExists(NESTEST_LOG_PATH);
 
-   // TODO: misbehaved test? out of memory exception in StringBuilder.ToString()?
-   //
-   // Answer: This test currently has no way of passing and will never end. The memory leak is
-   // unrelated. Idk if that calls for an Ignore attribute or a test that is correctly
-   // identified as "failed". Leaving it in because it takes forever.
-   //
    // nestest writes to certain areas of memory the results of how accurately it was run,
    // so evaluating those addresses at the end, as well as making sure our log is identical
    // to the Nintendulator one will determine whether this test passes or not.
    //
    // The test "ends" after reaching a specific address. After that it will start checking
    // to see if illegal opcodes are working, and none of those are implemented atm.
-   [TestMethod/*, Ignore*/]
+   [TestMethod]
    public async Task RunNestest() {
       var input = new NesInputState();
       var settings = new MnesConfig();
@@ -55,6 +49,8 @@ public sealed class NesTest {
          Debug.WriteLine($"     {valid_log.GetDebugString(true)} (control)");
          valid_log.AssertAreEqual(current_log, i);
          Debug.WriteLine("");
+         if (machine.Cpu.Registers.PC == 0xC6BC)
+            _ = machine.Stop();
       }
 
       machine.Callbacks.OnNesInstructionExecute += cpu_callback;

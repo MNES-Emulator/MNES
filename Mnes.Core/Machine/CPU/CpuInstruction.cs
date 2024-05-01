@@ -895,6 +895,7 @@ public sealed class CpuInstruction {
 
             var c_flag = m[arg].HasBit(0);
             m[arg] >>= 1;
+            m.Cpu.Registers.UpdateFlags(m[arg]);
             m.Cpu.Registers.SetFlag(StatusFlag.Carry, c_flag);
 
             m.Cpu.Registers.PC += 2;
@@ -909,6 +910,7 @@ public sealed class CpuInstruction {
 
             var c_flag = m[arg].HasBit(7);
             m[arg] <<= 1;
+            m.Cpu.Registers.UpdateFlags(m[arg]);
             m.Cpu.Registers.SetFlag(StatusFlag.Carry, c_flag);
 
             m.Cpu.Registers.PC += 2;
@@ -1106,6 +1108,7 @@ public sealed class CpuInstruction {
             if (m.Settings.System.DebugMode) m.Cpu._log.Message = $"${target:X4} = {m[target]:X2}";
             var carry = (m[target] & 1) > 0;
             m[target] >>= 1;
+            m.Cpu.Registers.UpdateFlags(m[target]);
             m.Cpu.Registers.SetFlag(StatusFlag.Carry, carry);
             m.Cpu.Registers.PC += 3;
          },
@@ -1121,12 +1124,13 @@ public sealed class CpuInstruction {
             if (m.Settings.System.DebugMode) m.Cpu._log.Message = $"${target:X4} = {m[target]:X2}";
             var c_flag = m[target].HasBit(7);
             m[target] <<= 1;
+            m.Cpu.Registers.UpdateFlags(m[target]);
             m.Cpu.Registers.SetFlag(StatusFlag.Carry, c_flag);
             m.Cpu.Registers.PC += 3;
          },
       } },
 
-      new() { Name = "ROR", OpCode = 0x6E, Bytes = 2, Process = new ProcessDelegate[] {
+      new() { Name = "ROR", OpCode = 0x6E, Bytes = 3, Process = new ProcessDelegate[] {
          m => { },
          m => { },
          m => { },
@@ -1139,7 +1143,7 @@ public sealed class CpuInstruction {
          },
       } },
 
-      new() { Name = "ROL", OpCode = 0x2E, Bytes = 2, Process = new ProcessDelegate[] {
+      new() { Name = "ROL", OpCode = 0x2E, Bytes = 3, Process = new ProcessDelegate[] {
          m => { },
          m => { },
          m => { },
@@ -1164,7 +1168,7 @@ public sealed class CpuInstruction {
          },
       } },
 
-      new() { Name = "INC", OpCode = 0xEE, Bytes = 2, Process = new ProcessDelegate[] {
+      new() { Name = "INC", OpCode = 0xEE, Bytes = 3, Process = new ProcessDelegate[] {
       m => { },
       m => { },
       m => { },
@@ -1455,6 +1459,7 @@ public sealed class CpuInstruction {
             var address = GetIndexedZeroPageAddress(m, m[(ushort)(m.Cpu.Registers.PC + 1)], RegisterType.X);
             var carry = (m[address] & 1) > 0;
             m[address] >>= 1;
+            m.Cpu.Registers.UpdateFlags(m[address]);
             m.Cpu.Registers.SetFlag(StatusFlag.Carry, carry);
             m.Cpu.Registers.PC += 2;
          },
@@ -1469,6 +1474,7 @@ public sealed class CpuInstruction {
             var address = GetIndexedZeroPageAddress(m, m[(ushort)(m.Cpu.Registers.PC + 1)], RegisterType.X);
             var carry = m[address].HasBit(7);
             m[address] <<= 1;
+            m.Cpu.Registers.UpdateFlags(m[address]);
             m.Cpu.Registers.SetFlag(StatusFlag.Carry, carry);
             m.Cpu.Registers.PC += 2;
          },
@@ -1633,6 +1639,7 @@ public sealed class CpuInstruction {
             var address = GetIndexedAbsoluteAddress(m, m.ReadUShort(m.Cpu.Registers.PC + 1), RegisterType.X);
             var carry = (m[address] & 1) > 0;
             m[address] >>= 1;
+            m.Cpu.Registers.UpdateFlags(m[address]);
             m.Cpu.Registers.SetFlag(StatusFlag.Carry, carry);
             m.Cpu.Registers.PC += 3;
          },
@@ -1647,6 +1654,7 @@ public sealed class CpuInstruction {
             var address = GetIndexedAbsoluteAddress(m, m.ReadUShort(m.Cpu.Registers.PC + 1), RegisterType.X);
             var carry = m[address].HasBit(7);
             m[address] <<= 1;
+            m.Cpu.Registers.UpdateFlags(m[address]);
             m.Cpu.Registers.SetFlag(StatusFlag.Carry, carry);
             m.Cpu.Registers.PC += 3;
          },
