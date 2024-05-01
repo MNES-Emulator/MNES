@@ -7,7 +7,7 @@ namespace Mnes.Core.Machine.CPU;
 public sealed partial class CpuRegisters {
    /// <summary> The 5 8-bit registers. </summary>
    readonly byte[] _registers = new byte[RegisterType.Values.Count];
-   /// <summary> The program counter. </summary>
+   /// <summary> The program counter. Points to the address that the CPU pulls the next instruction from. </summary>
    public ushort PC;
 
    public byte this[RegisterType reg] {
@@ -15,7 +15,7 @@ public sealed partial class CpuRegisters {
       set => SetRegister(reg, value);
    }
 
-   /// <summary> The accumulator. </summary>
+   /// <summary> The accumulator. Used for arithmetic operations. </summary>
    public byte A { get => _registers[RegisterType.A]; set => SetRegister(RegisterType.A, value); }
 
    /// <summary> The X register. </summary>
