@@ -609,8 +609,9 @@ public sealed class CpuInstruction {
 
       new() { Name = "LSR", OpCode = 0x4A, Bytes = 1, Process = new ProcessDelegate[] {
          m => {
+            var carry = m.Cpu.Registers.A.HasBit(0);
             m.Cpu.Registers.A >>= 1;
-            m.Cpu.Registers.SetFlag(StatusFlag.Carry, m.Cpu.Registers.A.HasBit(0));
+            m.Cpu.Registers.SetFlag(StatusFlag.Carry, carry);
             m.Cpu.Registers.PC += 1;
             if (m.Settings.System.DebugMode) m.Cpu._log.Message = $"A";
          },
