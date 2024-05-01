@@ -52,7 +52,6 @@ public struct InstructionLog {
       var opcode = Convert.ToByte(s[6..8], 16);
       byte? param1 = s[9..11].Trim() == "" ? null : Convert.ToByte(s[9..11], 16);
       byte? param2 = s[12..14].Trim() == "" ? null : Convert.ToByte(s[12..14], 16);
-      var name = s[16..19];
       var message = s[20..47].Trim();
       var a = Convert.ToByte(s[50..52], 16);
       var x = Convert.ToByte(s[55..57], 16);

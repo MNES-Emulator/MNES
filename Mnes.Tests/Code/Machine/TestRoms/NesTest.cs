@@ -54,6 +54,7 @@ public sealed class NesTest {
          var current_log = machine.Logger.GetLast();
          Debug.WriteLine($"     {valid_log.GetDebugString(true)} (control)");
          valid_log.AssertAreEqual(current_log, i);
+         Debug.WriteLine("");
       }
 
       machine.Callbacks.OnNesInstructionExecute += cpu_callback;

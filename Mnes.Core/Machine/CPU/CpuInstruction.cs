@@ -359,7 +359,7 @@ public sealed class CpuInstruction {
          m => { },
          m => {
             var p = m.Cpu.Registers.P;
-            p |= BitFlags.F5;
+            p |= BitFlags.F5 | BitFlags.F4;
             PUSH(m, p);
             m.Cpu.Registers.PC++;
          },
@@ -550,7 +550,7 @@ public sealed class CpuInstruction {
             var target = m.ReadUShort(m.Cpu.Registers.PC + 1);
             m[target] = m.Cpu.Registers.X;
             m.Cpu.Registers.PC += 3;
-            if (m.Settings.System.DebugMode) m.Cpu._log.Message = $"${target:X2} = {m.Cpu.Registers.X:X2}";
+            if (m.Settings.System.DebugMode) m.Cpu._log.Message = $"${target:X4} = {m.Cpu.Registers.X:X2}";
          },
       } },
 
@@ -602,8 +602,8 @@ public sealed class CpuInstruction {
          m => { },
          m => { },
          m => {
-            m.Cpu.Registers.PC = PULL_ushort(m);
             m.Cpu.Registers.P = PULL(m);
+            m.Cpu.Registers.PC = PULL_ushort(m);
          },
       } },
 

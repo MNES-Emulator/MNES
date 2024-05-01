@@ -54,6 +54,7 @@ public sealed class Ppu {
 
    public void SetPowerUpState() {
       Registers.SetPowerUpState();
+      Cycle = 21; // probably a hack
       Array.Clear(Vram);
       Array.Clear(Oam);
    }
