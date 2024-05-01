@@ -42,7 +42,7 @@ public sealed class NesTest {
       var machine = new MachineState(rom_data, settings, input);
 
       int i = 0;
-      void cpu_callback(CpuInstruction instruction) {
+      void cpu_callback() {
          var valid_log = valid_logs[i++];
          var current_log = machine.Logger.GetLast();
          Debug.WriteLine($"     {valid_log.GetDebugString(true)} (control)");
@@ -52,7 +52,7 @@ public sealed class NesTest {
             _ = machine.Stop();
       }
 
-      machine.Callbacks.OnNesInstructionExecute += cpu_callback;
+      machine.Callbacks.OnCpuExecute += cpu_callback;
       await machine.Run();
       // Todo: Check addresses that nestest writes results to.
    }

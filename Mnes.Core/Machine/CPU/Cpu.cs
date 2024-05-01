@@ -61,7 +61,6 @@ public sealed class Cpu {
                _machine.Logger.Log(_log, _machine.Settings.System.DebugShowStatusFlags);
                _log.Message = null;
             }
-            _machine.Callbacks.OnNesInstructionExecute?.Invoke(_current_instruction);
             _machine.Callbacks.OnCpuExecute?.Invoke();
             _current_instruction = null;
             _current_instruction_cycle = 0;
